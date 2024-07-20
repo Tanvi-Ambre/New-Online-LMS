@@ -19,14 +19,14 @@ function Dashboard() {
     useAxios()
       .get(`student/summary/${UserData()?.user_id}/`)
       .then((res) => {
-        console.log(res.data[0]);
+       // console.log(`student/summary/${UserData()?.user_id}/`, res.data[0]);
         setStats(res.data[0]);
       });
 
     useAxios()
       .get(`student/course-list/${UserData()?.user_id}/`)
       .then((res) => {
-        console.log(res.data);
+       // console.log(`student/course-list/${UserData()?.user_id}/`, res.data);
         setCourses(res.data);
         setFetching(false);
       });
@@ -45,6 +45,7 @@ function Dashboard() {
       const filtered = courses.filter((c) => {
         return c.course.title.toLowerCase().includes(query);
       });
+    //  console.log("filtered", filtered)
       setCourses(filtered);
     }
   };
@@ -121,7 +122,7 @@ function Dashboard() {
 
               {fetching === true && <p className="mt-3 p-3">Loading...</p>}
 
-              {fetching === false && (
+              {/* {fetching === false && (
                 <div className="card mb-4">
                   <div className="card-header">
                     <h3 className="mb-0">Courses</h3>
@@ -155,11 +156,11 @@ function Dashboard() {
                       </thead>
                       <tbody>
                         {courses?.map((c, index) => (
-                          <tr>
+                          <tr key={index}>
                             <td>
                               <div className="d-flex align-items-center">
                                 <div>
-                                  <a href="#">
+                                  <a href="">
                                     <img
                                       src={c.course.image}
                                       alt="course"
@@ -219,7 +220,7 @@ function Dashboard() {
                                   to={`/student/courses/${c.enrollment_id}/`}
                                   className="btn btn-success btn-sm mt-3"
                                 >
-                                  start Course
+                                  Start Course
                                   <i className="fas fa-arrow-right ms-2"></i>
                                 </Link>
                               )}
@@ -244,7 +245,7 @@ function Dashboard() {
                     </table>
                   </div>
                 </div>
-              )}
+              )} */}
             </div>
           </div>
         </div>

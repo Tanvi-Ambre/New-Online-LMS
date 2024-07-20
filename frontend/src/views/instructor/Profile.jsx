@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useEffect, useContext } from "react";
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
@@ -18,12 +19,12 @@ function Profile() {
     country: "",
   });
   const [imagePreview, setImagePreview] = useState("");
+  const [imageError, setImageError] = useState("");
 
   const fetchProfile = () => {
     useAxios()
       .get(`user/profile/${UserData()?.user_id}/`)
       .then((res) => {
-        console.log(res.data);
         setProfile(res.data);
         setProfileData(res.data);
         setImagePreview(res.data.image);
@@ -43,6 +44,11 @@ function Profile() {
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
+    if (selectedFile && selectedFile.size > 800 * 1024) {
+      setImageError("Image size exceeds the limit of 800KB.");
+      return;
+    }
+    setImageError("");
     setProfileData({
       ...profileData,
       [event.target.name]: selectedFile,
@@ -80,6 +86,17 @@ function Profile() {
       .then((res) => {
         console.log(res.data);
         setProfile(res.data);
+        Toast().fire({
+          title: "Profile updated successfully",
+          icon: "success",
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+        Toast().fire({
+          title: "Failed to update profile",
+          icon: "error",
+        });
       });
   };
 
@@ -134,6 +151,9 @@ function Profile() {
                           onChange={handleFileChange}
                           id=""
                         />
+                        {imageError && (
+                          <p style={{ color: "red" }}>{imageError}</p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -145,7 +165,7 @@ function Profile() {
                     </p>
                     {/* Form */}
                     <div className="row gx-3">
-                      {/* First name */}
+                      {/* Full Name */}
                       <div className="mb-3 col-12 col-md-12">
                         <label className="form-label" htmlFor="fname">
                           Full Name
@@ -154,38 +174,38 @@ function Profile() {
                           type="text"
                           id="fname"
                           className="form-control"
-                          placeholder="First Name"
+                          placeholder="Full Name"
                           required=""
                           value={profileData.full_name}
                           onChange={handleProfileChange}
                           name="full_name"
                         />
                         <div className="invalid-feedback">
-                          Please enter first name.
+                          Please enter your full name.
                         </div>
                       </div>
-                      {/* Last name */}
+                      {/* About Me */}
                       <div className="mb-3 col-12 col-md-12">
-                        <label className="form-label" htmlFor="lname">
+                        <label className="form-label" htmlFor="about">
                           About Me
                         </label>
                         <textarea
                           onChange={handleProfileChange}
                           name="about"
-                          id=""
+                          id="about"
                           cols="30"
                           rows="5"
                           className="form-control"
                           value={profileData.about}
                         ></textarea>
                         <div className="invalid-feedback">
-                          Please enter last name.
+                          Please enter some information about yourself.
                         </div>
                       </div>
 
                       {/* Country */}
                       <div className="mb-3 col-12 col-md-12">
-                        <label className="form-label" htmlFor="editCountry">
+                        <label className="form-label" htmlFor="country">
                           Country
                         </label>
                         <input
@@ -199,7 +219,7 @@ function Profile() {
                           name="country"
                         />
                         <div className="invalid-feedback">
-                          Please choose country.
+                          Please choose your country.
                         </div>
                       </div>
                       <div className="col-12">

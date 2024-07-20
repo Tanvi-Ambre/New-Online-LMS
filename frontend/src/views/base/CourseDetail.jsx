@@ -15,71 +15,66 @@ import UserData from "../plugin/UserData";
 import Toast from "../plugin/Toast";
 import { CartContext } from "../plugin/Context";
 import apiInstance from "../../utils/axios";
+//import { ProfileContext } from "../plugin/Context";
 
 function CourseDetail() {
   const [course, setCourse] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [addToCartBtn, setAddToCartBtn] = useState("Add To Cart");
   const [cartCount, setCartCount] = useContext(CartContext);
-
-  const param = useParams();
-  console.log(param.course_id);
+  //const country = GetCurrentAddress()
+  // const [profile, setProfile] = useContext(ProfileContext);
+  // console.log("profile", profile)
+  const { course_id } = useParams();
 
   const country = GetCurrentAddress().country;
   const userId = UserData().user_id;
 
-  const fetchCourse = () => {
-    setIsLoading(true);
-    console.log(`Fetching course details for slug: ${param.slug}`);
-    useAxios()
-      .get(`course/course-detail/${param.course_id}/`)
-      .then((res) => {
-        console.log("Course--- details fetched:", res.data)
-        setCourse(res.data);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error("Failed to fetch course data:", error);
-        setIsLoading(false);
-      });
-  };
-
   useEffect(() => {
     fetchCourse();
-  }, [param.course_id]);
+  }, [course_id]);
 
-  const addToCart = async (courseId, userId, price, country, cartId) => {
-    setAddToCartBtn("Adding To Cart");
-    const formdata = new FormData();
+  const fetchCourse = async () => {
+    try {
+      const response = await useAxios().get(
+        `/course/course-detail/${course_id}/`
+      );
+      setCourse(response.data);
+      setIsLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setIsLoading(false);
+    }
+  };
 
-    formdata.append("course_id", courseId);
-    formdata.append("user_id", userId);
-    formdata.append("price", price);
-    formdata.append("country_name", country);
-    formdata.append("cart_id", cartId);
+
+  const addToCart = async () => {
+    const formData = new FormData();
+    formData.append("course_id", course.id);
+    formData.append("user_id", userId);
+    formData.append("price", course.price);
+    formData.append("country_name", country);
+    formData.append("cart_id", CartId());
 
     try {
-      await useAxios()
-        .post(`course/cart/`, formdata)
-        .then((res) => {
-          console.log(res.data);
-          setAddToCartBtn("Added To Cart");
-          Toast().fire({
-            title: "Added To Cart",
-            icon: "success",
-          });
+      const response = await useAxios().post(`course/cart/`, formData);
+      Toast().fire({
+        title: "Added To Cart",
+        icon: "success",
+      });
 
-          // Set cart count after adding to cart
-          apiInstance.get(`course/cart-list/${CartId()}/`).then((res) => {
-            setCartCount(res.data?.length);
-          });
-        });
+      // Set cart count after adding to cart
+      apiInstance.get(`course/cart-list/${CartId()}/`).then((res) => {
+        setCartCount(res.data?.length);
+      });
     } catch (error) {
       console.log(error);
       setAddToCartBtn("Add To Cart");
     }
   };
 
+  //console.log("course", course)
   return (
     <>
       <BaseHeader />
@@ -295,8 +290,8 @@ function CourseDetail() {
                               id="accordionExample2"
                             >
                               {/* Item */}
-                              {course?.curriculum?.map((c, index) => (
-                                <div className="accordion-item mb-3" key={index}>
+                              {course?.curriculum?.map((c) => (
+                                <div className="accordion-item mb-3" key={c.id}>
                                   <h6
                                     className="accordion-header font-base"
                                     id="heading-1"
@@ -320,9 +315,12 @@ function CourseDetail() {
                                   >
                                     <div className="accordion-body mt-3">
                                       {/* Course lecture */}
-                                      {c.variant_items?.map((l, index) => (
+                                      {c.variant_items?.map((l) => (
                                         <>
-                                          <div className="d-flex justify-content-between align-items-center" key={index}>
+                                          <div
+                                            className="d-flex justify-content-between align-items-center"
+                                            key={l.id}
+                                          >
                                             <div className="position-relative d-flex align-items-center">
                                               <a
                                                 href="#"
@@ -366,9 +364,10 @@ function CourseDetail() {
                                 <div className="col-md-5">
                                   {/* Image */}
                                   <img
-                                    src={course.teacher.image}
+                                    src={course.teacher?.image}
                                     className="img-fluid rounded-3"
                                     alt="instructor-image"
+                                   // onError={(e) => { e.target.onerror = null; e.target.src="http://127.0.0.1:8000/media/user_folder/66972e567f990_download_5gVFg07.jpg"; }}
                                   />
                                 </div>
                                 <div className="col-md-7">
@@ -376,14 +375,14 @@ function CourseDetail() {
                                   <div className="card-body">
                                     {/* Title */}
                                     <h3 className="card-title mb-0">
-                                      {course.teacher.full_name}
+                                      {course.teacher?.full_name}
                                     </h3>
-                                    <p className="mb-2">{course.teacher.bio}</p>
+                                    <p className="mb-2">{course.teacher?.bio}</p>
                                     {/* Social button */}
                                     <ul className="list-inline mb-3">
                                       <li className="list-inline-item me-3">
                                         <a
-                                          href={course.teacher.twitter}
+                                          href={course.teacher?.twitter}
                                           className="fs-5 text-twitter"
                                         >
                                           <i className="fab fa-twitter-square" />
@@ -391,7 +390,7 @@ function CourseDetail() {
                                       </li>
                                       <li className="list-inline-item me-3">
                                         <a
-                                          href={course.teacher.facebook}
+                                          href={course.teacher?.facebook}
                                           className="fs-5 text-facebook"
                                         >
                                           <i className="fab fa-facebook-square" />
@@ -399,7 +398,7 @@ function CourseDetail() {
                                       </li>
                                       <li className="list-inline-item me-3">
                                         <a
-                                          href={course.teacher.linkedin}
+                                          href={course.teacher?.linkedin}
                                           className="fs-5 text-linkedin"
                                         >
                                           <i className="fab fa-linkedin" />
@@ -413,7 +412,7 @@ function CourseDetail() {
                             {/* Card END */}
                             {/* Instructor info */}
                             <h5 className="mb-3">About Instructor</h5>
-                            <p className="mb-3">{course.teacher.about}</p>
+                            <p className="mb-3">{course.teacher?.about}</p>
                           </div>
                           <div
                             className="tab-pane fade"
@@ -1171,15 +1170,15 @@ function CourseDetail() {
                                     </li>
                                   </ul>
 
-                                  <form class="w-100 d-flex">
+                                  <form className="w-100 d-flex">
                                     <textarea
-                                      class="one form-control pe-4 bg-light w-75"
+                                      className="one form-control pe-4 bg-light w-75"
                                       id="autoheighttextarea"
                                       rows="1"
                                       placeholder="Write a message..."
                                     ></textarea>
                                     <button
-                                      class="btn btn-primary ms-2 mb-0 w-25"
+                                      className="btn btn-primary ms-2 mb-0 w-25"
                                       type="button"
                                     >
                                       Post{" "}
@@ -1214,7 +1213,7 @@ function CourseDetail() {
                               <a
                                 data-bs-toggle="modal"
                                 data-bs-target="#exampleModal"
-                                href="https://www.youtube.com/embed/tXHviS-4ygo"
+                                //href="#"
                                 className="btn btn-lg text-danger btn-round btn-white-shadow mb-0"
                                 data-glightbox=""
                                 data-gallery="course-video"
@@ -1252,7 +1251,16 @@ function CourseDetail() {
                                         aria-label="Close"
                                       />
                                     </div>
-                                    <div className="modal-body">...</div>
+                                    <div className="modal-body">
+                                      <video width="100%" controls>
+                                        <source
+                                          src={course.file}
+                                          type="video/mp4"
+                                        />
+                                        Your browser does not support the video
+                                        tag.
+                                      </video>
+                                    </div>
                                     <div className="modal-footer">
                                       <button
                                         type="button"
@@ -1260,12 +1268,6 @@ function CourseDetail() {
                                         data-bs-dismiss="modal"
                                       >
                                         Close
-                                      </button>
-                                      <button
-                                        type="button"
-                                        className="btn btn-primary"
-                                      >
-                                        Save changes
                                       </button>
                                     </div>
                                   </div>

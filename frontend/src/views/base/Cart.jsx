@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -138,7 +139,7 @@ function Cart() {
                     <table className="table align-middle p-4 mb-0">
                       <tbody className="border-top-2">
                         {cart?.map((c, index) => (
-                          <tr>
+                          <tr key = {index}>
                             <td>
                               <div className="d-lg-flex align-items-center">
                                 <div className="w-100px w-md-80px mb-2 mb-md-0">
@@ -179,7 +180,11 @@ function Cart() {
                         ))}
 
                         {cart?.length < 1 && (
-                          <p className="mt-1 p-1">No Item In Cart</p>
+                          
+                            <tr>
+                              <td colSpan="3" className="text-center">No Item In Cart</td>
+                            </tr>
+                          
                         )}
                       </tbody>
                     </table>
@@ -246,16 +251,16 @@ function Cart() {
               <div className="col-lg-4">
                 <div className="p-4 shadow rounded-3">
                   <h4 className="mb-3">Cart Total</h4>
-                  <ul class="list-group mb-3">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <ul className="list-group mb-3">
+                    <li className="list-group-item d-flex justify-content-between align-items-center">
                       Sub Total
                       <span>${cartStats.price?.toFixed(2)}</span>
                     </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <li className="list-group-item d-flex justify-content-between align-items-center">
                       Tax
                       <span>${cartStats.tax?.toFixed(2)}</span>
                     </li>
-                    <li class="list-group-item d-flex fw-bold justify-content-between align-items-center">
+                    <li className="list-group-item d-flex fw-bold justify-content-between align-items-center">
                       Total
                       <span className="fw-bold">
                         ${cartStats.total?.toFixed(2)}

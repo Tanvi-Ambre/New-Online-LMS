@@ -4,6 +4,7 @@ import { Route, Routes, BrowserRouter } from "react-router-dom";
 import { CartContext, ProfileContext } from "./views/plugin/Context";
 import apiInstance from "./utils/axios";
 import CartId from "./views/plugin/CartId";
+import { AuthProvider } from './utils/AuthContext';
 
 import MainWrapper from "./layouts/MainWrapper";
 import PrivateRoute from "./layouts/PrivateRoute";
@@ -42,6 +43,7 @@ import ChangePassword from "./views/instructor/ChangePassword";
 import Profile from "./views/instructor/Profile";
 import CourseCreate from "./views/instructor/CourseCreate";
 import CourseEdit from "./views/instructor/CourseEdit";
+import InstructorCourseDetail from "./views/instructor/InstructorCourseDetail";
 
 
 function App() {
@@ -61,6 +63,7 @@ function App() {
   }, []);
 
   return (
+    <AuthProvider>
     <CartContext.Provider value={[cartCount, setCartCount]}>
       <ProfileContext.Provider value={[profile, setProfile]}>
         <BrowserRouter>
@@ -129,11 +132,16 @@ function App() {
                 path="/instructor/edit-course/:course_id/"
                 element={<CourseEdit />}
               />
+              <Route
+                path="/instructor/courses/:course_id/"
+                element={<InstructorCourseDetail />}
+              />
             </Routes>
           </MainWrapper>
         </BrowserRouter>
       </ProfileContext.Provider>
     </CartContext.Provider>
+    </AuthProvider>
   );
 }
 

@@ -17,7 +17,7 @@ import Toast from "../plugin/Toast";
 function CourseEdit() {
   const [course, setCourse] = useState({
     category: 0,
-    file: "",
+    file: null,
     image: "",
     title: "",
     description: "",
@@ -85,7 +85,7 @@ function CourseEdit() {
         setCourse({
           ...course,
           image: {
-            file: event.target.files[0],
+            file: file,
             preview: reader.result,
           },
         });
@@ -97,7 +97,7 @@ function CourseEdit() {
   const handleCourseIntroVideoChange = (event) => {
     setCourse({
       ...course,
-      [event.target.name]: event.target.files[0],
+      file: event.target.files[0],
     });
   };
 
@@ -227,9 +227,12 @@ function CourseEdit() {
 
     const response = await useAxios().patch(
       `teacher/course-update/${UserData()?.teacher_id}/${param.course_id}/`,
-      formdata
+      formdata,{
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
     );
-    console.log(response.data);
     Swal.fire({
       icon: "success",
       title: "Course Updated Successfully",
@@ -270,12 +273,13 @@ function CourseEdit() {
                               <i className="fas fa-arrow-left"></i> Back to
                               Course
                             </Link>
-                            <a
-                              href="instructor-courses.html"
+                            <button
+                              //href="instructor-courses.html"
                               className="btn btn-dark ms-2"
+                              type="submit"
                             >
                               Save <i className="fas fa-check-circle"></i>
-                            </a>
+                            </button>
                           </div>
                         </div>
                       </div>

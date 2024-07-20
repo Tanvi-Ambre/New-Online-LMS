@@ -101,7 +101,6 @@ function Courses() {
                           <td>
                             <div className="d-flex align-items-center">
                               <div>
-                                <a href="#">
                                   <img
                                     src={c.image}
                                     alt="course"
@@ -113,13 +112,11 @@ function Courses() {
                                       objectFit: "cover",
                                     }}
                                   />
-                                </a>
-                              </div>
+                                                    </div>
                               <div className="ms-3">
-                                <h4 className="mb-1 h6">
-                                  <a
-                                    href="#"
-                                    className="text-inherit text-decoration-none text-dark"
+                                  <h4 className="mb-1 h6">
+                                <a
+                                                                    className="text-inherit text-decoration-none text-dark"
                                   >
                                     {c.title}
                                   </a>
@@ -170,12 +167,13 @@ function Courses() {
                             >
                               <i className="fas fa-edit"></i>
                             </Link>
-                            <button className="btn btn-danger btn-sm mt-3 me-1">
+                            <Link className="btn btn-danger btn-sm mt-3 me-1">
                               <i className="fas fa-trash"></i>
-                            </button>
-                            <button className="btn btn-secondary btn-sm mt-3 me-1">
+                            </Link>
+                            <Link  to={`/instructor/courses/${c.course_id}/`}
+                            className="btn btn-secondary btn-sm mt-3 me-1">
                               <i className="fas fa-eye"></i>
-                            </button>
+                            </Link>
                           </td>
                         </tr>
                       ))}

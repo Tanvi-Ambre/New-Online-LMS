@@ -114,7 +114,7 @@ function Dashboard() {
                 </div>
               </div>
 
-              <div className="card mb-4">
+              {/* <div className="card mb-4">
                 <div className="card-header">
                   <h3 className="mb-0">Courses</h3>
                   <span>
@@ -231,7 +231,7 @@ function Dashboard() {
                     </tbody>
                   </table>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

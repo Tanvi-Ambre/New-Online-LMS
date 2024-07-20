@@ -87,7 +87,7 @@ class Category(models.Model):
     title = models.CharField(max_length=100)
     image = models.FileField(upload_to="course-file", default="category.jpg", null=True, blank=True)
     active = models.BooleanField(default=True)
-    slug = models.SlugField(unique=True, null=True, blank=True)
+    slug = models.SlugField(unique=True, null=True, blank=True, default="course")
 
     class Meta:
         verbose_name_plural = "Category"
@@ -126,8 +126,8 @@ class Course(models.Model):
         return self.title
     
     def save(self, *args, **kwargs):
-        # if self.slug == "" or self.slug == None:
-            #self.slug = slugify(self.title) + str(self.pk)
+        if self.slug == "" or self.slug == None:
+            self.slug = slugify(self.title)
             
             #Below code works
         # self.course_id = self.course_id

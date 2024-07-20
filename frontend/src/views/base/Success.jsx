@@ -86,12 +86,7 @@ function Success() {
                     visit your <a href="">My Courses</a> page, to view the
                     courses now.
                   </p>
-                  <button
-                    type="button"
-                    className="btn btn-primary mb-0 rounded-2"
-                  >
-                    View Enrolled Courses <i className="fas fa-arrow-right"></i>
-                  </button>
+                  <a href="/student/courses" className="btn btn-primary mb-0 rounded-2">View Enrolled Courses {" "}<i className="fas fa-arrow-right"/></a>
                 </div>
                 <div className="col-lg-7 text-center">
                   <img
@@ -119,7 +114,6 @@ function Success() {
                 </div>
                 <div className="col-lg-7 text-center">
                   <img
-                    sty
                     src="https://www.icegif.com/wp-content/uploads/2023/07/icegif-1259.gif"
                     className="h-300px h-sm-400px h-md-500px h-xl-700px"
                     alt=""
@@ -146,7 +140,6 @@ function Success() {
                 </div>
                 <div className="col-lg-7 text-center">
                   <img
-                    sty
                     src="https://media3.giphy.com/media/h4OGa0npayrJX2NRPT/giphy.gif?cid=790b76117pc6298jypyph0liy6xlp3lzb7b2y405ixesujeu&ep=v1_stickers_search&rid=giphy.gif&ct=e"
                     className="h-300px h-sm-400px h-md-500px h-xl-700px"
                     alt=""

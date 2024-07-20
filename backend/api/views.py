@@ -781,6 +781,7 @@ class TeacherSummaryAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         teacher_id = self.kwargs['teacher_id']
+        #print("teacher_id---", teacher_id)
         teacher = api_models.Teacher.objects.get(id=teacher_id)
 
         one_month_ago = datetime.today() - timedelta(days=28)
@@ -890,7 +891,7 @@ def TeacherAllMonthEarningAPIView(request, teacher_id):
         )
         .order_by("month")
     )
-
+    #print("monthly_earning_tracker", monthly_earning_tracker)
     return Response(monthly_earning_tracker)
 
 class TeacherBestSellingCourseAPIView(viewsets.ViewSet):

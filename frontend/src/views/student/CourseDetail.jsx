@@ -58,24 +58,27 @@ function CourseDetail() {
   const handleQuestionShow = () => setAddQuestionShow(true);
 
   const fetchCourseDetail = async () => {
+   
     useAxios()
       .get(
         `student/course-detail/${UserData()?.user_id}/${param.enrollment_id}/`
       )
       .then((res) => {
+       // console.log(`student/course-detail/${UserData()?.user_id}/${param.enrollment_id}/`, res.data)
         setCourse(res.data);
         setQuestions(res.data.question_answer);
-        setStudentReview(res.data.review);
+        setStudentReview(res.data?.review);
         const percentageCompleted =
           (res.data.completed_lesson?.length / res.data.lectures?.length) * 100;
         setCompletionPercentage(percentageCompleted?.toFixed(0));
       });
   };
   useEffect(() => {
+   // console.log("check")
     fetchCourseDetail();
-  }, []);
+  }, [param.enrollment_id]);
 
-  console.log(createReview?.rating);
+  //console.log(createReview?.rating);
   // console.log(studentReview);
   const handleMarkLessonAsCompleted = (variantItemId) => {
     const key = `lecture_${variantItemId}`;
@@ -249,8 +252,8 @@ function CourseDetail() {
     const formdata = new FormData();
     formdata.append("course_id", course.course?.id);
     formdata.append("user_id", UserData()?.user_id);
-    formdata.append("rating", createReview.rating);
-    formdata.append("review", createReview.review);
+    formdata.append("rating", createReview?.rating);
+    formdata.append("review", createReview?.review);
 
     useAxios()
       .post(`student/rate-course/`, formdata)
@@ -270,8 +273,8 @@ function CourseDetail() {
     const formdata = new FormData();
     formdata.append("course", course.course?.id);
     formdata.append("user", UserData()?.user_id);
-    formdata.append("rating", createReview.rating || studentReview?.rating);
-    formdata.append("review", createReview.review || studentReview?.review);
+    formdata.append("rating", createReview?.rating || studentReview?.rating);
+    formdata.append("review", createReview?.review || studentReview?.review);
 
     useAxios()
       .patch(
@@ -428,7 +431,7 @@ function CourseDetail() {
                                 {/* Item */}
 
                                 {course?.curriculum?.map((c, index) => (
-                                  <div className="accordion-item mb-3 p-3 bg-light">
+                                  <div className="accordion-item mb-3 p-3 bg-light" key={index}>
                                     <h6
                                       className="accordion-header font-base"
                                       id="heading-1"
@@ -751,7 +754,7 @@ function CourseDetail() {
                                 <div className="card-header border-bottom p-0 pb-3">
                                   {/* Title */}
                                   <h4 className="mb-3 p-3">
-                                    Leave a Review {studentReview.rating}
+                                    Leave a Review {studentReview?.rating}
                                   </h4>
                                   <div className="mt-2">
                                     {!studentReview && (
@@ -767,7 +770,7 @@ function CourseDetail() {
                                             onChange={handleReviewChange}
                                             name="rating"
                                             defaultValue={
-                                              studentReview.rating || 0
+                                              studentReview?.rating || 0
                                             }
                                           >
                                             <option value={1}>
@@ -797,8 +800,8 @@ function CourseDetail() {
                                             onChange={handleReviewChange}
                                             name="review"
                                             defaultValue={
-                                              studentReview.review ||
-                                              createReview.review
+                                              studentReview?.review ||
+                                              createReview?.review
                                             }
                                           />
                                         </div>
@@ -826,7 +829,7 @@ function CourseDetail() {
                                             className="form-select js-choice"
                                             onChange={handleReviewChange}
                                             name="rating"
-                                            value={course.review.rating}
+                                            value={course.review?.rating}
                                           >
                                             <option value={1}>
                                               ★☆☆☆☆ (1/5)
@@ -854,7 +857,7 @@ function CourseDetail() {
                                             rows={3}
                                             onChange={handleReviewChange}
                                             name="review"
-                                            defaultValue={studentReview.review}
+                                            defaultValue={studentReview?.review}
                                           />
                                         </div>
                                         {/* Button */}
@@ -962,8 +965,8 @@ function CourseDetail() {
               style={{ overflowY: "scroll", height: "500px" }}
             >
               {selectedConversation?.messages?.map((m, index) => (
-                <li className="comment-item mb-3">
-                  <div className="d-flex">
+                <li className="comment-item mb-3" key={index}>
+                  <div className="d-flex" >
                     <div className="avatar avatar-sm flex-shrink-0">
                       <a href="#">
                         <img
@@ -1013,21 +1016,21 @@ function CourseDetail() {
               <div ref={lastElementRef}></div>
             </ul>
 
-            <form class="w-100 d-flex" onSubmit={sendNewMessage}>
+            <form className="w-100 d-flex" onSubmit={sendNewMessage}>
               <textarea
                 name="message"
-                class="one form-control pe-4 bg-light w-75"
+                className="one form-control pe-4 bg-light w-75"
                 id="autoheighttextarea"
                 rows="2"
                 onChange={handleMessageChange}
                 placeholder="What's your question?"
               ></textarea>
-              <button class="btn btn-primary ms-2 mb-0 w-25" type="submit">
+              <button className="btn btn-primary ms-2 mb-0 w-25" type="submit">
                 Post <i className="fas fa-paper-plane"></i>
               </button>
             </form>
 
-            {/* <form class="w-100">
+            {/* <form className="w-100">
               <input
                 name="title"
                 type="text"
@@ -1036,12 +1039,12 @@ function CourseDetail() {
               />
               <textarea
                 name="message"
-                class="one form-control pe-4 mb-2 bg-light"
+                className="one form-control pe-4 mb-2 bg-light"
                 id="autoheighttextarea"
                 rows="5"
                 placeholder="What's your question?"
               ></textarea>
-              <button class="btn btn-primary mb-0 w-25" type="button">
+              <button className="btn btn-primary mb-0 w-25" type="button">
                 Post <i className="fas fa-paper-plane"></i>
               </button>
             </form> */}

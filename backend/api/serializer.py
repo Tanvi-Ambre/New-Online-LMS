@@ -16,6 +16,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['username'] = user.username
         try:
             token['teacher_id'] = user.teacher.id
+            #print("user_id", user.teacher.id)
         except:
             token['teacher_id'] = 0
 

@@ -16,23 +16,24 @@ function Earning() {
   const [earning, setEarning] = useState([]);
   const [bestSellingCourse, setBestSellingCourse] = useState([]);
 
+  //console.log("earning????", earning, stats)
   useEffect(() => {
     useAxios()
-      .get(`teacher/summary/${UserData()?.user_id}/`)
+      .get(`teacher/summary/${UserData()?.teacher_id}/`)
       .then((res) => {
         console.log(res.data[0]);
         setStats(res.data[0]);
       });
 
     useAxios()
-      .get(`teacher/all-months-earning/${UserData()?.user_id}/`)
+      .get(`teacher/all-months-earning/${UserData()?.teacher_id}/`)
       .then((res) => {
         console.log(res.data);
         setEarning(res.data);
       });
 
     useAxios()
-      .get(`teacher/best-course-earning/${UserData()?.user_id}/`)
+      .get(`teacher/best-course-earning/${UserData()?.teacher_id}/`)
       .then((res) => {
         console.log(res.data);
         setBestSellingCourse(res.data);
@@ -94,7 +95,7 @@ function Earning() {
                         <h3 className="display-4 fw-bold mt-3 mb-0">
                           ${stats.total_revenue?.toFixed(2)}
                         </h3>
-                        <span>Monthly Earnings (Jan)</span>
+                        <span>Monthly Earnings</span>
                       </div>
                     </div>
                     <div className="col-xl-6 col-lg-6 col-md-12 col-12 mb-3 mb-lg-0">
@@ -127,7 +128,7 @@ function Earning() {
                     </thead>
                     <tbody>
                       {bestSellingCourse?.map((b, index) => (
-                        <tr>
+                        <tr key={index}>
                           <td>
                             <a
                               href="#"
