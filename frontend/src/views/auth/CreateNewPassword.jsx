@@ -36,11 +36,11 @@ function CreateNewPassword() {
         await apiInstance
           .post(`user/password-change/`, formdata)
           .then((res) => {
-            console.log(res.data);
+            //console.log(res.data);
             setIsLoading(false);
             navigate("/login/");
             Toast().fire({
-              icon: "warning",
+              icon: "success",
               title: res.data.message,
             });
           });

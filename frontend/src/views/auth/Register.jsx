@@ -13,16 +13,18 @@ function Register() {
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
-    const { error } = await register(fullName, email, password, password2);
+    const { res, error } = await register(fullName, email, password, password2);
     if (error) {
-      alert(error);
+      setError(error);
       setIsLoading(false);
     } else {
       navigate("/");
@@ -52,6 +54,8 @@ function Register() {
                     </Link>
                   </span>
                 </div>
+                {/* Display error messages */}
+                {error && <div className="alert alert-danger">{error}</div>}
                 {/* Form */}
                 <form
                   className="needs-validation"

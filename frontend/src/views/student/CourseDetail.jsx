@@ -610,7 +610,7 @@ function CourseDetail() {
                                 <div className="card-body p-0 pt-3">
                                   {/* Note item start */}
                                   {course?.note?.map((n, index) => (
-                                    <div className="row g-4 p-3">
+                                    <div className="row g-4 p-3" key={index}>
                                       <div className="col-sm-11 col-xl-11 shadow p-3 m-3 rounded">
                                         <h5> {n.title}</h5>
                                         <p>{n.note}</p>

@@ -66,7 +66,7 @@ function CourseDetail() {
 
       // Set cart count after adding to cart
       apiInstance.get(`course/cart-list/${CartId()}/`).then((res) => {
-        setCartCount(res.data?.length);
+      setCartCount(res.data?.length);
       });
     } catch (error) {
       console.log(error);

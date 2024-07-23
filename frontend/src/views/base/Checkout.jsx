@@ -141,7 +141,7 @@ function Checkout() {
                   <table className="table align-middle p-4 mb-0">
                     <tbody className="border-top-2">
                       {order?.order_items?.map((o, index) => (
-                        <tr>
+                        <tr key={index}>
                           <td>
                             <div className="d-lg-flex align-items-center">
                               <div className="w-100px w-md-80px mb-2 mb-md-0">
@@ -192,7 +192,7 @@ function Checkout() {
                       id="yourName"
                       placeholder="Name"
                       readOnly
-                      value={order.full_name}
+                      value={order?.full_name || ""}
                     />
                   </div>
                   <div className="col-md-12 bg-light-input">
@@ -205,7 +205,7 @@ function Checkout() {
                       id="emailInput"
                       placeholder="Email"
                       readOnly
-                      value={order.email}
+                      value={order?.email || ""}
                     />
                   </div>
 
@@ -220,7 +220,7 @@ function Checkout() {
                       id="mobileNumber"
                       placeholder="Country"
                       readOnly
-                      value={order.country}
+                      value={order?.country || ""}
                     />
                   </div>
                 </form>
@@ -256,20 +256,20 @@ function Checkout() {
 
                     <div className="p-3 shadow rounded-3 mt-3">
                       <h4 className="mb-3">Cart Total</h4>
-                      <ul class="list-group mb-3">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                      <ul className="list-group mb-3">
+                        <li className="list-group-item d-flex justify-content-between align-items-center">
                           Sub Total
                           <span>${order.sub_total}</span>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <li className="list-group-item d-flex justify-content-between align-items-center">
                           Discount
                           <span>${order.saved}</span>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <li className="list-group-item d-flex justify-content-between align-items-center">
                           Tax
                           <span>${order.tax_fee}</span>
                         </li>
-                        <li class="list-group-item d-flex fw-bold justify-content-between align-items-center">
+                        <li className="list-group-item d-flex fw-bold justify-content-between align-items-center">
                           Total
                           <span className="fw-bold">${order.total}</span>
                         </li>
@@ -330,6 +330,10 @@ function Checkout() {
                                   );
                                 }
                               });
+                            }}
+                            onError={(err) => {
+                              console.error('PayPal Checkout onError:', err);
+                              alert('An error occurred during the PayPal transaction. Please try again.');
                             }}
                           />
                         </PayPalScriptProvider>

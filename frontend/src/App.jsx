@@ -4,7 +4,8 @@ import { Route, Routes, BrowserRouter } from "react-router-dom";
 import { CartContext, ProfileContext } from "./views/plugin/Context";
 import apiInstance from "./utils/axios";
 import CartId from "./views/plugin/CartId";
-import { AuthProvider } from './utils/AuthContext';
+import { AuthProvider } from "./utils/AuthContext";
+import { SearchProvider } from "./utils/SearchContext";
 
 import MainWrapper from "./layouts/MainWrapper";
 import PrivateRoute from "./layouts/PrivateRoute";
@@ -45,7 +46,6 @@ import CourseCreate from "./views/instructor/CourseCreate";
 import CourseEdit from "./views/instructor/CourseEdit";
 import InstructorCourseDetail from "./views/instructor/InstructorCourseDetail";
 
-
 function App() {
   const [cartCount, setCartCount] = useState(0);
   const [profile, setProfile] = useState([]);
@@ -64,83 +64,100 @@ function App() {
 
   return (
     <AuthProvider>
-    <CartContext.Provider value={[cartCount, setCartCount]}>
-      <ProfileContext.Provider value={[profile, setProfile]}>
-        <BrowserRouter>
-          <MainWrapper>
-            <Routes>
-              <Route path="/register/" element={<Register />} />
-              <Route path="/login/" element={<Login />} />
-              <Route path="/logout/" element={<Logout />} />
-              <Route path="/forgot-password/" element={<ForgotPassword />} />
-              <Route
-                path="/create-new-password/"
-                element={<CreateNewPassword />}
-              />
+      <SearchProvider>
+        <CartContext.Provider value={[cartCount, setCartCount]}>
+          <ProfileContext.Provider value={[profile, setProfile]}>
+            <BrowserRouter>
+              <MainWrapper>
+                <Routes>
+                  <Route path="/register/" element={<Register />} />
+                  <Route path="/login/" element={<Login />} />
+                  <Route path="/logout/" element={<Logout />} />
+                  <Route
+                    path="/forgot-password/"
+                    element={<ForgotPassword />}
+                  />
+                  <Route
+                    path="/create-new-password/"
+                    element={<CreateNewPassword />}
+                  />
 
-              {/* Base Routes */}
-              <Route path="/" element={<Index />} />
-              <Route path="/course-detail/:course_id/" element={<CourseDetail />} />
-              <Route path="/cart/" element={<Cart />} />
-              <Route path="/checkout/:order_oid/" element={<Checkout />} />
-              <Route
-                path="/payment-success/:order_oid/"
-                element={<Success />}
-              />
-              <Route path="/search/" element={<Search />} />
+                  {/* Base Routes */}
+                  <Route path="/" element={<Index />} />
+                  <Route
+                    path="/course-detail/:course_id/"
+                    element={<CourseDetail />}
+                  />
+                  <Route path="/cart/" element={<Cart />} />
+                  <Route path="/checkout/:order_oid/" element={<Checkout />} />
+                  <Route
+                    path="/payment-success/:order_oid/"
+                    element={<Success />}
+                  />
+                  <Route path="/search/" element={<Search />} />
 
-              {/* Student Routes */}
-              <Route
-                path="/student/dashboard/"
-                element={<StudentDashboard />}
-              />
-              <Route path="/student/courses/" element={<StudentCourses />} />
-              <Route
-                path="/student/courses/:enrollment_id/"
-                element={<StudentCourseDetail />}
-              />
-              <Route path="/student/wishlist/" element={<Wishlist />} />
-              <Route path="/student/profile/" element={<StudentProfile />} />
-              <Route
-                path="/student/change-password/"
-                element={<StudentChangePassword />}
-              />
+                  {/* Student Routes */}
+                  <Route
+                    path="/student/dashboard/"
+                    element={<StudentDashboard />}
+                  />
+                  <Route
+                    path="/student/courses/"
+                    element={<StudentCourses />}
+                  />
+                  <Route
+                    path="/student/courses/:enrollment_id/"
+                    element={<StudentCourseDetail />}
+                  />
+                  <Route path="/student/wishlist/" element={<Wishlist />} />
+                  <Route
+                    path="/student/profile/"
+                    element={<StudentProfile />}
+                  />
+                  <Route
+                    path="/student/change-password/"
+                    element={<StudentChangePassword />}
+                  />
 
-              {/* Teacher Routes */}
-              <Route path="/instructor/dashboard/" element={<Dashboard />} />
-              <Route path="/instructor/courses/" element={<Courses />} />
-              <Route path="/instructor/reviews/" element={<Review />} />
-              <Route path="/instructor/students/" element={<Students />} />
-              <Route path="/instructor/earning/" element={<Earning />} />
-              <Route path="/instructor/orders/" element={<Orders />} />
-              <Route path="/instructor/coupon/" element={<Coupon />} />
-              <Route
-                path="/instructor/notifications/"
-                element={<TeacherNotification />}
-              />
-              <Route path="/instructor/question-answer/" element={<QA />} />
-              <Route
-                path="/instructor/change-password/"
-                element={<ChangePassword />}
-              />
-              <Route path="/instructor/profile/" element={<Profile />} />
-              <Route
-                path="/instructor/create-course/"
-                element={<CourseCreate />}
-              />
-              <Route
-                path="/instructor/edit-course/:course_id/"
-                element={<CourseEdit />}
-              />
-              <Route
-                path="/instructor/courses/:course_id/"
-                element={<InstructorCourseDetail />}
-              />
-            </Routes>
-          </MainWrapper>
-        </BrowserRouter>
-      </ProfileContext.Provider>
-    </CartContext.Provider>
+                  {/* Teacher Routes */}
+                  <Route
+                    path="/instructor/dashboard/"
+                    element={<Dashboard />}
+                  />
+                  <Route path="/instructor/courses/" element={<Courses />} />
+                  <Route path="/instructor/reviews/" element={<Review />} />
+                  <Route path="/instructor/students/" element={<Students />} />
+                  <Route path="/instructor/earning/" element={<Earning />} />
+                  <Route path="/instructor/orders/" element={<Orders />} />
+                  <Route path="/instructor/coupon/" element={<Coupon />} />
+                  <Route
+                    path="/instructor/notifications/"
+                    element={<TeacherNotification />}
+                  />
+                  <Route path="/instructor/question-answer/" element={<QA />} />
+                  <Route
+                    path="/instructor/change-password/"
+                    element={<ChangePassword />}
+                  />
+                  <Route path="/instructor/profile/" element={<Profile />} />
+                  <Route
+                    path="/instructor/create-course/"
+                    element={<CourseCreate />}
+                  />
+                  <Route
+                    path="/instructor/edit-course/:course_id/"
+                    element={<CourseEdit />}
+                  />
+                  <Route
+                    path="/instructor/courses/:course_id/"
+                    element={<InstructorCourseDetail />}
+                  />
+                </Routes>
+              </MainWrapper>
+            </BrowserRouter>
+          </ProfileContext.Provider>
+        </CartContext.Provider>
+      </SearchProvider>
     </AuthProvider>
   );
 }

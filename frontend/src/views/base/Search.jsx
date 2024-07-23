@@ -75,6 +75,7 @@ function Search() {
 
   const handleSeach = (e) => {
     const query = e.target.value.toLowerCase();
+    console.log("search", query)
     setSearchQuery(query);
 
     if (query === "") {
@@ -98,7 +99,7 @@ function Search() {
             <div className="col-12">
               <div className="mb-6">
                 <h2 className="mb-1 h1">
-                  Showing Results for "{searchQuery || "No Search Query"}"
+                  Showing Results for &quot;{searchQuery || "No Search Query"}&quot;
                 </h2>
               </div>
             </div>

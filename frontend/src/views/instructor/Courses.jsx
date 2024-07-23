@@ -12,38 +12,34 @@ import UserData from "../plugin/UserData";
 import { Link } from "react-router-dom";
 
 function Courses() {
-    const [courses, setCourses] = useState([]);
+  const [courses, setCourses] = useState([]);
 
-    const fetchCourseData = () => {
-      useAxios()
-        .get(`teacher/course-lists/${UserData()?.teacher_id}/`)
-        .then((res) => {
-          console.log(res.data);
-          setCourses(res.data);
-        });
-    };
+  const fetchCourseData = () => {
+    useAxios()
+      .get(`teacher/course-lists/${UserData()?.teacher_id}/`)
+      .then((res) => {
+        console.log(res.data);
+        setCourses(res.data);
+      });
+  };
 
-    useEffect(() => {
+  useEffect(() => {
+    fetchCourseData();
+  }, []);
+
+  const handleSearch = (event) => {
+    const query = event.target.value.toLowerCase();
+    console.log(query);
+    if (query === "") {
       fetchCourseData();
-    }, []);
+    } else {
+      const filtered = courses.filter((c) => {
+        return c.title.toLowerCase().includes(query);
+      });
+      setCourses(filtered);
+    }
+  };
 
-    const handleSearch = (event) => {
-      const query = event.target.value.toLowerCase();
-      console.log(query);
-      if (query === "") {
-        fetchCourseData();
-      } else {
-        const filtered = courses.filter((c) => {
-          return c.title.toLowerCase().includes(query);
-        });
-        setCourses(filtered);
-      }
-    };
-
-
-    
-
-    
   return (
     <>
       <BaseHeader />
@@ -96,28 +92,26 @@ function Courses() {
                       </tr>
                     </thead>
                     <tbody>
-                      {courses?.map((c) => (
-                        <tr>
+                      {courses?.map((c, index) => (
+                        <tr key={index}>
                           <td>
                             <div className="d-flex align-items-center">
                               <div>
-                                  <img
-                                    src={c.image}
-                                    alt="course"
-                                    className="rounded img-4by3-lg"
-                                    style={{
-                                      width: "100px",
-                                      height: "70px",
-                                      borderRadius: "50%",
-                                      objectFit: "cover",
-                                    }}
-                                  />
-                                                    </div>
+                                <img
+                                  src={c.image}
+                                  alt="course"
+                                  className="rounded img-4by3-lg"
+                                  style={{
+                                    width: "100px",
+                                    height: "70px",
+                                    borderRadius: "50%",
+                                    objectFit: "cover",
+                                  }}
+                                />
+                              </div>
                               <div className="ms-3">
-                                  <h4 className="mb-1 h6">
-                                <a
-                                                                    className="text-inherit text-decoration-none text-dark"
-                                  >
+                                <h4 className="mb-1 h6">
+                                  <a className="text-inherit text-decoration-none text-dark">
                                     {c.title}
                                   </a>
                                 </h4>
@@ -170,8 +164,10 @@ function Courses() {
                             <Link className="btn btn-danger btn-sm mt-3 me-1">
                               <i className="fas fa-trash"></i>
                             </Link>
-                            <Link  to={`/instructor/courses/${c.course_id}/`}
-                            className="btn btn-secondary btn-sm mt-3 me-1">
+                            <Link
+                              to={`/instructor/courses/${c.course_id}/`}
+                              className="btn btn-secondary btn-sm mt-3 me-1"
+                            >
                               <i className="fas fa-eye"></i>
                             </Link>
                           </td>

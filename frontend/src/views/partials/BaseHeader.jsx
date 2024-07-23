@@ -1,26 +1,33 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { useAuth } from "../../utils/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-
+import { SearchContext } from "../../utils/SearchContext";
 import { CartContext } from "../plugin/Context";
-import { useAuthStore } from "../../store/auth";
 
 function BaseHeader() {
   const [cartCount, setCartCount] = useContext(CartContext);
-  const { isAuthenticated, user1 } = useAuth();
-  const [searchQuery, setSearchQuery] = useState("");
+  const { isAuthenticated, user } = useAuth();
+  const [searchInput, setSearchInput] = useState("");
+  const { searchQuery, setSearchQuery } = useContext(SearchContext);
   const navigate = useNavigate();
 
-  const handleSearchSubmit = () => {
-    navigate(`/search/?search=${searchQuery}`);
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchInput.trim() !== "") {
+      setSearchQuery(searchInput.toLowerCase());
+      navigate("/");
+    }
   };
 
-  const [isLoggedIn, user] = useAuthStore((state) => [
-    state.isLoggedIn,
-    state.user,
-  ]);
+  const handleInputChange = (e) => {
+    setSearchInput(e.target.value); 
+    setSearchQuery(e.target.value); 
+  };
 
-  console.log("wwwe", isLoggedIn, isAuthenticated, user1);
+  const handleClearSearch = () => {
+    setSearchInput("");
+    setSearchQuery("");
+  };
 
   return (
     <div>
@@ -30,7 +37,7 @@ function BaseHeader() {
       >
         <div className="container">
           <Link className="navbar-brand" to="/">
-            Your Knowldge Budddy LMS
+            Your Knowledge Buddy LMS
           </Link>
           <button
             className="navbar-toggler"
@@ -47,7 +54,6 @@ function BaseHeader() {
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
                 <Link className="nav-link" to="/pages/contact-us/">
-                  {" "}
                   <i className="fas fa-phone"></i> Contact Us
                 </Link>
               </li>
@@ -152,7 +158,6 @@ function BaseHeader() {
                           className="dropdown-item"
                           to={`/student/dashboard/`}
                         >
-                          {" "}
                           <i className="bi bi-grid-fill"></i> Dashboard
                         </Link>
                       </li>
@@ -161,8 +166,7 @@ function BaseHeader() {
                           className="dropdown-item"
                           to={`/student/courses/`}
                         >
-                          {" "}
-                          <i className="fas fa-shopping-cart"></i>My Courses
+                          <i className="fas fa-shopping-cart"></i> My Courses
                         </Link>
                       </li>
 
@@ -171,7 +175,6 @@ function BaseHeader() {
                           className="dropdown-item"
                           to={`/student/wishlist/`}
                         >
-                          {" "}
                           <i className="fas fa-heart"></i> Wishlist{" "}
                         </Link>
                       </li>
@@ -180,7 +183,6 @@ function BaseHeader() {
                           className="dropdown-item"
                           to={`/student/question-answer/`}
                         >
-                          {" "}
                           <i className="fas fa-envelope"></i> Q/A{" "}
                         </Link>
                       </li>
@@ -189,7 +191,6 @@ function BaseHeader() {
                           className="dropdown-item"
                           to={`/student/profile/`}
                         >
-                          {" "}
                           <i className="fas fa-gear"></i> Profile & Settings
                         </Link>
                       </li>
@@ -198,35 +199,44 @@ function BaseHeader() {
                 </>
               )}
             </ul>
-            <div className="d-flex" role="search">
+            <div className="position-relative mb-4">
+            <form onSubmit={handleSearch}>
               <input
-                className="form-control me-2 w-100"
-                type="search"
-                placeholder="Search Courses"
-                aria-label="Search Courses"
-                onChange={(e) => setSearchQuery(e.target.value)}
+                type="text"
+                value={searchInput}
+                onChange={handleInputChange}
+                placeholder="Search courses..."
+                className="form-control"
               />
-              <button
-                onClick={handleSearchSubmit}
-                className="btn btn-outline-success w-50"
-                type="submit"
-              >
-                Search <i className="fas fa-search"></i>
-              </button>
+              {searchInput && (
+                <span
+                  onClick={handleClearSearch}
+                  style={{
+                    position: "absolute",
+                    right: "10px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    cursor: "pointer",
+                  }}
+                >
+                  &times;
+                </span>
+              )}
+              </form>
             </div>
-            {isLoggedIn() === true ? (
+
+            {isAuthenticated === true ? (
               <>
                 <Link
                   to="/logout/"
                   className="btn btn-primary ms-2"
                   type="submit"
                 >
-                  Logout <i className="fas fa-usign-out-alt"></i>
+                  Logout <i className="fas fa-sign-out-alt"></i>
                 </Link>
               </>
             ) : (
               <>
-                {/* Login and register button */}
                 <Link
                   to="/login/"
                   className="btn btn-primary ms-2"
