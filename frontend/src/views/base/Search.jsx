@@ -120,7 +120,7 @@ function Search() {
             <div className="col-md-12">
               <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
                 {courses?.map((c, index) => (
-                  <div className="col">
+                  <div className="col" key={index}>
                     {/* Card */}
                     <div className="card card-hover">
                       <Link to={`/course-detail/${c.course_id}/`}>
@@ -239,15 +239,15 @@ function Search() {
         </div>
       </section>
 
-      <section className="my-8 py-lg-8">
-        {/* container */}
+      {/* <section className="my-8 py-lg-8">
+      
         <div className="container">
-          {/* row */}
+          
           <div className="row align-items-center bg-primary gx-0 rounded-3 mt-5">
-            {/* col */}
+        
             <div className="col-lg-6 col-12 d-none d-lg-block">
               <div className="d-flex justify-content-center pt-4">
-                {/* img */}
+                
                 <div className="position-relative">
                   <img
                     src="https://geeksui.codescandy.com/geeks/assets/images/png/cta-instructor-1.png"
@@ -260,7 +260,7 @@ function Search() {
                       alt="dollor"
                     />
                   </div>
-                  {/* img */}
+                  
                   <div className="me-n4 position-absolute top-0 end-0">
                     <img
                       src="https://geeksui.codescandy.com/geeks/assets/images/svg/graph.svg"
@@ -272,7 +272,7 @@ function Search() {
             </div>
             <div className="col-lg-5 col-12">
               <div className="text-white p-5 p-lg-0">
-                {/* text */}
+              
                 <h2 className="h1 text-white">Become an instructor today</h2>
                 <p className="mb-0">
                   Instructors from around the world teach millions of students
@@ -286,7 +286,7 @@ function Search() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <BaseFooter />
     </>

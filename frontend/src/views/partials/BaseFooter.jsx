@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 
 function BaseFooter() {
   return (
@@ -8,12 +8,9 @@ function BaseFooter() {
           <div className="col-lg-4 col-md-6 col-12 text-white">
             {/* about company */}
             <div className="mb-4">
-              <h1>Desphixs</h1>
+              <h1>Your Knowledge Buddy LMS</h1>
               <div className="mt-4">
-                <p>
-                  Desphixs is feature-rich components and beautifully Bootstrap UIKit
-                  for developers, built with bootstrap responsive framework.
-                </p>
+                <p>Your Knowledge Buddy LMS is a portal for instructors and students</p>
                 {/* social media */}
                 <div className="fs-4 mt-4">
                   {/*Facebook*/}
@@ -43,7 +40,7 @@ function BaseFooter() {
                     </svg>
                   </a>
                   {/*GitHub*/}
-                  <a href="#" className='text-white'>
+                  <a href="#" className="text-white">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width={16}
@@ -129,10 +126,13 @@ function BaseFooter() {
             {/* contact info */}
             <div className="mb-4">
               <h3 className="fw-bold mb-3">Get in touch</h3>
-              <p>123 Main Street, U.S.A</p>
+              <p>University of Leicester</p>
               <p className="mb-1">
                 Email:
-                <a href="#" className='text-white'> support@desphixs.com</a>
+                <a href="#" className="text-white">
+                  {" "}
+                  support@example.com
+                </a>
               </p>
               <p>
                 Phone:
@@ -148,7 +148,7 @@ function BaseFooter() {
               <div className="me-4">
                 <span>
                   ©<span id="copyright5"></span>
-                  Desphixs
+                 Your Knowledge Buddy
                 </span>
               </div>
               <div>
@@ -308,8 +308,7 @@ function BaseFooter() {
         </div>
       </div>
     </footer>
-
-  )
+  );
 }
 
-export default BaseFooter
+export default BaseFooter;

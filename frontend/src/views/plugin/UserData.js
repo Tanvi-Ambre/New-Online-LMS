@@ -7,14 +7,17 @@ function UserData() {
 
   if (access_token && refresh_token) {
     const token = refresh_token;
-    const decoded = jwtDecode(token);
-
-    console.log("decoded", decoded)
-    return decoded;
+    try {
+      const decoded = jwtDecode(token);
+      console.log("decoded", decoded);
+      return decoded;
+    } catch (error) {
+      console.error("Failed to decode token:", error);
+      return null;
+    }
   } else {
-    // pass
+    return null;
   }
 }
 
-
-export default UserData
+export default UserData;

@@ -8,12 +8,19 @@ import BaseFooter from "../partials/BaseFooter";
 
 import useAxios from "../../utils/useAxios";
 import UserData from "../plugin/UserData";
+import CoursesChart from "../charts/CoursesChart";
+import Spinner from "./Partials/Spinner";
 
 function Dashboard() {
   const [stats, setStats] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [averageRatings, setAverageRatings] = useState([]);
+  const [showRatingCounts, setShowRatingCounts] = useState(false);
+  const [loading, setLoading] = useState(true)
 
   const fetchCourseData = () => {
+    setLoading(true);
     useAxios()
       .get(`teacher/summary/${UserData()?.teacher_id}/`)
       .then((res) => {
@@ -26,6 +33,17 @@ function Dashboard() {
       .then((res) => {
         console.log(res.data);
         setCourses(res.data);
+
+        // Calculate average ratings for each course
+        const avgRatings = res.data
+          .map((course) => {
+            const totalRatings = course.reviews.reduce((acc, review) => acc + review.rating, 0);
+            const avgRating = totalRatings / course.reviews.length;
+            return { title: course.title, avgRating };
+          })
+          .filter((course) => !isNaN(course.avgRating)); // Filter out courses with no ratings
+        setAverageRatings(avgRatings);
+        setLoading(false);
       });
   };
 
@@ -44,6 +62,55 @@ function Dashboard() {
       });
       setCourses(filtered);
     }
+  };
+
+  const handleBarClick = (courseTitle) => {
+    const selected = courses.find((course) => course.title === courseTitle);
+    setSelectedCourse(selected);
+    setShowRatingCounts(true);
+  };
+
+  const handleToggleView = () => {
+    setShowRatingCounts(!showRatingCounts);
+  };
+
+  const ratingCounts = selectedCourse
+    ? selectedCourse.reviews.reduce((acc, review) => {
+        acc[review.rating] = (acc[review.rating] || 0) + 1;
+        return acc;
+      }, {})
+    : {};
+
+  const ratingData = Object.keys(ratingCounts).map((rating) => ({
+    rating: rating,
+    count: ratingCounts[rating],
+  }));
+
+  const pieData = {
+    labels: ratingData.map((data) => `Rating ${data.rating}`),
+    datasets: [
+      {
+        data: ratingData.map((data) => data.count),
+        backgroundColor: [
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#FF9F40",
+          "#4BC0C0",
+        ],
+      },
+    ],
+  };
+
+  const barData = {
+    labels: averageRatings.map((data) => data.title),
+    datasets: [
+      {
+        label: "Average Rating",
+        data: averageRatings.map((data) => data.avgRating),
+        backgroundColor: "#36A2EB",
+      },
+    ],
   };
 
   return (
@@ -114,124 +181,18 @@ function Dashboard() {
                 </div>
               </div>
 
-              {/* <div className="card mb-4">
-                <div className="card-header">
-                  <h3 className="mb-0">Courses</h3>
-                  <span>
-                    Manage your courses from here, earch, view, edit or delete
-                    courses.
-                  </span>
-                </div>
-                <div className="card-body">
-                  <form className="row gx-3">
-                    <div className="col-lg-12 col-md-12 col-12 mb-lg-0 mb-2">
-                      <input
-                        type="search"
-                        className="form-control"
-                        placeholder="Search Your Courses"
-                        onChange={handleSearch}
-                      />
-                    </div>
-                  </form>
-                </div>
-                <div className="table-responsive overflow-y-hidden">
-                  <table className="table mb-0 text-nowrap table-hover table-centered text-nowrap">
-                    <thead className="table-light">
-                      <tr>
-                        <th>Courses</th>
-                        <th>Enrolled</th>
-                        <th>Level</th>
-                        <th>Status</th>
-                        <th>Date Created</th>
-                        <th>Action</th>
-                        <th />
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {courses?.map((c, index) => (
-                        <tr>
-                          <td>
-                            <div className="d-flex align-items-center">
-                              <div>
-                                <a href="#">
-                                  <img
-                                    src={c.image}
-                                    alt="course"
-                                    className="rounded img-4by3-lg"
-                                    style={{
-                                      width: "100px",
-                                      height: "70px",
-                                      borderRadius: "50%",
-                                      objectFit: "cover",
-                                    }}
-                                  />
-                                </a>
-                              </div>
-                              <div className="ms-3">
-                                <h4 className="mb-1 h6">
-                                  <a
-                                    href="#"
-                                    className="text-inherit text-decoration-none text-dark"
-                                  >
-                                    {c.title}
-                                  </a>
-                                </h4>
-                                <ul className="list-inline fs-6 mb-0">
-                                  <li className="list-inline-item">
-                                    <small>
-                                      <i className="fas fa-user"></i>
-                                      <span className="ms-1">{c.language}</span>
-                                    </small>
-                                  </li>
-                                  <li className="list-inline-item">
-                                    <small>
-                                      <i className="bi bi-reception-4"></i>
-                                      <span className="ms-1">{c.level}</span>
-                                    </small>
-                                  </li>
-                                  <li className="list-inline-item">
-                                    <small>
-                                      <i className="fas fa-dollar-sign"></i>
-                                      <span>{c.price}</span>
-                                    </small>
-                                  </li>
-                                </ul>
-                              </div>
-                            </div>
-                          </td>
-                          <td>
-                            <p className="mt-3">{c.students?.length}</p>
-                          </td>
-                          <td>
-                            <p className="mt-3 badge bg-success">{c.level}</p>
-                          </td>
-                          <td>
-                            <p className="mt-3 badge bg-warning text-dark">
-                              Intermediate
-                            </p>
-                          </td>
-                          <td>
-                            <p className="mt-3">
-                              {moment(c.date).format("DD MMM, YYYY")}
-                            </p>
-                          </td>
-                          <td>
-                            <button className="btn btn-primary btn-sm mt-3 me-1">
-                              <i className="fas fa-edit"></i>
-                            </button>
-                            <button className="btn btn-danger btn-sm mt-3 me-1">
-                              <i className="fas fa-trash"></i>
-                            </button>
-                            <button className="btn btn-secondary btn-sm mt-3 me-1">
-                              <i className="fas fa-eye"></i>
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div> */}
+              {/* Charts component */}
+              {loading ? (  // Display loading spinner while data is being fetched
+                <Spinner />
+              ) : (<CoursesChart
+                pieData={pieData}
+                barData={barData}
+                onBarClick={handleBarClick}
+                centerChart={true}
+                showRatingCounts={showRatingCounts}
+                selectedCourse={selectedCourse}
+                onToggleView={handleToggleView}
+              />)}
             </div>
           </div>
         </div>
