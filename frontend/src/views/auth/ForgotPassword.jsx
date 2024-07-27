@@ -12,12 +12,10 @@ function ForgotPassword() {
     setIsLoading(true);
     try {
       await apiInstance.get(`user/password-reset/${email}/`).then((res) => {
-        console.log(res.data);
         setIsLoading(false);
         alert("Password Reset Email Sent");
       });
     } catch (error) {
-      console.log("error: ", error);
       setIsLoading(false);
     }
   };
@@ -61,7 +59,11 @@ function ForgotPassword() {
                   <div>
                     <div className="d-grid">
                       {isLoading === true && (
-                        <button disabled type="submit" className="btn btn-primary">
+                        <button
+                          disabled
+                          type="submit"
+                          className="btn btn-primary"
+                        >
                           Processing <i className="fas fa-spinner fa-spin"></i>
                         </button>
                       )}

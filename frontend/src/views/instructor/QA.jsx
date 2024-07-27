@@ -24,7 +24,6 @@ function QA() {
     useAxios()
       .get(`teacher/question-answer-list/${UserData()?.teacher_id}/`)
       .then((res) => {
-        console.log(res.data);
         setQuestions(res.data);
       });
   };
@@ -46,7 +45,6 @@ function QA() {
       [event.target.name]: event.target.value,
     });
   };
-  console.log(selectedConversation.course);
   const sendNewMessage = async (e) => {
     e.preventDefault();
     const formdata = new FormData();
@@ -121,7 +119,7 @@ function QA() {
                   <div className="vstack gap-3 p-3">
                     {/* Question item START */}
                     {questions?.map((q, index) => (
-                      <div className="shadow rounded-3 p-3" key={1}>
+                      <div className="shadow rounded-3 p-3" key={index}>
                         <div className="d-sm-flex justify-content-sm-between mb-3">
                           <div className="d-flex align-items-center">
                             <div className="avatar avatar-sm flex-shrink-0">
@@ -188,7 +186,7 @@ function QA() {
               style={{ overflowY: "scroll", height: "500px" }}
             >
               {selectedConversation?.messages?.map((m, index) => (
-                <li className="comment-item mb-3">
+                <li className="comment-item mb-3" key ={index}>
                   <div className="d-flex">
                     <div className="avatar avatar-sm flex-shrink-0">
                       <a href="#">
@@ -239,16 +237,16 @@ function QA() {
               <div ref={lastElementRef}></div>
             </ul>
 
-            <form class="w-100 d-flex" onSubmit={sendNewMessage}>
+            <form className="w-100 d-flex" onSubmit={sendNewMessage}>
               <textarea
                 name="message"
-                class="one form-control pe-4 bg-light w-75"
+                className="one form-control pe-4 bg-light w-75"
                 id="autoheighttextarea"
                 rows="2"
                 onChange={handleMessageChange}
                 placeholder="What's your question?"
               ></textarea>
-              <button class="btn btn-primary ms-2 mb-0 w-25" type="submit">
+              <button className="btn btn-primary ms-2 mb-0 w-25" type="submit">
                 Post <i className="fas fa-paper-plane"></i>
               </button>
             </form>

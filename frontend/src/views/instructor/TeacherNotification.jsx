@@ -21,7 +21,6 @@ function TeacherNotification() {
       .get(`teacher/noti-list/${UserData()?.teacher_id}/`)
       .then((res) => {
         setNoti(res.data);
-        console.log(res.data);
       });
   };
 
@@ -42,7 +41,6 @@ function TeacherNotification() {
         formdata
       )
       .then((res) => {
-        console.log(res.data);
         fetchNoti();
         Toast().fire({
           icon: "success",

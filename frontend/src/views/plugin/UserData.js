@@ -9,7 +9,6 @@ function UserData() {
     const token = refresh_token;
     try {
       const decoded = jwtDecode(token);
-      console.log("decoded", decoded);
       return decoded;
     } catch (error) {
       console.error("Failed to decode token:", error);

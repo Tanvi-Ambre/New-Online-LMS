@@ -22,7 +22,6 @@ function ChangePassword() {
       [event.target.name]: event.target.value,
     });
   };
-  console.log(password);
 
   const changePasswordSubmit = async (e) => {
     e.preventDefault();
@@ -42,7 +41,6 @@ function ChangePassword() {
     await useAxios()
       .post(`user/change-password/`, formdata)
       .then((res) => {
-        console.log(res.data);
         Toast().fire({
           icon: res.data.icon,
           title: res.data.message,

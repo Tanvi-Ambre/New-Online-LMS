@@ -64,7 +64,6 @@ function CourseDetail() {
         `student/course-detail/${UserData()?.user_id}/${param.enrollment_id}/`
       )
       .then((res) => {
-       // console.log(`student/course-detail/${UserData()?.user_id}/${param.enrollment_id}/`, res.data)
         setCourse(res.data);
         setQuestions(res.data.question_answer);
         setStudentReview(res.data?.review);
@@ -74,12 +73,9 @@ function CourseDetail() {
       });
   };
   useEffect(() => {
-   // console.log("check")
     fetchCourseDetail();
   }, [param.enrollment_id]);
 
-  //console.log(createReview?.rating);
-  // console.log(studentReview);
   const handleMarkLessonAsCompleted = (variantItemId) => {
     const key = `lecture_${variantItemId}`;
     setMarkAsCompletedStatus({
@@ -258,7 +254,6 @@ function CourseDetail() {
     useAxios()
       .post(`student/rate-course/`, formdata)
       .then((res) => {
-        console.log(res.data);
         fetchCourseDetail();
         Toast().fire({
           icon: "success",
@@ -282,7 +277,6 @@ function CourseDetail() {
         formdata
       )
       .then((res) => {
-        console.log(res.data);
         fetchCourseDetail();
         Toast().fire({
           icon: "success",
@@ -431,13 +425,13 @@ function CourseDetail() {
                                 {/* Item */}
 
                                 {course?.curriculum?.map((c, index) => (
-                                  <div className="accordion-item mb-3 p-3 bg-light" key={index}>
+                                  <div className="accordion-item mb-3" key={index}>
                                     <h6
                                       className="accordion-header font-base"
                                       id="heading-1"
                                     >
                                       <button
-                                        className="accordfion-button p-3 w-100 bg-light btn border fw-bold rounded d-sm-flex d-inline-block collapsed"
+                                        className="accordion-button p-3 w-100 bg-light btn border fw-bold rounded d-sm-flex d-inline-block collapsed"
                                         type="button"
                                         data-bs-toggle="collapse"
                                         data-bs-target={`#collapse-${c.variant_id}`}

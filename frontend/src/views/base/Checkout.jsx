@@ -36,7 +36,6 @@ function Checkout() {
 
     try {
       await apiInstance.post(`order/coupon/`, formdata).then((res) => {
-        console.log(res.data);
         fetchOrder();
         Toast().fire({
           icon: res.data.icon,
@@ -323,7 +322,6 @@ function Checkout() {
                                 const status = details.status;
                                 const paypal_order_id = data.orderID;
 
-                                console.log(status);
                                 if (status === "COMPLETED") {
                                   navigate(
                                     `/payment-success/${order.oid}/?paypal_order_id=${paypal_order_id}`
@@ -332,7 +330,6 @@ function Checkout() {
                               });
                             }}
                             onError={(err) => {
-                              console.error('PayPal Checkout onError:', err);
                               alert('An error occurred during the PayPal transaction. Please try again.');
                             }}
                           />

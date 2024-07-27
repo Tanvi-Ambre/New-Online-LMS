@@ -18,7 +18,6 @@ function Orders() {
     useAxios()
       .get(`teacher/course-order-list/${UserData()?.teacher_id}/`)
       .then((res) => {
-        console.log(res.data);
         setOrders(res.data);
       });
   }, []);
@@ -56,7 +55,7 @@ function Orders() {
                     </thead>
                     <tbody>
                       {orders?.map((o, index) => (
-                        <tr>
+                        <tr key ={index}>
                           <td>
                             <h5 className="mb-0">
                               <a

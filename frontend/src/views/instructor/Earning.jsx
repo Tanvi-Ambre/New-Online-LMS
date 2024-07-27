@@ -16,26 +16,22 @@ function Earning() {
   const [earning, setEarning] = useState([]);
   const [bestSellingCourse, setBestSellingCourse] = useState([]);
 
-  //console.log("earning????", earning, stats)
   useEffect(() => {
     useAxios()
       .get(`teacher/summary/${UserData()?.teacher_id}/`)
       .then((res) => {
-        console.log(res.data[0]);
         setStats(res.data[0]);
       });
 
     useAxios()
       .get(`teacher/all-months-earning/${UserData()?.teacher_id}/`)
       .then((res) => {
-        console.log(res.data);
         setEarning(res.data);
       });
 
     useAxios()
       .get(`teacher/best-course-earning/${UserData()?.teacher_id}/`)
       .then((res) => {
-        console.log(res.data);
         setBestSellingCourse(res.data);
       });
   }, []);

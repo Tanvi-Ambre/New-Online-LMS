@@ -36,7 +36,6 @@ function Coupon() {
     useAxios()
       .get(`teacher/coupon-list/${UserData()?.teacher_id}/`)
       .then((res) => {
-        console.log(res.data);
         setCoupons(res.data);
       });
   };
@@ -64,7 +63,6 @@ function Coupon() {
     useAxios()
       .post(`teacher/coupon-list/${UserData()?.teacher_id}/`, formdata)
       .then((res) => {
-        console.log(res.data);
         fetchCoupons();
         handleAddCouponClose();
         Toast().fire({
@@ -78,7 +76,6 @@ function Coupon() {
     useAxios()
       .delete(`teacher/coupon-detail/${UserData()?.teacher_id}/${couponId}/`)
       .then((res) => {
-        console.log(res.data);
         fetchCoupons();
         Toast().fire({
           icon: "success",
@@ -102,7 +99,6 @@ function Coupon() {
         formdata
       )
       .then((res) => {
-        console.log(res.data);
         fetchCoupons();
         handleClose();
         Toast().fire({
@@ -145,7 +141,7 @@ function Coupon() {
                   <ul className="list-group list-group-flush">
                     {/* List group item */}
                     {coupons?.map((c, index) => (
-                      <li className="list-group-item p-4 shadow rounded-3 mb-3">
+                      <li className="list-group-item p-4 shadow rounded-3 mb-3" key={index}>
                         <div className="d-flex">
                           <div className="ms-3 mt-2">
                             <div className="d-flex align-items-center justify-content-between">

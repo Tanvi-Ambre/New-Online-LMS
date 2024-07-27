@@ -18,7 +18,6 @@ function Courses() {
     useAxios()
       .get(`teacher/course-lists/${UserData()?.teacher_id}/`)
       .then((res) => {
-        console.log(res.data);
         setCourses(res.data);
       });
   };
@@ -29,7 +28,6 @@ function Courses() {
 
   const handleSearch = (event) => {
     const query = event.target.value.toLowerCase();
-    console.log(query);
     if (query === "") {
       fetchCourseData();
     } else {

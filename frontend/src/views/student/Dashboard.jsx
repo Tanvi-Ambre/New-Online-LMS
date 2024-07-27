@@ -19,14 +19,12 @@ function Dashboard() {
     useAxios()
       .get(`student/summary/${UserData()?.user_id}/`)
       .then((res) => {
-       // console.log(`student/summary/${UserData()?.user_id}/`, res.data[0]);
         setStats(res.data[0]);
       });
 
     useAxios()
       .get(`student/course-list/${UserData()?.user_id}/`)
       .then((res) => {
-       // console.log(`student/course-list/${UserData()?.user_id}/`, res.data);
         setCourses(res.data);
         setFetching(false);
       });
@@ -38,14 +36,12 @@ function Dashboard() {
 
   const handleSearch = (event) => {
     const query = event.target.value.toLowerCase();
-    console.log(query);
     if (query === "") {
       fetchData();
     } else {
       const filtered = courses.filter((c) => {
         return c.course.title.toLowerCase().includes(query);
       });
-    //  console.log("filtered", filtered)
       setCourses(filtered);
     }
   };

@@ -53,7 +53,6 @@ function Search() {
       await useAxios()
         .post(`course/cart/`, formdata)
         .then((res) => {
-          console.log(res.data);
           Toast().fire({
             title: "Added To Cart",
             icon: "success",
@@ -71,11 +70,9 @@ function Search() {
 
   // Search Feature
   const [searchQuery, setSearchQuery] = useState("");
-  console.log(searchQuery);
 
   const handleSeach = (e) => {
     const query = e.target.value.toLowerCase();
-    console.log("search", query)
     setSearchQuery(query);
 
     if (query === "") {

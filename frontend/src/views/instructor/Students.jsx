@@ -16,7 +16,6 @@ function Students() {
     useAxios()
       .get(`teacher/student-lists/${UserData()?.teacher_id}/`)
       .then((res) => {
-        console.log("res.data: ", res.data);
         setStudents(res.data);
       });
   }, []);
