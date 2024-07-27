@@ -735,7 +735,7 @@
 
 //THis is working code
 /* eslint-disable react/jsx-key */
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 import { Link } from "react-router-dom";
@@ -748,28 +748,34 @@ import GetCurrentAddress from "../plugin/UserCountry";
 import UserData from "../plugin/UserData";
 import Toast from "../plugin/Toast";
 import { CartContext } from "../plugin/Context";
+import { SearchContext } from "../../utils/SearchContext";
 import apiInstance from "../../utils/axios";
 
 function Index() {
   const [courses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [filteredCourses, setFilteredCourses] = useState([]);
   const [cartCount, setCartCount] = useContext(CartContext);
+  const { searchQuery, setSearchQuery } = useContext(SearchContext);
+  const courseListRef = useRef(null);
 
   const country = GetCurrentAddress().country;
   const userId = UserData()?.user_id;
   const cartId = CartId();
 
-  const fetchCourse = async () => {
+  const fetchCourse = async (retryCount = 3) => {
     setIsLoading(true);
     try {
-      await useAxios()
-        .get(`/course/course-list/`)
-        .then((res) => {
-          setCourses(res.data);
-          setIsLoading(false);
-        });
+      const res = await useAxios().get(`/course/course-list/`);
+      setCourses(res.data);
+      setIsLoading(false);
     } catch (error) {
-      console.log(error);
+      if (retryCount > 0) {
+        fetchCourse(retryCount - 1);
+      } else {
+        console.log("Failed to fetch courses:", error);
+        setIsLoading(false);
+      }
     }
   };
 
@@ -777,6 +783,18 @@ function Index() {
     fetchCourse();
   }, []);
 
+
+  useEffect(() => {
+    if (searchQuery) {
+      const filteredCourses = courses.filter((course) =>
+        course.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredCourses(filteredCourses);
+    } else {
+      setFilteredCourses(courses);
+    }
+  }, [searchQuery, courses]);
+    
   const addToCart = async (courseId, userId, price, country, cartId) => {
     const formdata = new FormData();
 
@@ -790,7 +808,6 @@ function Index() {
       await useAxios()
         .post(`course/cart/`, formdata)
         .then((res) => {
-          console.log(res.data);
           Toast().fire({
             title: "Added To Cart",
             icon: "success",
@@ -812,8 +829,9 @@ function Index() {
   const [currentPage, setCurrentPage] = useState(1);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = courses.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(courses.length / itemsPerPage);
+  const currentItems = filteredCourses.slice(indexOfFirstItem, indexOfLastItem); // Modified line
+  const totalPages = Math.ceil(filteredCourses.length / itemsPerPage); // Modified line
+
   const pageNumbers = Array.from(
     { length: totalPages },
     (_, index) => index + 1
@@ -840,7 +858,7 @@ function Index() {
     <>
       <BaseHeader />
 
-      <section className="py-lg-8 py-5">
+      <section className="py-lg-8 py-5" ref={courseListRef}>
         {/* container */}
         <div className="container my-lg-8">
           {/* row */}
@@ -965,10 +983,10 @@ function Index() {
           </div>
           <div className="row">
             <div className="col-md-12">
-              <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+              <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4"> 
                 {currentItems?.map((c, index) => (
                   <div className="col" key={index}>
-                    <Link to={`/course-detail/${c.course_id}/`}>
+                    <Link to={`/course-detail/${c.course_id}/`} style={{textDecoration:"none"}}>
                       {/* Card */}
                       <div className="card card-hover">
                         <Link to={`/course-detail/${c.course_id}/`}>
@@ -1035,7 +1053,7 @@ function Index() {
                             <div className="col">
                               <h5 className="mb-0">${c.price}</h5>
                             </div>
-                            <div className="col-auto">
+                            {/* <div className="col-auto">
                               <button
                                 type="button"
                                 onClick={() =>
@@ -1058,7 +1076,7 @@ function Index() {
                                 Enroll Now{" "}
                                 <i className="fas fa-arrow-right text-primary align-middle me-2 text-white" />
                               </Link>
-                            </div>
+                            </div> */}
                           </div>
                         </div>
                       </div>
@@ -1115,15 +1133,15 @@ function Index() {
         </div>
       </section>
 
-      <section className="my-8 py-lg-8">
-        {/* container */}
+      {/* <section className="my-8 py-lg-8">
+       
         <div className="container">
-          {/* row */}
+      
           <div className="row align-items-center bg-primary gx-0 rounded-3 mt-5">
-            {/* col */}
+            
             <div className="col-lg-6 col-12 d-none d-lg-block">
               <div className="d-flex justify-content-center pt-4">
-                {/* img */}
+          
                 <div className="position-relative">
                   <img
                     src="https://geeksui.codescandy.com/geeks/assets/images/png/cta-instructor-1.png"
@@ -1136,7 +1154,7 @@ function Index() {
                       alt="dollor"
                     />
                   </div>
-                  {/* img */}
+                 
                   <div className="me-n4 position-absolute top-0 end-0">
                     <img
                       src="https://geeksui.codescandy.com/geeks/assets/images/svg/graph.svg"
@@ -1148,7 +1166,7 @@ function Index() {
             </div>
             <div className="col-lg-5 col-12">
               <div className="text-white p-5 p-lg-0">
-                {/* text */}
+              
                 <h2 className="h1 text-white">Become an instructor today</h2>
                 <p className="mb-0">
                   Instructors from around the world teach millions of students
@@ -1162,7 +1180,7 @@ function Index() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <section className="bg-gray-200 pt-8 pb-8 mt-5">
         <div className="container pb-8">
@@ -1199,12 +1217,12 @@ function Index() {
                     </p>
                   </div>
                 </div>
-                <div className="col-lg-6 col-md-4 text-md-end mt-4 mt-md-0">
-                  {/* btn */}
+                {/* <div className="col-lg-6 col-md-4 text-md-end mt-4 mt-md-0">
+                  
                   <a href="#" className="btn btn-primary">
                     View Reviews
                   </a>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
