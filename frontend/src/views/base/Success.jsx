@@ -15,9 +15,25 @@ function Success() {
   const sessionId = urlParam.get("session_id");
   const paypalOrderId = urlParam.get("paypal_order_id");
 
-  console.log(sessionId);
-  console.log(paypalOrderId);
-  console.log(param);
+
+  // useEffect(() => {
+  //   const formdata = new FormData();
+
+  //   formdata.append("order_oid", param.order_oid);
+  //   formdata.append("session_id", sessionId);
+  //   formdata.append("paypal_order_id", paypalOrderId);
+
+  //   setOrderMessage("Processing Payment");
+
+  //   try {
+  //     apiInstance.post(`payment/payment-sucess/`, formdata).then((res) => {
+  //       console.log(res.data);
+  //       setOrderMessage(res.data.message);
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }, []);
 
   useEffect(() => {
     const formdata = new FormData();
@@ -28,9 +44,18 @@ function Success() {
 
     setOrderMessage("Processing Payment");
 
+   // apiInstance.post(`payment/payment-sucess/`, formdata)
+  //     .then((res) => {
+  //       setOrderMessage(res.data.message || "Unexpected Error");
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error during payment confirmation:", error);
+  //       setOrderMessage("Payment Failed");
+  //     });
+  // }, [param.order_oid, sessionId, paypalOrderId]);
+
     try {
       apiInstance.post(`payment/payment-sucess/`, formdata).then((res) => {
-        console.log(res.data);
         setOrderMessage(res.data.message);
       });
     } catch (error) {
@@ -38,7 +63,6 @@ function Success() {
     }
   }, []);
 
-  console.log(orderMessage);
 
   return (
     <>
@@ -58,12 +82,13 @@ function Success() {
                     visit your <a href="">My Courses</a> page, to view the
                     courses now.
                   </p>
-                  <button
+                  <Link
+                    to="/student/courses"
                     type="button"
                     className="btn btn-primary mb-0 rounded-2"
                   >
                     View Enrolled Courses <i className="fas fa-arrow-right"></i>
-                  </button>
+                  </Link>
                 </div>
                 <div className="col-lg-7 text-center">
                   <img

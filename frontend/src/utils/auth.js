@@ -17,11 +17,26 @@ export const login = async (email, password) => {
 
     return { data, error: null };
   } catch (error) {
+    const errorMessage = error.response?.data?.detail || "Something went wrong";
     return {
       data: null,
-      error: error.response.data?.detail || "Something went wrong",
+      error: formatErrorMessage(errorMessage),
     };
   }
+};
+
+const formatErrorMessage = (errorMessage) => {
+  if (typeof errorMessage === "string") {
+    return errorMessage;
+  }
+
+  let formattedMessage = "";
+  for (const [field, messages] of Object.entries(errorMessage)) {
+    messages.forEach((msg) => {
+      formattedMessage += `${field}: ${msg}\n`;
+    });
+  }
+  return formattedMessage;
 };
 
 export const register = async (full_name, email, password, password2) => {
@@ -36,11 +51,11 @@ export const register = async (full_name, email, password, password2) => {
     await login(email, password);
     return { data, error: null };
   } catch (error) {
+    const errorMessage =
+      `${error.response?.data?.password}` || "Something went wrong";
     return {
       data: null,
-      error:
-        `${error.response.data.full_name} - ${error.response.data.email}` ||
-        "Something went wrong",
+      error: formatErrorMessage(errorMessage),
     };
   }
 };
@@ -48,7 +63,16 @@ export const register = async (full_name, email, password, password2) => {
 export const logout = () => {
   Cookie.remove("access_token");
   Cookie.remove("refresh_token");
+
   useAuthStore.getState().setUser(null);
+  // Clear cookies if you're using cookies for authentication
+  document.cookie.split(";").forEach((c) => {
+    document.cookie = c
+      .trim()
+      .replace(/=.*/, "=;expires=Thu, 01 Jan 1970 00:00:00 GMT");
+  });
+
+  localStorage.removeItem("authToken");
 };
 
 export const setUser = async () => {
@@ -100,7 +124,6 @@ export const isAccessTokenExpired = (access_token) => {
     const decodedToken = jwt_decode(access_token);
     return decodedToken.exp < Date.now() / 1000;
   } catch (error) {
-    console.log(error);
     return true;
   }
 };

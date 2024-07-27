@@ -1,0 +1,850 @@
+[
+    {
+        "model": "userauths.user",
+        "pk": 2,
+        "fields": {
+            "username": "tracy_nane",
+            "email": "tracynane@gmail.com",
+            "full_name": "Tracy Nane",
+            "otp": null,
+            "refresh_token": null,
+            "password": "pbkdf2_sha256$260000$...",
+            "is_superuser": false,
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "userauths.profile",
+        "pk": 2,
+        "fields": {
+            "user": 2,
+            "image": "default-user.jpg",
+            "full_name": "Tracy Nane",
+            "country": "UK",
+            "about": "An experienced teacher.",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.teacher",
+        "pk": 2,
+        "fields": {
+            "user": 2,
+            "image": "default.jpg",
+            "full_name": "Tracy Nane",
+            "bio": "Expert in Science.",
+            "facebook": "https://facebook.com/tracynane",
+            "twitter": "https://twitter.com/tracynane",
+            "linkedin": "https://linkedin.com/in/tracynane",
+            "about": "Tracy has over 15 years of teaching experience.",
+            "country": "UK"
+        }
+    },
+    {
+        "model": "api.category",
+        "pk": 2,
+        "fields": {
+            "title": "Science",
+            "image": "category.jpg",
+            "active": true,
+            "slug": "science"
+        }
+    },
+    {
+        "model": "api.course",
+        "pk": 2,
+        "fields": {
+            "category": 2,
+            "teacher": 2,
+            "file": null,
+            "image": "course-file.jpg",
+            "title": "Physics 101",
+            "description": "An introductory course to Physics.",
+            "price": "59.99",
+            "language": "English",
+            "level": "Beginner",
+            "platform_status": "Published",
+            "teacher_course_status": "Published",
+            "featured": false,
+            "course_id": "phy101",
+            "slug": "physics-101",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.course",
+        "pk": 3,
+        "fields": {
+            "category": 2,
+            "teacher": 2,
+            "file": null,
+            "image": "course-file.jpg",
+            "title": "Chemistry 101",
+            "description": "An introductory course to Chemistry.",
+            "price": "59.99",
+            "language": "English",
+            "level": "Beginner",
+            "platform_status": "Published",
+            "teacher_course_status": "Published",
+            "featured": false,
+            "course_id": "chem101",
+            "slug": "chemistry-101",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.course",
+        "pk": 4,
+        "fields": {
+            "category": 2,
+            "teacher": 2,
+            "file": null,
+            "image": "course-file.jpg",
+            "title": "Biology 101",
+            "description": "An introductory course to Biology.",
+            "price": "59.99",
+            "language": "English",
+            "level": "Beginner",
+            "platform_status": "Published",
+            "teacher_course_status": "Published",
+            "featured": false,
+            "course_id": "bio101",
+            "slug": "biology-101",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.course",
+        "pk": 5,
+        "fields": {
+            "category": 2,
+            "teacher": 2,
+            "file": null,
+            "image": "course-file.jpg",
+            "title": "Astronomy 101",
+            "description": "An introductory course to Astronomy.",
+            "price": "59.99",
+            "language": "English",
+            "level": "Beginner",
+            "platform_status": "Published",
+            "teacher_course_status": "Published",
+            "featured": false,
+            "course_id": "astro101",
+            "slug": "astronomy-101",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.course",
+        "pk": 6,
+        "fields": {
+            "category": 2,
+            "teacher": 2,
+            "file": null,
+            "image": "course-file.jpg",
+            "title": "Geology 101",
+            "description": "An introductory course to Geology.",
+            "price": "59.99",
+            "language": "English",
+            "level": "Beginner",
+            "platform_status": "Published",
+            "teacher_course_status": "Published",
+            "featured": false,
+            "course_id": "geo101",
+            "slug": "geology-101",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "userauths.user",
+        "pk": 3,
+        "fields": {
+            "username": "student1",
+            "email": "student1@example.com",
+            "full_name": "Student One",
+            "otp": null,
+            "refresh_token": null,
+            "password": "pbkdf2_sha256$260000$...",
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "userauths.user",
+        "pk": 4,
+        "fields": {
+            "username": "student2",
+            "email": "student2@example.com",
+            "full_name": "Student Two",
+            "otp": null,
+            "refresh_token": null,
+            "password": "pbkdf2_sha256$260000$...",
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "userauths.user",
+        "pk": 5,
+        "fields": {
+            "username": "student3",
+            "email": "student3@example.com",
+            "full_name": "Student Three",
+            "otp": null,
+            "refresh_token": null,
+            "password": "pbkdf2_sha256$260000$...",
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "userauths.user",
+        "pk": 6,
+        "fields": {
+            "username": "student4",
+            "email": "student4@example.com",
+            "full_name": "Student Four",
+            "otp": null,
+            "refresh_token": null,
+            "password": "pbkdf2_sha256$260000$...",
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "userauths.user",
+        "pk": 7,
+        "fields": {
+            "username": "student5",
+            "email": "student5@example.com",
+            "full_name": "Student Five",
+            "otp": null,
+            "refresh_token": null,
+            "password": "pbkdf2_sha256$260000$...",
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.cartorderitem",
+        "pk": 1,
+        "fields": {
+            "order": 1,
+            "course": 2,
+            "teacher": 2,
+            "price": "59.99",
+            "tax_fee": "5.00",
+            "total": "64.99",
+            "initial_total": "64.99",
+            "saved": "0.00",
+            "applied_coupon": false,
+            "oid": "orderitem1",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.cartorderitem",
+        "pk": 2,
+        "fields": {
+            "order": 2,
+            "course": 3,
+            "teacher": 2,
+            "price": "59.99",
+            "tax_fee": "5.00",
+            "total": "64.99",
+            "initial_total": "64.99",
+            "saved": "0.00",
+            "applied_coupon": false,
+            "oid": "orderitem2",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.cartorderitem",
+        "pk": 3,
+        "fields": {
+            "order": 3,
+            "course": 4,
+            "teacher": 2,
+            "price": "59.99",
+            "tax_fee": "5.00",
+            "total": "64.99",
+            "initial_total": "64.99",
+            "saved": "0.00",
+            "applied_coupon": false,
+            "oid": "orderitem3",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.cartorderitem",
+        "pk": 4,
+        "fields": {
+            "order": 4,
+            "course": 5,
+            "teacher": 2,
+            "price": "59.99",
+            "tax_fee": "5.00",
+            "total": "64.99",
+            "initial_total": "64.99",
+            "saved": "0.00",
+            "applied_coupon": false,
+            "oid": "orderitem4",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.cartorderitem",
+        "pk": 5,
+        "fields": {
+            "order": 5,
+            "course": 6,
+            "teacher": 2,
+            "price": "59.99",
+            "tax_fee": "5.00",
+            "total": "64.99",
+            "initial_total": "64.99",
+            "saved": "0.00",
+            "applied_coupon": false,
+            "oid": "orderitem5",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.cartorderitem",
+        "pk": 6,
+        "fields": {
+            "order": 6,
+            "course": 2,
+            "teacher": 2,
+            "price": "59.99",
+            "tax_fee": "5.00",
+            "total": "64.99",
+            "initial_total": "64.99",
+            "saved": "0.00",
+            "applied_coupon": false,
+            "oid": "orderitem6",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.cartorderitem",
+        "pk": 7,
+        "fields": {
+            "order": 7,
+            "course": 3,
+            "teacher": 2,
+            "price": "59.99",
+            "tax_fee": "5.00",
+            "total": "64.99",
+            "initial_total": "64.99",
+            "saved": "0.00",
+            "applied_coupon": false,
+            "oid": "orderitem7",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.cartorderitem",
+        "pk": 8,
+        "fields": {
+            "order": 8,
+            "course": 4,
+            "teacher": 2,
+            "price": "59.99",
+            "tax_fee": "5.00",
+            "total": "64.99",
+            "initial_total": "64.99",
+            "saved": "0.00",
+            "applied_coupon": false,
+            "oid": "orderitem8",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.cartorderitem",
+        "pk": 9,
+        "fields": {
+            "order": 9,
+            "course": 5,
+            "teacher": 2,
+            "price": "59.99",
+            "tax_fee": "5.00",
+            "total": "64.99",
+            "initial_total": "64.99",
+            "saved": "0.00",
+            "applied_coupon": false,
+            "oid": "orderitem9",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.cartorderitem",
+        "pk": 10,
+        "fields": {
+            "order": 10,
+            "course": 6,
+            "teacher": 2,
+            "price": "59.99",
+            "tax_fee": "5.00",
+            "total": "64.99",
+            "initial_total": "64.99",
+            "saved": "0.00",
+            "applied_coupon": false,
+            "oid": "orderitem10",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.cartorder",
+        "pk": 1,
+        "fields": {
+            "student": 3,
+            "sub_total": "59.99",
+            "tax_fee": "5.00",
+            "total": "64.99",
+            "initial_total": "64.99",
+            "saved": "0.00",
+            "payment_status": "Processing",
+            "full_name": "Student One",
+            "email": "student1@example.com",
+            "country": "UK",
+            "stripe_session_id": null,
+            "oid": "order1",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.cartorder",
+        "pk": 2,
+        "fields": {
+            "student": 3,
+            "sub_total": "59.99",
+            "tax_fee": "5.00",
+            "total": "64.99",
+            "initial_total": "64.99",
+            "saved": "0.00",
+            "payment_status": "Processing",
+            "full_name": "Student One",
+            "email": "student1@example.com",
+            "country": "UK",
+            "stripe_session_id": null,
+            "oid": "order2",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.cartorder",
+        "pk": 3,
+        "fields": {
+            "student": 4,
+            "sub_total": "59.99",
+            "tax_fee": "5.00",
+            "total": "64.99",
+            "initial_total": "64.99",
+            "saved": "0.00",
+            "payment_status": "Processing",
+            "full_name": "Student Two",
+            "email": "student2@example.com",
+            "country": "UK",
+            "stripe_session_id": null,
+            "oid": "order3",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.cartorder",
+        "pk": 4,
+        "fields": {
+            "student": 4,
+            "sub_total": "59.99",
+            "tax_fee": "5.00",
+            "total": "64.99",
+            "initial_total": "64.99",
+            "saved": "0.00",
+            "payment_status": "Processing",
+            "full_name": "Student Two",
+            "email": "student2@example.com",
+            "country": "UK",
+            "stripe_session_id": null,
+            "oid": "order4",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.cartorder",
+        "pk": 5,
+        "fields": {
+            "student": 5,
+            "sub_total": "59.99",
+            "tax_fee": "5.00",
+            "total": "64.99",
+            "initial_total": "64.99",
+            "saved": "0.00",
+            "payment_status": "Processing",
+            "full_name": "Student Three",
+            "email": "student3@example.com",
+            "country": "UK",
+            "stripe_session_id": null,
+            "oid": "order5",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.cartorder",
+        "pk": 6,
+        "fields": {
+            "student": 5,
+            "sub_total": "59.99",
+            "tax_fee": "5.00",
+            "total": "64.99",
+            "initial_total": "64.99",
+            "saved": "0.00",
+            "payment_status": "Processing",
+            "full_name": "Student Three",
+            "email": "student3@example.com",
+            "country": "UK",
+            "stripe_session_id": null,
+            "oid": "order6",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.cartorder",
+        "pk": 7,
+        "fields": {
+            "student": 6,
+            "sub_total": "59.99",
+            "tax_fee": "5.00",
+            "total": "64.99",
+            "initial_total": "64.99",
+            "saved": "0.00",
+            "payment_status": "Processing",
+            "full_name": "Student Four",
+            "email": "student4@example.com",
+            "country": "UK",
+            "stripe_session_id": null,
+            "oid": "order7",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.cartorder",
+        "pk": 8,
+        "fields": {
+            "student": 6,
+            "sub_total": "59.99",
+            "tax_fee": "5.00",
+            "total": "64.99",
+            "initial_total": "64.99",
+            "saved": "0.00",
+            "payment_status": "Processing",
+            "full_name": "Student Four",
+            "email": "student4@example.com",
+            "country": "UK",
+            "stripe_session_id": null,
+            "oid": "order8",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.cartorder",
+        "pk": 9,
+        "fields": {
+            "student": 7,
+            "sub_total": "59.99",
+            "tax_fee": "5.00",
+            "total": "64.99",
+            "initial_total": "64.99",
+            "saved": "0.00",
+            "payment_status": "Processing",
+            "full_name": "Student Five",
+            "email": "student5@example.com",
+            "country": "UK",
+            "stripe_session_id": null,
+            "oid": "order9",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.cartorder",
+        "pk": 10,
+        "fields": {
+            "student": 7,
+            "sub_total": "59.99",
+            "tax_fee": "5.00",
+            "total": "64.99",
+            "initial_total": "64.99",
+            "saved": "0.00",
+            "payment_status": "Processing",
+            "full_name": "Student Five",
+            "email": "student5@example.com",
+            "country": "UK",
+            "stripe_session_id": null,
+            "oid": "order10",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.enrolledcourse",
+        "pk": 1,
+        "fields": {
+            "course": 2,
+            "user": 3,
+            "teacher": 2,
+            "order_item": 1,
+            "enrollment_id": "enroll1",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.enrolledcourse",
+        "pk": 2,
+        "fields": {
+            "course": 3,
+            "user": 3,
+            "teacher": 2,
+            "order_item": 2,
+            "enrollment_id": "enroll2",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.enrolledcourse",
+        "pk": 3,
+        "fields": {
+            "course": 4,
+            "user": 4,
+            "teacher": 2,
+            "order_item": 3,
+            "enrollment_id": "enroll3",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.enrolledcourse",
+        "pk": 4,
+        "fields": {
+            "course": 5,
+            "user": 4,
+            "teacher": 2,
+            "order_item": 4,
+            "enrollment_id": "enroll4",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.enrolledcourse",
+        "pk": 5,
+        "fields": {
+            "course": 6,
+            "user": 5,
+            "teacher": 2,
+            "order_item": 5,
+            "enrollment_id": "enroll5",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.enrolledcourse",
+        "pk": 6,
+        "fields": {
+            "course": 2,
+            "user": 5,
+            "teacher": 2,
+            "order_item": 6,
+            "enrollment_id": "enroll6",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.enrolledcourse",
+        "pk": 7,
+        "fields": {
+            "course": 3,
+            "user": 6,
+            "teacher": 2,
+            "order_item": 7,
+            "enrollment_id": "enroll7",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.enrolledcourse",
+        "pk": 8,
+        "fields": {
+            "course": 4,
+            "user": 6,
+            "teacher": 2,
+            "order_item": 8,
+            "enrollment_id": "enroll8",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.enrolledcourse",
+        "pk": 9,
+        "fields": {
+            "course": 5,
+            "user": 7,
+            "teacher": 2,
+            "order_item": 9,
+            "enrollment_id": "enroll9",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.enrolledcourse",
+        "pk": 10,
+        "fields": {
+            "course": 6,
+            "user": 7,
+            "teacher": 2,
+            "order_item": 10,
+            "enrollment_id": "enroll10",
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.review",
+        "pk": 1,
+        "fields": {
+            "user": 3,
+            "course": 2,
+            "review": "Excellent course on Physics!",
+            "rating": 5,
+            "reply": null,
+            "active": true,
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.review",
+        "pk": 2,
+        "fields": {
+            "user": 3,
+            "course": 3,
+            "review": "Very informative Chemistry course.",
+            "rating": 4,
+            "reply": null,
+            "active": true,
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.review",
+        "pk": 3,
+        "fields": {
+            "user": 4,
+            "course": 4,
+            "review": "Great introduction to Biology.",
+            "rating": 5,
+            "reply": null,
+            "active": true,
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.review",
+        "pk": 4,
+        "fields": {
+            "user": 4,
+            "course": 5,
+            "review": "Loved the Astronomy course!",
+            "rating": 5,
+            "reply": null,
+            "active": true,
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.review",
+        "pk": 5,
+        "fields": {
+            "user": 5,
+            "course": 6,
+            "review": "Geology course was very detailed.",
+            "rating": 4,
+            "reply": null,
+            "active": true,
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.review",
+        "pk": 6,
+        "fields": {
+            "user": 5,
+            "course": 2,
+            "review": "Physics course was good.",
+            "rating": 4,
+            "reply": null,
+            "active": true,
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.review",
+        "pk": 7,
+        "fields": {
+            "user": 6,
+            "course": 3,
+            "review": "Chemistry course was okay.",
+            "rating": 3,
+            "reply": null,
+            "active": true,
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.review",
+        "pk": 8,
+        "fields": {
+            "user": 6,
+            "course": 4,
+            "review": "Biology course was excellent.",
+            "rating": 5,
+            "reply": null,
+            "active": true,
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.review",
+        "pk": 9,
+        "fields": {
+            "user": 7,
+            "course": 5,
+            "review": "Astronomy course was very interesting.",
+            "rating": 5,
+            "reply": null,
+            "active": true,
+            "date": "2024-07-24T00:00:00Z"
+        }
+    },
+    {
+        "model": "api.review",
+        "pk": 10,
+        "fields": {
+            "user": 7,
+            "course": 6,
+            "review": "Geology course was good.",
+            "rating": 4,
+            "reply": null,
+            "active": true,
+            "date": "2024-07-24T00:00:00Z"
+        }
+    }
+]

@@ -57,7 +57,6 @@ function CourseEdit() {
   useEffect(() => {
     fetchCourseDetail();
   }, []);
-  console.log(course);
 
   const handleCourseInputChange = (event) => {
     setCourse({
@@ -72,12 +71,10 @@ function CourseEdit() {
   const handleCkEditorChange = (event, editor) => {
     const data = editor.getData();
     setCKEditorData(data);
-    console.log(ckEdtitorData);
   };
 
   const handleCourseImageChange = (event) => {
     const file = event.target.files[0];
-    console.log(file);
 
     if (file) {
       const reader = new FileReader();
@@ -94,20 +91,28 @@ function CourseEdit() {
     }
   };
 
+  // const handleCourseIntroVideoChange = (event) => {
+  //   setCourse({
+  //     ...course,
+  //     file: event.target.files[0],
+  //   });
+  // };
+
   const handleCourseIntroVideoChange = (event) => {
-    setCourse({
-      ...course,
-      file: event.target.files[0],
-    });
-  };
+    const file = event.target.files[0];
+   if (file) {
+     setCourse((prevCourse) => ({
+       ...prevCourse,
+       file: file,
+     }));
+    }
+   };
 
   const handleVariantChange = (index, propertyName, value) => {
     const updatedVariants = [...variants];
     updatedVariants[index][propertyName] = value;
     setVariants(updatedVariants);
 
-    console.log(`Name: ${propertyName} - value: ${value} - Index: ${index}`);
-    console.log(variants);
   };
 
   const handleItemChange = (
@@ -120,10 +125,6 @@ function CourseEdit() {
     const updatedVariants = [...variants];
     updatedVariants[variantIndex].items[itemIndex][propertyName] = value;
     setVariants(updatedVariants);
-
-    console.log(
-      `Name: ${propertyName} - value: ${value} - Index: ${variantIndex} ItemIndex: ${itemIndex} - type: ${type}`
-    );
   };
 
   const addVariant = () => {
@@ -146,7 +147,6 @@ function CourseEdit() {
         `teacher/course/variant-delete/${variantId}/${UserData()?.teacher_id}/${param.course_id}/`
       )
       .then((res) => {
-        console.log(res.data);
         fetchCourseDetail();
         Toast().fire({
           icon: "success",
@@ -177,7 +177,6 @@ function CourseEdit() {
         `teacher/course/variant-item-delete/${variantId}/${itemId}/${UserData()?.teacher_id}/${param.course_id}/`
       )
       .then((res) => {
-        console.log(res.data);
         fetchCourseDetail();
         Toast().fire({
           icon: "success",
@@ -196,34 +195,56 @@ function CourseEdit() {
     formdata.append("level", course.level);
     formdata.append("language", course.language);
     formdata.append("teacher", parseInt(UserData()?.teacher_id));
-    console.log(course.category);
 
-    if (course.file !== null || course.file !== "") {
-      formdata.append("file", course.file || "");
+    if (course.file) {
+      formdata.append("file", course.file);
     }
 
     if (course.image.file) {
       formdata.append("image", course.image.file);
     }
 
+    // variants.forEach((variant, variantIndex) => {
+    //   Object.entries(variant).forEach(([key, value]) => {
+    //     console.log(`Key: ${key} = value: ${value}`);
+    //     formdata.append(
+    //       `variants[${variantIndex}][variant_${key}]`,
+    //       String(value)
+    //     );
+    //   });
+
+    //   variant.items.forEach((item, itemIndex) => {
+    //     Object.entries(item).forEach(([itemKey, itemValue]) => {
+    //       formdata.append(
+    //         `variants[${variantIndex}][items][${itemIndex}][${itemKey}]`,
+    //         itemValue
+    //       );
+    //     });
+    //   });
+    // });
+
     variants.forEach((variant, variantIndex) => {
-      Object.entries(variant).forEach(([key, value]) => {
-        console.log(`Key: ${key} = value: ${value}`);
+      formdata.append(`variants[${variantIndex}][title]`, variant.title);
+      variant.items.forEach((item, itemIndex) => {
         formdata.append(
-          `variants[${variantIndex}][variant_${key}]`,
-          String(value)
+          `variants[${variantIndex}][items][${itemIndex}][title]`,
+          item.title
+        );
+        formdata.append(
+          `variants[${variantIndex}][items][${itemIndex}][description]`,
+          item.description
+        );
+        formdata.append(
+          `variants[${variantIndex}][items][${itemIndex}][file]`,
+          item.file
+        );
+        formdata.append(
+          `variants[${variantIndex}][items][${itemIndex}][preview]`,
+          item.preview
         );
       });
-
-      variant.items.forEach((item, itemIndex) => {
-        Object.entries(item).forEach(([itemKey, itemValue]) => {
-          formdata.append(
-            `variants[${variantIndex}][items][${itemIndex}][${itemKey}]`,
-            itemValue
-          );
-        });
-      });
     });
+    
 
     const response = await useAxios().patch(
       `teacher/course-update/${UserData()?.teacher_id}/${param.course_id}/`,

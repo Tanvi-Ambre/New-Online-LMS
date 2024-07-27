@@ -1,0 +1,274 @@
+[
+  {
+      "model": "userauths.user",
+      "pk": 8,
+      "fields": {
+          "username": "john_doe",
+          "email": "john@example.com",
+          "full_name": "John Doe",
+          "otp": null,
+          "refresh_token": null,
+          "password": "pbkdf2_sha256$260000$...",
+          "is_superuser": false,
+          "is_staff": true,
+          "is_active": true,
+          "date_joined": "2024-07-24T00:00:00Z"
+      }
+  },
+  {
+      "model": "userauths.profile",
+      "pk": 8,
+      "fields": {
+          "user": 8,
+          "image": "default-user.jpg",
+          "full_name": "John Doe",
+          "country": "USA",
+          "about": "An experienced teacher.",
+          "date": "2024-07-24T00:00:00Z"
+      }
+  },
+  {
+      "model": "api.teacher",
+      "pk": 8,
+      "fields": {
+          "user": 8,
+          "image": "default.jpg",
+          "full_name": "John Doe",
+          "bio": "Expert in Mathematics.",
+          "facebook": "https://facebook.com/johndoe",
+          "twitter": "https://twitter.com/johndoe",
+          "linkedin": "https://linkedin.com/in/johndoe",
+          "about": "John has over 10 years of teaching experience.",
+          "country": "USA"
+      }
+  },
+  {
+      "model": "api.category",
+      "pk": 8,
+      "fields": {
+          "title": "Mathematics",
+          "image": "category.jpg",
+          "active": true,
+          "slug": "mathematics"
+      }
+  },
+  {
+      "model": "api.course",
+      "pk": 11,
+      "fields": {
+          "category": 8,
+          "teacher": 8,
+          "file": null,
+          "image": "course-file.jpg",
+          "title": "Algebra 101",
+          "description": "An introductory course to Algebra.",
+          "price": "49.99",
+          "language": "English",
+          "level": "Beginner",
+          "platform_status": "Published",
+          "teacher_course_status": "Published",
+          "featured": false,
+          "course_id": "abc123",
+          "slug": "algebra-101",
+          "date": "2024-07-24T00:00:00Z"
+      }
+  },
+  {
+      "model": "api.variant",
+      "pk": 8,
+      "fields": {
+          "course": 11,
+          "title": "Introduction",
+          "variant_id": "var123",
+          "date": "2024-07-24T00:00:00Z"
+      }
+  },
+  {
+      "model": "api.variantitem",
+      "pk": 8,
+      "fields": {
+          "variant": 8,
+          "title": "Lesson 1",
+          "description": "Introduction to Algebra.",
+          "file": null,
+          "duration": null,
+          "content_duration": "10m 0s",
+          "preview": false,
+          "variant_item_id": "item123",
+          "date": "2024-07-24T00:00:00Z"
+      }
+  },
+  {
+      "model": "api.question_answer",
+      "pk": 8,
+      "fields": {
+          "course": 11,
+          "user": 8,
+          "title": "What is Algebra?",
+          "qa_id": "qa123",
+          "date": "2024-07-24T00:00:00Z"
+      }
+  },
+  {
+      "model": "api.question_answer_message",
+      "pk": 8,
+      "fields": {
+          "course": 11,
+          "question": 8,
+          "user": 8,
+          "message": "Algebra is a branch of mathematics.",
+          "qam_id": "qam123",
+          "qa_id": "qa123",
+          "date": "2024-07-24T00:00:00Z"
+      }
+  },
+  {
+      "model": "api.cart",
+      "pk": 8,
+      "fields": {
+          "course": 11,
+          "user": 8,
+          "price": "49.99",
+          "tax_fee": "5.00",
+          "total": "54.99",
+          "country": "USA",
+          "cart_id": "cart123",
+          "date": "2024-07-24T00:00:00Z"
+      }
+  },
+  {
+      "model": "api.cartorder",
+      "pk": 8,
+      "fields": {
+          "student": 8,
+          "sub_total": "49.99",
+          "tax_fee": "5.00",
+          "total": "54.99",
+          "initial_total": "54.99",
+          "saved": "0.00",
+          "payment_status": "Processing",
+          "full_name": "John Doe",
+          "email": "john@example.com",
+          "country": "USA",
+          "stripe_session_id": null,
+          "oid": "order123",
+          "date": "2024-07-24T00:00:00Z"
+      }
+  },
+  {
+      "model": "api.cartorderitem",
+      "pk": 8,
+      "fields": {
+          "order": 8,
+          "course": 11,
+          "teacher": 8,
+          "price": "49.99",
+          "tax_fee": "5.00",
+          "total": "54.99",
+          "initial_total": "54.99",
+          "saved": "0.00",
+          "applied_coupon": false,
+          "oid": "orderitem123",
+          "date": "2024-07-24T00:00:00Z"
+      }
+  },
+  {
+      "model": "api.certificate",
+      "pk": 8,
+      "fields": {
+          "course": 11,
+          "user": 8,
+          "certificate_id": "cert123",
+          "date": "2024-07-24T00:00:00Z"
+      }
+  },
+  {
+      "model": "api.completedlesson",
+      "pk": 8,
+      "fields": {
+          "course": 11,
+          "user": 8,
+          "variant_item": 8,
+          "date": "2024-07-24T00:00:00Z"
+      }
+  },
+  {
+      "model": "api.enrolledcourse",
+      "pk": 8,
+      "fields": {
+          "course": 11,
+          "user": 8,
+          "teacher": 8,
+          "order_item": 8,
+          "enrollment_id": "enroll123",
+          "date": "2024-07-24T00:00:00Z"
+      }
+  },
+  {
+      "model": "api.note",
+      "pk": 8,
+      "fields": {
+          "user": 8,
+          "course": 11,
+          "title": "Algebra Notes",
+          "note": "These are notes on Algebra.",
+          "note_id": "note123",
+          "date": "2024-07-24T00:00:00Z"
+      }
+  },
+  {
+      "model": "api.review",
+      "pk": 8,
+      "fields": {
+          "user": 8,
+          "course": 11,
+          "review": "Great course!",
+          "rating": 5,
+          "reply": null,
+          "active": true,
+          "date": "2024-07-24T00:00:00Z"
+      }
+  },
+  {
+      "model": "api.notification",
+      "pk": 8,
+      "fields": {
+          "user": 8,
+          "teacher": 8,
+          "order": 8,
+          "order_item": 8,
+          "review": 8,
+          "type": "New Order",
+          "seen": false,
+          "date": "2024-07-24T00:00:00Z"
+      }
+  },
+  {
+      "model": "api.coupon",
+      "pk": 8,
+      "fields": {
+          "teacher": 8,
+          "code": "DISCOUNT10",
+          "discount": 10,
+          "active": true,
+          "date": "2024-07-24T00:00:00Z"
+      }
+  },
+  {
+      "model": "api.wishlist",
+      "pk": 8,
+      "fields": {
+          "user": 8,
+          "course": 11
+      }
+  },
+  {
+      "model": "api.country",
+      "pk": 8,
+      "fields": {
+          "name": "USA",
+          "tax_rate": 5,
+          "active": true
+      }
+  }
+]

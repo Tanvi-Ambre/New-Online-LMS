@@ -23,7 +23,6 @@ function Wishlist() {
     useAxios()
       .get(`student/wishlist/${UserData()?.user_id}/`)
       .then((res) => {
-        console.log(res.data);
         setWishlist(res.data);
       });
   };
@@ -46,7 +45,6 @@ function Wishlist() {
       await useAxios()
         .post(`course/cart/`, formdata)
         .then((res) => {
-          console.log(res.data);
           Toast().fire({
             title: "Added To Cart",
             icon: "success",
@@ -72,7 +70,6 @@ function Wishlist() {
     useAxios()
       .post(`student/wishlist/${UserData()?.user_id}/`, formdata)
       .then((res) => {
-        console.log(res.data);
         fetchWishlist();
         Toast().fire({
           icon: "success",
@@ -102,7 +99,7 @@ function Wishlist() {
                 <div className="col-md-12">
                   <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
                     {wishlist?.map((w, index) => (
-                      <div className="col-lg-4">
+                      <div className="col-lg-4" key={index}>
                         {/* Card */}
                         <div className="card card-hover">
                           <Link to={`/course-detail/${w.course.slug}/`}>
