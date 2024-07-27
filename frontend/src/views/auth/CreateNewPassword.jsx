@@ -36,7 +36,6 @@ function CreateNewPassword() {
         await apiInstance
           .post(`user/password-change/`, formdata)
           .then((res) => {
-            //console.log(res.data);
             setIsLoading(false);
             navigate("/login/");
             Toast().fire({
@@ -45,12 +44,9 @@ function CreateNewPassword() {
             });
           });
       } catch (error) {
-        console.log(error);
         setIsLoading(false);
       }
     }
-
-    console.log("Password Created");
   };
   return (
     <>

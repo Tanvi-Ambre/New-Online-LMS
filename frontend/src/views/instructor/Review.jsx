@@ -22,7 +22,6 @@ function Review() {
     useAxios()
       .get(`teacher/review-lists/${teacherId}/`)
       .then((res) => {
-        console.log(res.data);
         setReviews(res.data);
         setFilteredReview(res.data);
       });
@@ -39,7 +38,6 @@ function Review() {
           reply: reply,
         })
         .then((res) => {
-          console.log(res.data);
           fetchReviewsData();
           Toast().fire({
             icon: "success",
@@ -66,7 +64,6 @@ function Review() {
 
   const handleSortByRatingChange = (e) => {
     const rating = parseInt(e.target.value);
-    console.log(rating);
     if (rating === 0) {
       fetchReviewsData();
     } else {
@@ -152,7 +149,7 @@ function Review() {
                   <ul className="list-group list-group-flush">
                     {/* List group item */}
                     {filteredReviews?.map((r, index) => (
-                      <li className="list-group-item p-4 shadow rounded-3 mb-4">
+                      <li className="list-group-item p-4 shadow rounded-3 mb-4" key={index}>
                         <div className="d-flex">
                           <img
                             src={r.profile.image}
@@ -205,7 +202,7 @@ function Review() {
                               </p>
                               <p>
                                 <button
-                                  class="btn btn-outline-secondary"
+                                  className="btn btn-outline-secondary"
                                   type="button"
                                   data-bs-toggle="collapse"
                                   data-bs-target={`#collapse${r.id}`}
@@ -215,13 +212,13 @@ function Review() {
                                   Send Response
                                 </button>
                               </p>
-                              <div class="collapse" id={`collapse${r.id}`}>
-                                <div class="card card-body">
+                              <div className="collapse" id={`collapse${r.id}`}>
+                                <div className="card card-body">
                                   <div>
-                                    <div class="mb-3">
+                                    <div className="mb-3">
                                       <label
                                         for="exampleInputEmail1"
-                                        class="form-label"
+                                        className="form-label"
                                       >
                                         Write Response
                                       </label>
@@ -240,7 +237,7 @@ function Review() {
 
                                     <button
                                       type="submit"
-                                      class="btn btn-primary"
+                                      className="btn btn-primary"
                                       onClick={() => handleSubmitReply(r.id)}
                                     >
                                       Send Response{" "}

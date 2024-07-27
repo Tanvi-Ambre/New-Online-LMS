@@ -84,7 +84,6 @@ function Profile() {
         },
       })
       .then((res) => {
-        console.log(res.data);
         setProfile(res.data);
         Toast().fire({
           title: "Profile updated successfully",
@@ -92,7 +91,6 @@ function Profile() {
         });
       })
       .catch((err) => {
-        console.error(err);
         Toast().fire({
           title: "Failed to update profile",
           icon: "error",
@@ -100,7 +98,6 @@ function Profile() {
       });
   };
 
-  console.log(imagePreview);
 
   return (
     <>

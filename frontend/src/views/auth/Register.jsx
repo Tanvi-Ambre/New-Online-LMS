@@ -27,7 +27,7 @@ function Register() {
       setError(error);
       setIsLoading(false);
     } else {
-      navigate("/");
+      navigate("/login");
       alert("Registration Successfull, you have now been logged in");
       setIsLoading(false);
     }

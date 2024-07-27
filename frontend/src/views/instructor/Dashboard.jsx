@@ -24,14 +24,12 @@ function Dashboard() {
     useAxios()
       .get(`teacher/summary/${UserData()?.teacher_id}/`)
       .then((res) => {
-        console.log(res.data[0]);
         setStats(res.data[0]);
       });
 
     useAxios()
       .get(`teacher/course-lists/${UserData()?.teacher_id}/`)
       .then((res) => {
-        console.log(res.data);
         setCourses(res.data);
 
         // Calculate average ratings for each course
@@ -53,7 +51,6 @@ function Dashboard() {
 
   const handleSearch = (event) => {
     const query = event.target.value.toLowerCase();
-    console.log(query);
     if (query === "") {
       fetchCourseData();
     } else {

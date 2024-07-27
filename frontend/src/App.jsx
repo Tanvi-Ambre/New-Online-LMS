@@ -63,11 +63,11 @@ function App() {
   }, []);
 
   return (
-    <AuthProvider>
-      <SearchProvider>
-        <CartContext.Provider value={[cartCount, setCartCount]}>
-          <ProfileContext.Provider value={[profile, setProfile]}>
-            <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
+        <SearchProvider>
+          <CartContext.Provider value={[cartCount, setCartCount]}>
+            <ProfileContext.Provider value={[profile, setProfile]}>
               <MainWrapper>
                 <Routes>
                   <Route path="/register/" element={<Register />} />
@@ -154,11 +154,11 @@ function App() {
                   />
                 </Routes>
               </MainWrapper>
-            </BrowserRouter>
-          </ProfileContext.Provider>
-        </CartContext.Provider>
-      </SearchProvider>
-    </AuthProvider>
+            </ProfileContext.Provider>
+          </CartContext.Provider>
+        </SearchProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 
