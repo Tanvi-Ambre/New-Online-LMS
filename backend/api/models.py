@@ -70,6 +70,7 @@ class Teacher(models.Model):
     linkedin = models.URLField(null=True, blank=True)
     about = models.TextField(null=True, blank=True)
     country = models.CharField(max_length=100, null=True, blank=True)
+    #teacher_id = ShortUUIDField(unique=True, length=6, max_length=20, alphabet="1234567890")
 
     def __str__(self):
         return self.full_name
@@ -87,7 +88,7 @@ class Category(models.Model):
     title = models.CharField(max_length=100)
     image = models.FileField(upload_to="course-file", default="category.jpg", null=True, blank=True)
     active = models.BooleanField(default=True)
-    slug = models.SlugField(unique=True, null=True, blank=True, default="course")
+    slug = models.SlugField(unique=True, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Category"
@@ -100,10 +101,12 @@ class Category(models.Model):
         return Course.objects.filter(category=self).count()
     
     def save(self, *args, **kwargs):
-        if self.course_id == "" or self.course_id == None:
-            self.course_id = slugify(self.title) 
+        if not self.slug:
+            self.slug = slugify(self.title) 
         super(Category, self).save(*args, **kwargs)
-            
+        # if self.course_id == "" or self.course_id == None:
+        #     self.course_id = slugify(self.title) 
+        # super(Category, self).save(*args, **kwargs) 
 class Course(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
@@ -126,13 +129,6 @@ class Course(models.Model):
         return self.title
     
     def save(self, *args, **kwargs):
-        if self.slug == "" or self.slug == None:
-            self.slug = slugify(self.title)
-            
-            #Below code works
-        # self.course_id = self.course_id
-        # super(Course, self).save(*args, **kwargs)
-
         if not self.slug:
             self.slug = slugify(self.title)
             while Course.objects.filter(slug=self.slug).exists():
@@ -143,6 +139,7 @@ class Course(models.Model):
         return EnrolledCourse.objects.filter(course=self)
     
     def curriculum(self):
+        # return "this is 234"
         return Variant.objects.filter(course=self)
     
     def lectures(self):
@@ -418,4 +415,3 @@ class Country(models.Model):
 
     def __str__(self):
         return self.name
-

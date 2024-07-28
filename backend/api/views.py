@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render, redirect
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -27,6 +28,9 @@ import requests
 from datetime import datetime, timedelta
 from distutils.util import strtobool
 
+# import logging
+
+# logger = logging.getLogger('api')
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 PAYPAL_CLIENT_ID = settings.PAYPAL_CLIENT_ID
@@ -51,7 +55,7 @@ class PasswordResetEmailVerifyAPIView(generics.RetrieveAPIView):
     serializer_class = api_serializer.UserSerializer
 
     def get_object(self):
-        email = self.kwargs['email'] # api/v1/password-email-verify/desphixs@gmail.com/
+        email = self.kwargs['email']
 
         user = User.objects.filter(email=email).first()
 
@@ -473,6 +477,7 @@ class PaymentSuccessAPIView(generics.CreateAPIView):
                     if order.payment_status == "Processing":
                         order.payment_status = "Paid"
                         order.save()
+                       # api_models.CartOrderItem.objects.filter(order=order).delete()
                         api_models.Notification.objects.create(user=order.student, order=order, type="Course Enrollment Completed")
 
                         for o in order_items:
@@ -505,7 +510,7 @@ class PaymentSuccessAPIView(generics.CreateAPIView):
                 if order.payment_status == "Processing":
                     order.payment_status = "Paid"
                     order.save()
-
+                   # api_models.CartOrderItem.objects.filter(order=order).delete()
                     api_models.Notification.objects.create(user=order.student, order=order, type="Course Enrollment Completed")
                     for o in order_items:
                         api_models.Notification.objects.create(
@@ -746,7 +751,7 @@ class QuestionAnswerListCreateAPIView(generics.ListCreateAPIView):
             question=question
         )
         
-        return Response({"message": "Group conversation Started"}, status=status.HTTP_201_CREATED)
+        return Response({"message": "conversation Started"}, status=status.HTTP_201_CREATED)
 
 
 class QuestionAnswerMessageSendAPIView(generics.CreateAPIView):
@@ -781,7 +786,7 @@ class TeacherSummaryAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         teacher_id = self.kwargs['teacher_id']
-        #print("teacher_id---", teacher_id)
+        print("teacher_id---", teacher_id)
         teacher = api_models.Teacher.objects.get(id=teacher_id)
 
         one_month_ago = datetime.today() - timedelta(days=28)
@@ -972,9 +977,9 @@ class TeacherNotificationDetailAPIView(generics.RetrieveUpdateAPIView):
         return api_models.Notification.objects.get(teacher=teacher, id=noti_id)
     
 class CourseCreateAPIView(generics.CreateAPIView):
-    querysect = api_models.Course.objects.all()
+    queryset = api_models.Course.objects.all()
     serializer_class = api_serializer.CourseSerializer
-    permisscion_classes = [AllowAny]
+    permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
         try:
@@ -984,52 +989,37 @@ class CourseCreateAPIView(generics.CreateAPIView):
             if 'UNIQUE constraint failed: api_course.slug' in str(e):
                 return Response({"error": "A course with this slug already exists. Please try again."}, status=status.HTTP_400_BAD_REQUEST)
             raise e
-
-        variant_data = []
-        for key, value in self.request.data.items():
-            if key.startswith('variant') and '[variant_title]' in key:
-                index = key.split('[')[1].split(']')[0]
-                title = value
-
-                variant_dict = {'title': title}
-                item_data_list = []
-                current_item = {}
-                variant_data = []
-
-                for item_key, item_value in self.request.data.items():
-                    if f'variants[{index}][items]' in item_key:
-                        field_name = item_key.split('[')[-1].split(']')[0]
-                        if field_name == "title":
-                            if current_item:
-                                item_data_list.append(current_item)
-                            current_item = {}
-                        current_item.update({field_name: item_value})
-                    
-                if current_item:
-                    item_data_list.append(current_item)
-
-                variant_data.append({'variant_data': variant_dict, 'variant_item_data': item_data_list})
-
-        for data_entry in variant_data:
-            variant = api_models.Variant.objects.create(title=data_entry['variant_data']['title'], course=course_instance)
-
-            for item_data in data_entry['variant_item_data']:
-                preview_value = item_data.get("preview")
-                preview = bool(strtobool(str(preview_value))) if preview_value is not None else False
-
-                api_models.VariantItem.objects.create(
-                    variant=variant,
-                    title=item_data.get("title"),
-                    description=item_data.get("description"),
-                    file=item_data.get("file"),
-                    preview=preview,
+        
+        variants_json = self.request.data.get('variants', '[]')
+        try:
+            variants = json.loads(variants_json)
+            for variant in variants:
+                variant_instance = api_models.Variant.objects.create(
+                    title=variant['title'],
+                    course=course_instance
                 )
+                for item in variant['items']:
+                    file_field_name = f"file-{variants.index(variant)}-{variant['items'].index(item)}"
+                    file = self.request.FILES.get(file_field_name)
+                    api_models.VariantItem.objects.create(
+                        variant=variant_instance,
+                        title=item['title'],
+                        description=item['description'],
+                        file=file,
+                        preview=item['preview']
+                    )
+        except json.JSONDecodeError as e:
+            return Response({"error": "Invalid JSON for variants"}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def save_nested_data(self, course_instance, serializer_class, data):
-        serializer = serializer_class(data=data, many=True, context={"course_instance": course_instance})
-        serializer.is_valid(raise_exception=True)
-        serializer.save(course=course_instance) 
-
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CourseUpdateAPIView(generics.RetrieveUpdateAPIView):
