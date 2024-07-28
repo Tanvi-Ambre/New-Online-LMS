@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-key */
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import Swal from "sweetalert2";
@@ -18,6 +19,7 @@ import apiInstance from "../../utils/axios";
 //import { ProfileContext } from "../plugin/Context";
 
 function CourseDetail() {
+  const navigate = useNavigate();
   const [course, setCourse] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -25,7 +27,6 @@ function CourseDetail() {
   const [cartCount, setCartCount] = useContext(CartContext);
   //const country = GetCurrentAddress()
   // const [profile, setProfile] = useContext(ProfileContext);
-  // console.log("profile", profile)
   const { course_id } = useParams();
 
   const country = GetCurrentAddress().country;
@@ -34,6 +35,28 @@ function CourseDetail() {
   useEffect(() => {
     fetchCourse();
   }, [course_id]);
+
+  const enrollNow = async () => {
+    const formData = new FormData();
+    formData.append("course_id", course.id);
+    formData.append("user_id", userId);
+    formData.append("price", course.price);
+    formData.append("country_name", country);
+    formData.append("cart_id", CartId());
+
+    try {
+      const response = await useAxios().post(`course/cart/`, formData);
+      // Set cart count after adding to cart
+      apiInstance.get(`course/cart-list/${CartId()}/`).then((res) => {
+        setCartCount(res.data?.length);
+        //setAddToCartBtn("Added To Cart");
+      });
+      navigate("/cart/");
+    } catch (error) {
+      console.log(error);
+      setAddToCartBtn("Add To Cart");
+    }
+  };
 
   const fetchCourse = async () => {
     try {
@@ -47,7 +70,6 @@ function CourseDetail() {
       setIsLoading(false);
     }
   };
-
 
   const addToCart = async () => {
     const formData = new FormData();
@@ -66,7 +88,8 @@ function CourseDetail() {
 
       // Set cart count after adding to cart
       apiInstance.get(`course/cart-list/${CartId()}/`).then((res) => {
-      setCartCount(res.data?.length);
+        setCartCount(res.data?.length);
+        setAddToCartBtn("Added To Cart");
       });
     } catch (error) {
       console.log(error);
@@ -74,7 +97,6 @@ function CourseDetail() {
     }
   };
 
-  //console.log("course", course)
   return (
     <>
       <BaseHeader />
@@ -367,7 +389,7 @@ function CourseDetail() {
                                     src={course.teacher?.image}
                                     className="img-fluid rounded-3"
                                     alt="instructor-image"
-                                   // onError={(e) => { e.target.onerror = null; e.target.src="http://127.0.0.1:8000/media/user_folder/66972e567f990_download_5gVFg07.jpg"; }}
+                                    // onError={(e) => { e.target.onerror = null; e.target.src="http://127.0.0.1:8000/media/user_folder/66972e567f990_download_5gVFg07.jpg"; }}
                                   />
                                 </div>
                                 <div className="col-md-7">
@@ -377,7 +399,9 @@ function CourseDetail() {
                                     <h3 className="card-title mb-0">
                                       {course.teacher?.full_name}
                                     </h3>
-                                    <p className="mb-2">{course.teacher?.bio}</p>
+                                    <p className="mb-2">
+                                      {course.teacher?.bio}
+                                    </p>
                                     {/* Social button */}
                                     <ul className="list-inline mb-3">
                                       <li className="list-inline-item me-3">
@@ -1352,8 +1376,18 @@ function CourseDetail() {
                                   To Cart
                                 </button>
                               )}
-
                               {addToCartBtn === "Added To Cart" && (
+                                <button
+                                  disabled
+                                  type="button"
+                                  className="btn btn-primary mb-0 w-100 me-2"
+                                >
+                                  <i className="fas fa-shopping-cart"></i> Added
+                                  To Cart
+                                </button>
+                              )}
+
+                              {/* {addToCartBtn === "Added To Cart" && (
                                 <button
                                   type="button"
                                   className="btn btn-primary mb-0 w-100 me-2"
@@ -1389,14 +1423,15 @@ function CourseDetail() {
                                   <i className="fas fa-spinner fa-spin"></i>{" "}
                                   Adding To Cart
                                 </button>
-                              )}
-                              <Link
-                                to="/cart/"
+                              )} */}
+                              <button
+                                onClick={enrollNow}
+                                //onClick={handleAddToCart}
                                 className="btn btn-success mb-0 w-100"
                               >
                                 Enroll Now{" "}
                                 <i className="fas fa-arrow-right"></i>
-                              </Link>
+                              </button>
                             </div>
                           </div>
                         </div>
