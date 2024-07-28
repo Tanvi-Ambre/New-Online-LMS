@@ -750,6 +750,7 @@ import Toast from "../plugin/Toast";
 import { CartContext } from "../plugin/Context";
 import { SearchContext } from "../../utils/SearchContext";
 import apiInstance from "../../utils/axios";
+import imagePath from "../../assets/Landing.avif"
 
 function Index() {
   const [courses, setCourses] = useState([]);
@@ -882,15 +883,15 @@ function Index() {
                   world-class universities and companies.
                 </p>
                 {/* btn */}
-                <a href="#" className="btn btn-primary fs-4 text-inherit ms-3">
+                {/* <a href="#" className="btn btn-primary fs-4 text-inherit ms-3">
                   Join Free Now <i className="fas fa-plus"></i>
-                </a>
-                <a
+                </a> */}
+                {/* <a
                   href="https://www.youtube.com/watch?v=Nfzi7034Kbg"
                   className="btn btn-outline-success fs-4 text-inherit ms-3"
                 >
                   Watch Demo <i className="fas fa-video"></i>
-                </a>
+                </a> */}
               </div>
             </div>
             {/* col */}
@@ -898,7 +899,7 @@ function Index() {
               {/* images */}
               <div className="position-relative">
                 <img
-                  src="https://geeksui.codescandy.com/geeks/assets/images/background/acedamy-img/girl-image.png"
+                  src={imagePath}
                   alt="girl"
                   className="end-0 bottom-0"
                 />
@@ -983,10 +984,13 @@ function Index() {
           </div>
           <div className="row">
             <div className="col-md-12">
-              <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4"> 
+              <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
                 {currentItems?.map((c, index) => (
                   <div className="col" key={index}>
-                    <Link to={`/course-detail/${c.course_id}/`} style={{textDecoration:"none"}}>
+                    <Link
+                      to={`/course-detail/${c.course_id}/`}
+                      style={{ textDecoration: "none" }}
+                    >
                       {/* Card */}
                       <div className="card card-hover">
                         <Link to={`/course-detail/${c.course_id}/`}>
