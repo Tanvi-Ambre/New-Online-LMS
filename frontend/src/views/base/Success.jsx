@@ -58,12 +58,7 @@ function Success() {
                     visit your <a href="">My Courses</a> page, to view the
                     courses now.
                   </p>
-                  <button
-                    type="button"
-                    className="btn btn-primary mb-0 rounded-2"
-                  >
-                    View Enrolled Courses <i className="fas fa-arrow-right"></i>
-                  </button>
+                  <a href="/student/courses" className="btn btn-primary mb-0 rounded-2">View Enrolled Courses {" "}<i className="fas fa-arrow-right"/></a>
                 </div>
                 <div className="col-lg-7 text-center">
                   <img

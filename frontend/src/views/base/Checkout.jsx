@@ -15,8 +15,24 @@ function Checkout() {
   const [order, setOrder] = useState([]);
   const [coupon, setCoupon] = useState("");
   const [paymentLoading, setPaymentLoading] = useState(false);
-
+  const [cartCount, setCartCount] = useContext(CartContext);
+  const [cartItems, setCartItems] = useState([]);
+  const [cart, setCart] = useState([]);
+ 
   const param = useParams();
+
+  const fetchCartItems = async () => {
+    try {
+      apiInstance.get(`course/cart-list/${CartId()}/`).then((res) => {
+        setCartCount(res.data?.length);
+        setCart(res.data)
+      });
+    } catch (error) {
+      console.error('Error fetching cart items', error);
+    }
+  };
+
+
   const fetchOrder = async () => {
     try {
       apiInstance.get(`order/checkout/${param.order_oid}/`).then((res) => {
@@ -26,6 +42,10 @@ function Checkout() {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    fetchCartItems();
+  }, []);
 
   const navigate = useNavigate();
 
@@ -43,7 +63,7 @@ function Checkout() {
         });
       });
     } catch (error) {
-      if (error.response.data.includes("Coupon matching query does not exi")) {
+      if (error.response.data.includes("Coupon matching query does not exist")) {
         Toast().fire({
           icon: "error",
           title: "Coupon does not exist",
@@ -62,9 +82,33 @@ function Checkout() {
     intent: "capture",
   };
 
-  const payWithStripe = (event) => {
+  const clearCart = async () => {
+    
+    try {
+      for (const item of cart) {        
+        await apiInstance.delete(`/course/cart-item-delete/${CartId()}/${item.id}/`);
+      }
+      
+      setCartCount(0);
+      Toast().fire({
+        icon: 'success',
+        title: 'Cart Cleared Successfully',
+      });
+    } catch (error) {
+      console.error('Error clearing cart', error);
+    }
+  };
+
+  const handlePaymentSuccess = async () => {
+    await clearCart();
+    navigate(`/payment-success/${order.oid}`);
+  };
+  
+  const payWithStripe = async (event) => {
+    
     setPaymentLoading(true);
     event.target.form.submit();
+    await handlePaymentSuccess();
   };
 
   return (
@@ -323,6 +367,7 @@ function Checkout() {
                                 const paypal_order_id = data.orderID;
 
                                 if (status === "COMPLETED") {
+                                  handlePaymentSuccess();
                                   navigate(
                                     `/payment-success/${order.oid}/?paypal_order_id=${paypal_order_id}`
                                   );

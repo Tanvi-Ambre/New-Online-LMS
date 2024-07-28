@@ -20,8 +20,8 @@ function BaseHeader() {
   };
 
   const handleInputChange = (e) => {
-    setSearchInput(e.target.value); 
-    setSearchQuery(e.target.value); 
+    setSearchInput(e.target.value);
+    setSearchQuery(e.target.value);
   };
 
   const handleClearSearch = () => {
@@ -199,29 +199,29 @@ function BaseHeader() {
                 </>
               )}
             </ul>
-            <div className="position-relative mb-4">
-            <form onSubmit={handleSearch}>
-              <input
-                type="text"
-                value={searchInput}
-                onChange={handleInputChange}
-                placeholder="Search courses..."
-                className="form-control"
-              />
-              {searchInput && (
-                <span
-                  onClick={handleClearSearch}
-                  style={{
-                    position: "absolute",
-                    right: "10px",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    cursor: "pointer",
-                  }}
-                >
-                  &times;
-                </span>
-              )}
+            <div className="position-relative">
+              <form onSubmit={handleSearch}>
+                <input
+                  type="text"
+                  value={searchInput}
+                  onChange={handleInputChange}
+                  placeholder="Search courses..."
+                  className="form-control"
+                />
+                {searchInput && (
+                  <span
+                    onClick={handleClearSearch}
+                    style={{
+                      position: "absolute",
+                      right: "10px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      cursor: "pointer",
+                    }}
+                  >
+                    &times;
+                  </span>
+                )}
               </form>
             </div>
 
