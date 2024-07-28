@@ -1,26 +1,20 @@
 from django.contrib.auth.password_validation import validate_password
-from api import models as api_models
-
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
 from userauths.models import Profile, User
+from api import models as api_models
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-
         token['full_name'] = user.full_name
         token['email'] = user.email
         token['username'] = user.username
         try:
             token['teacher_id'] = user.teacher.id
-            #print("user_id", user.teacher.id)
         except:
             token['teacher_id'] = 0
-
-
         return token
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -34,7 +28,6 @@ class RegisterSerializer(serializers.ModelSerializer):
     def validate(self, attr):
         if attr['password'] != attr['password2']:
             raise serializers.ValidationError({"password": "Password fields didn't match."})
-
         return attr
     
     def create(self, validated_data):
@@ -42,15 +35,11 @@ class RegisterSerializer(serializers.ModelSerializer):
             full_name=validated_data['full_name'],
             email=validated_data['email'],
         )
-
         email_username, _ = user.email.split("@")
         user.username = email_username
         user.set_password(validated_data['password'])
         user.save()
-
         return user
-    
-    
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -61,29 +50,20 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = "__all__"
 
-
 class CategorySerializer(serializers.ModelSerializer):
-
     class Meta:
         fields = ['id', 'title', 'image', 'slug', 'course_count']
         model = api_models.Category
 
 class TeacherSerializer(serializers.ModelSerializer):
-
     class Meta:
-        fields = [ "user", "image", "full_name", "bio", "facebook", "twitter", "linkedin", "about", "country", "students", "courses", "review",]
+        fields = ["user", "image", "full_name", "bio", "facebook", "twitter", "linkedin", "about", "country", "students", "courses", "review"]
         model = api_models.Teacher
 
-
-
-
 class VariantItemSerializer(serializers.ModelSerializer):
-    
     class Meta:
         fields = '__all__'
         model = api_models.VariantItem
-
-    
     def __init__(self, *args, **kwargs):
         super(VariantItemSerializer, self).__init__(*args, **kwargs)
         request = self.context.get("request")
@@ -92,14 +72,12 @@ class VariantItemSerializer(serializers.ModelSerializer):
         else:
             self.Meta.depth = 3
 
-
 class VariantSerializer(serializers.ModelSerializer):
     variant_items = VariantItemSerializer(many=True)
     items = VariantItemSerializer(many=True)
     class Meta:
         fields = '__all__'
         model = api_models.Variant
-
 
     def __init__(self, *args, **kwargs):
         super(VariantSerializer, self).__init__(*args, **kwargs)
@@ -109,29 +87,20 @@ class VariantSerializer(serializers.ModelSerializer):
         else:
             self.Meta.depth = 3
 
-
-
-
 class Question_Answer_MessageSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(many=False)
-
     class Meta:
         fields = '__all__'
         model = api_models.Question_Answer_Message
 
-
 class Question_AnswerSerializer(serializers.ModelSerializer):
     messages = Question_Answer_MessageSerializer(many=True)
     profile = ProfileSerializer(many=False)
-    
     class Meta:
         fields = '__all__'
         model = api_models.Question_Answer
 
-
-
 class CartSerializer(serializers.ModelSerializer):
-
     class Meta:
         fields = '__all__'
         model = api_models.Cart
@@ -144,9 +113,7 @@ class CartSerializer(serializers.ModelSerializer):
         else:
             self.Meta.depth = 3
 
-
 class CartOrderItemSerializer(serializers.ModelSerializer):
-
     class Meta:
         fields = '__all__'
         model = api_models.CartOrderItem
@@ -159,14 +126,11 @@ class CartOrderItemSerializer(serializers.ModelSerializer):
         else:
             self.Meta.depth = 3
 
-
 class CartOrderSerializer(serializers.ModelSerializer):
     order_items = CartOrderItemSerializer(many=True)
-    
     class Meta:
         fields = '__all__'
         model = api_models.CartOrder
-
 
     def __init__(self, *args, **kwargs):
         super(CartOrderSerializer, self).__init__(*args, **kwargs)
@@ -177,19 +141,14 @@ class CartOrderSerializer(serializers.ModelSerializer):
             self.Meta.depth = 3
 
 class CertificateSerializer(serializers.ModelSerializer):
-
     class Meta:
         fields = '__all__'
         model = api_models.Certificate
 
-
-
 class CompletedLessonSerializer(serializers.ModelSerializer):
-
     class Meta:
         fields = '__all__'
         model = api_models.CompletedLesson
-
 
     def __init__(self, *args, **kwargs):
         super(CompletedLessonSerializer, self).__init__(*args, **kwargs)
@@ -200,16 +159,12 @@ class CompletedLessonSerializer(serializers.ModelSerializer):
             self.Meta.depth = 3
 
 class NoteSerializer(serializers.ModelSerializer):
-
     class Meta:
         fields = '__all__'
         model = api_models.Note
 
-
-
 class ReviewSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(many=False)
-
     class Meta:
         fields = '__all__'
         model = api_models.Review
@@ -286,7 +241,7 @@ class CourseSerializer(serializers.ModelSerializer):
     lectures = VariantItemSerializer(many=True, required=False, read_only=True,)
     reviews = ReviewSerializer(many=True, read_only=True, required=False)
     class Meta:
-        fields = ["id", "category", "teacher", "file", "image", "title", "description", "price", "language", "level", "platform_status", "teacher_course_status", "featured", "course_id", "slug", "date", "students", "curriculum", "lectures", "average_rating", "rating_count", "reviews",]
+        fields = ["id", "category", "teacher", "file", "image", "title", "description", "price", "language", "level", "platform_status", "teacher_course_status", "featured", "course_id", "slug", "date", "students", "curriculum", "lectures", "average_rating", "rating_count", "reviews"]
         model = api_models.Course
 
     def __init__(self, *args, **kwargs):
