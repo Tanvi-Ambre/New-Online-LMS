@@ -1,6 +1,8 @@
 /* eslint-disable react/jsx-key */
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import moment from "moment";
+import Swal from "sweetalert2"; 
 
 import Sidebar from "./Partials/Sidebar";
 import Header from "./Partials/Header";
@@ -9,7 +11,6 @@ import BaseFooter from "../partials/BaseFooter";
 
 import useAxios from "../../utils/useAxios";
 import UserData from "../plugin/UserData";
-import { Link } from "react-router-dom";
 
 function Courses() {
   const [courses, setCourses] = useState([]);
@@ -37,6 +38,32 @@ function Courses() {
       setCourses(filtered);
     }
   };
+
+  const handleDelete = (courseId) => {
+    // Show a confirmation dialog before deleting
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this course!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, keep it'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Make the delete request if the user confirms
+        useAxios().delete(`/course/course-detail/${courseId}/`)
+          .then((response) => {
+            // Filter out the deleted course from the state
+            setCourses(courses.filter((course) => course.course_id !== courseId));
+            Swal.fire('Deleted!', 'Your course has been deleted.', 'success');
+          })
+          .catch((error) => {
+            console.error("There was an error deleting the course:", error);
+            Swal.fire('Error!', 'There was an error deleting the course.', 'error');
+          });
+      }
+    });
+  }
 
   return (
     <>
@@ -159,9 +186,12 @@ function Courses() {
                             >
                               <i className="fas fa-edit"></i>
                             </Link>
-                            <Link className="btn btn-danger btn-sm mt-3 me-1">
+                            <button
+                              className="btn btn-danger btn-sm mt-3 me-1"
+                              onClick={() => handleDelete(c.course_id)}
+                            >
                               <i className="fas fa-trash"></i>
-                            </Link>
+                            </button>
                             <Link
                               to={`/instructor/courses/${c.course_id}/`}
                               className="btn btn-secondary btn-sm mt-3 me-1"
