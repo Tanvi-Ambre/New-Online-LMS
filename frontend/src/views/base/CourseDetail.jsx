@@ -464,11 +464,11 @@ function CourseDetail() {
                                     alt="avatar"
                                   />
                                 </div>
-                                {/* Text */}
+                                
                                 <div>
                                   <div className="d-sm-flex mt-1 mt-md-0 align-items-center">
                                     <h5 className="me-3 mb-0">Sam Jay</h5>
-                                    {/* Review star */}
+                                    
                                     <ul className="list-inline mb-0">
                                       <i className="fas fa-star text-warning" />
                                       <i className="fas fa-star text-warning" />
@@ -477,7 +477,7 @@ function CourseDetail() {
                                       <i className="far fa-star text-warning" />
                                     </ul>
                                   </div>
-                                  {/* Info */}
+                                  
                                   <p className="small mb-2">5 days ago</p>
                                   <p className="mb-2">
                                     Perceived end knowledge certainly day
@@ -488,15 +488,14 @@ function CourseDetail() {
                                     private removed. Moderate do subjects to
                                     distance.
                                   </p>
-                                  {/* Like and dislike button */}
+                                  
                                 </div>
                               </div>
-                              {/* Comment children level 1 */}
+                              
                               <hr />
-                              {/* Review item END */}
-                              {/* Review item START */}
+                              
                               <div className="d-md-flex my-4">
-                                {/* Avatar */}
+                               
                                 <div className="avatar avatar-xl me-4 flex-shrink-0">
                                   <img
                                     className="avatar-img rounded-circle"
@@ -510,11 +509,11 @@ function CourseDetail() {
                                     alt="avatar"
                                   />
                                 </div>
-                                {/* Text */}
+                                
                                 <div>
                                   <div className="d-sm-flex mt-1 mt-md-0 align-items-center">
                                     <h5 className="me-3 mb-0">Benny Doggo</h5>
-                                    {/* Review star */}
+                                   
                                     <ul className="list-inline mb-0">
                                       <li className="list-inline-item me-0">
                                         <i className="fas fa-star text-warning" />
@@ -533,7 +532,7 @@ function CourseDetail() {
                                       </li>
                                     </ul>
                                   </div>
-                                  {/* Info */}
+                                 
                                   <p className="small mb-2">2 days ago</p>
                                   <p className="mb-2">
                                     Handsome met debating sir dwelling age
@@ -543,16 +542,14 @@ function CourseDetail() {
                                   </p>
                                 </div>
                               </div>
-                              {/* Review item END */}
-                              {/* Divider */}
+                              
                               <hr />
                             </div>
-                            {/* Student review END */}
-                            {/* Leave Review START */}
-                            <div className="mt-2">
+                          
+                             <div className="mt-2">
                               <h5 className="mb-4">Leave a Review</h5>
                               <form className="row g-3">
-                                {/* Rating */}
+                              
                                 <div className="col-12 bg-light-input">
                                   <select
                                     id="inputState2"
@@ -565,7 +562,7 @@ function CourseDetail() {
                                     <option>★☆☆☆☆ (1/5)</option>
                                   </select>
                                 </div>
-                                {/* Message */}
+                              
                                 <div className="col-12 bg-light-input">
                                   <textarea
                                     className="form-control"
@@ -575,7 +572,7 @@ function CourseDetail() {
                                     defaultValue={""}
                                   />
                                 </div>
-                                {/* Button */}
+                               
                                 <div className="col-12">
                                   <button
                                     type="submit"

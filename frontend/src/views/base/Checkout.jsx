@@ -308,10 +308,10 @@ function Checkout() {
                           Discount
                           <span>${order.saved}</span>
                         </li>
-                        <li className="list-group-item d-flex justify-content-between align-items-center">
+                        {/* <li className="list-group-item d-flex justify-content-between align-items-center">
                           Tax
                           <span>${order.tax_fee}</span>
-                        </li>
+                        </li> */}
                         <li className="list-group-item d-flex fw-bold justify-content-between align-items-center">
                           Total
                           <span className="fw-bold">${order.total}</span>

@@ -8,7 +8,7 @@ import apiInstance from "../../utils/axios";
 import CartId from "../plugin/CartId";
 import Toast from "../plugin/Toast";
 import { CartContext } from "../plugin/Context";
-import { userId } from "../../utils/constants";
+import UserData from "../plugin/UserData";
 
 const countries = [
   { code: "AF", name: "Afghanistan" },
@@ -284,8 +284,8 @@ function Cart() {
     formdata.append("country", bioData.country);
     formdata.append("cart_id", CartId());
     //formdata.append("user_id", userId);
-    if (userId) {
-      formdata.append("user_id", userId); 
+    if (UserData()?.user_id) {
+      formdata.append("user_id", UserData()?.user_id); 
     } else {
       console.error("User ID is undefined");
       return;
