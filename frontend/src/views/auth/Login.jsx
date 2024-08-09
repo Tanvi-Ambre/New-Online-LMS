@@ -10,22 +10,54 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("rememberedEmail");
+    const savedPassword = localStorage.getItem("rememberedPassword");
+
+    if (savedEmail && savedPassword) {
+      setEmail(savedEmail);
+      setPassword(savedPassword);
+      setRememberMe(true);
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    const { error } = await login(email, password);
+    const { error, token } = await login(email, password);
     if (error) {
       setIsLoading(false);
       alert(error);
     } else {
+      if (rememberMe) {
+        // Save email and password to localStorage
+        localStorage.setItem("rememberedEmail", email);
+        localStorage.setItem("rememberedPassword", password);
+      } else {
+        // Clear any remembered login details
+        localStorage.removeItem("rememberedEmail");
+        localStorage.removeItem("rememberedPassword");
+      }
+
+      localStorage.setItem("authToken", token);
       navigate("/");
       setIsLoading(false);
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevState) => !prevState);
+  };
+
+  const handleRememberMeChange = (e) => {
+    setRememberMe(e.target.checked);
+  };
+  
   return (
     <>
       <BaseHeader />
@@ -65,10 +97,11 @@ function Login() {
                       name="email"
                       placeholder="johndoe@gmail.com"
                       required=""
+                      value={email} 
                       onChange={(e) => setEmail(e.target.value)}
                     />
                     <div className="invalid-feedback">
-                      Please enter valid username.
+                      Please enter a valid email.
                     </div>
                   </div>
                   {/* Password */}
@@ -76,27 +109,42 @@ function Login() {
                     <label htmlFor="password" className="form-label">
                       Password
                     </label>
-                    <input
-                      type="password"
-                      id="password"
-                      className="form-control"
-                      name="password"
-                      placeholder="**************"
-                      required=""
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <div className="invalid-feedback">
-                      Please enter valid password.
+                    <div className="input-group">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        id="password"
+                        className="form-control"
+                        name="password"
+                        placeholder="**************"
+                        required=""
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                      <span
+                        className="input-group-text"
+                        onClick={togglePasswordVisibility}
+                        style={{ cursor: "pointer" }}
+                      >
+                        {showPassword ? (
+                          <i className="fas fa-eye-slash"></i>
+                        ) : (
+                          <i className="fas fa-eye"></i>
+                        )}
+                      </span>
+                      <div className="invalid-feedback">
+                        Please enter a valid password.
+                      </div>
                     </div>
                   </div>
                   {/* Checkbox */}
                   <div className="d-lg-flex justify-content-between align-items-center mb-4">
                     <div className="form-check">
-                      <input
+                    <input
                         type="checkbox"
                         className="form-check-input"
                         id="rememberme"
-                        required=""
+                        checked={rememberMe}
+                        onChange={handleRememberMeChange}
                       />
                       <label className="form-check-label" htmlFor="rememberme">
                         Remember me
@@ -111,7 +159,7 @@ function Login() {
                   </div>
                   <div>
                     <div className="d-grid">
-                      {isLoading === true && (
+                      {isLoading ? (
                         <button
                           disabled
                           type="submit"
@@ -119,9 +167,7 @@ function Login() {
                         >
                           Processing <i className="fas fa-spinner fa-spin"></i>
                         </button>
-                      )}
-
-                      {isLoading === false && (
+                      ) : (
                         <button type="submit" className="btn btn-primary">
                           Sign in <i className="fas fa-sign-in-alt"></i>
                         </button>

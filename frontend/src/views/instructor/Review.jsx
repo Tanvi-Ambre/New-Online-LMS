@@ -149,7 +149,10 @@ function Review() {
                   <ul className="list-group list-group-flush">
                     {/* List group item */}
                     {filteredReviews?.map((r, index) => (
-                      <li className="list-group-item p-4 shadow rounded-3 mb-4" key={index}>
+                      <li
+                        className="list-group-item p-4 shadow rounded-3 mb-4"
+                        key={index}
+                      >
                         <div className="d-flex">
                           <img
                             src={r.profile.image}
@@ -253,7 +256,14 @@ function Review() {
                     ))}
 
                     {filteredReviews?.length < 1 && (
-                      <p className="mt-4 p-3">No reviews</p>
+                      <div className="mt-4 p-3">
+                        <div
+                          className="alert alert-warning text-center"
+                          role="alert"
+                        >
+                          No reviews yet
+                        </div>
+                      </div>
                     )}
                   </ul>
                 </div>

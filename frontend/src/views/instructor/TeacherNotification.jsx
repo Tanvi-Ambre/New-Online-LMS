@@ -111,7 +111,14 @@ function TeacherNotification() {
                       </li>
                     ))}
 
-                    {noti?.length < 1 && <p>No notifications</p>}
+                    {noti?.length < 1 && (
+                      <div
+                        className="alert alert-warning text-center"
+                        role="alert"
+                      >
+                        No notifications yet.
+                      </div>
+                    )}
                   </ul>
                 </div>
               </div>

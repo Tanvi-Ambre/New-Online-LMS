@@ -118,53 +118,60 @@ function QA() {
                 <div className="card-body p-0 pt-3">
                   <div className="vstack gap-3 p-3">
                     {/* Question item START */}
-                    {questions?.map((q, index) => (
-                      <div className="shadow rounded-3 p-3" key={index}>
-                        <div className="d-sm-flex justify-content-sm-between mb-3">
-                          <div className="d-flex align-items-center">
-                            <div className="avatar avatar-sm flex-shrink-0">
-                              <img
-                                src={q.profile.image}
-                                className="avatar-img rounded-circle"
-                                alt="avatar"
-                                style={{
-                                  width: "60px",
-                                  height: "60px",
-                                  borderRadius: "50%",
-                                  objectFit: "cover",
-                                }}
-                              />
-                            </div>
-                            <div className="ms-2">
-                              <h6 className="mb-0">
-                                <a
-                                  href="#"
-                                  className="text-decoration-none text-dark"
-                                >
-                                  {q.profile.full_name}
-                                </a>
-                              </h6>
-                              <small>
-                                {moment(q.date).format("DD MMM, YYYY")}
-                              </small>
+                    {questions.length > 0 ? (
+                      questions?.map((q, index) => (
+                        <div className="shadow rounded-3 p-3" key={index}>
+                          <div className="d-sm-flex justify-content-sm-between mb-3">
+                            <div className="d-flex align-items-center">
+                              <div className="avatar avatar-sm flex-shrink-0">
+                                <img
+                                  src={q.profile.image}
+                                  className="avatar-img rounded-circle"
+                                  alt="avatar"
+                                  style={{
+                                    width: "60px",
+                                    height: "60px",
+                                    borderRadius: "50%",
+                                    objectFit: "cover",
+                                  }}
+                                />
+                              </div>
+                              <div className="ms-2">
+                                <h6 className="mb-0">
+                                  <a
+                                    href="#"
+                                    className="text-decoration-none text-dark"
+                                  >
+                                    {q.profile.full_name}
+                                  </a>
+                                </h6>
+                                <small>
+                                  {moment(q.date).format("DD MMM, YYYY")}
+                                </small>
+                              </div>
                             </div>
                           </div>
+                          <h5>
+                            {q.title} {""}
+                            <span className="badge bg-success">
+                              {q.messages?.length}
+                            </span>
+                          </h5>
+                          <button
+                            className="btn btn-primary btn-sm mb-3 mt-3"
+                            onClick={() => handleConversationShow(q)}
+                          >
+                            Join Conversation{" "}
+                            <i className="fas fa-arrow-right"></i>
+                          </button>
                         </div>
-                        <h5>
-                          {q.title} {""}
-                          <span className="badge bg-success">
-                            {q.messages?.length}
-                          </span>
-                        </h5>
-                        <button
-                          className="btn btn-primary btn-sm mb-3 mt-3"
-                          onClick={() => handleConversationShow(q)}
-                        >
-                          Join Conversation{" "}
-                          <i className="fas fa-arrow-right"></i>
-                        </button>
-                      </div>
-                    ))}
+                      ))
+                    ) : (
+                      <div
+                      className="alert alert-warning text-center"
+                      role="alert"
+                    >No Questions to respond.</div>
+                    )}
 
                     {/* {questions?.length < 1 && <p>No Questions</p>} */}
                   </div>
@@ -186,7 +193,7 @@ function QA() {
               style={{ overflowY: "scroll", height: "500px" }}
             >
               {selectedConversation?.messages?.map((m, index) => (
-                <li className="comment-item mb-3" key ={index}>
+                <li className="comment-item mb-3" key={index}>
                   <div className="d-flex">
                     <div className="avatar avatar-sm flex-shrink-0">
                       <a href="#">

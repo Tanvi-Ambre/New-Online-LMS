@@ -9,6 +9,7 @@ import BaseFooter from "../partials/BaseFooter";
 import useAxios from "../../utils/useAxios";
 import UserData from "../plugin/UserData";
 import CoursesChart from "../charts/CoursesChart";
+import CompletionChart from "../charts/CompletionChart";
 import Spinner from "./Partials/Spinner";
 
 function Dashboard() {
@@ -17,8 +18,10 @@ function Dashboard() {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [averageRatings, setAverageRatings] = useState([]);
   const [showRatingCounts, setShowRatingCounts] = useState(false);
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
 
+  
+  //To Display stats
   const fetchCourseData = () => {
     setLoading(true);
     useAxios()
@@ -35,7 +38,10 @@ function Dashboard() {
         // Calculate average ratings for each course
         const avgRatings = res.data
           .map((course) => {
-            const totalRatings = course.reviews.reduce((acc, review) => acc + review.rating, 0);
+            const totalRatings = course.reviews.reduce(
+              (acc, review) => acc + review.rating,
+              0
+            );
             const avgRating = totalRatings / course.reviews.length;
             return { title: course.title, avgRating };
           })
@@ -49,7 +55,7 @@ function Dashboard() {
     fetchCourseData();
   }, []);
 
-  const handleSearch = (event) => {
+  /*  const handleSearch = (event) => {
     const query = event.target.value.toLowerCase();
     if (query === "") {
       fetchCourseData();
@@ -59,7 +65,7 @@ function Dashboard() {
       });
       setCourses(filtered);
     }
-  };
+  } */
 
   const handleBarClick = (courseTitle) => {
     const selected = courses.find((course) => course.title === courseTitle);
@@ -179,17 +185,27 @@ function Dashboard() {
               </div>
 
               {/* Charts component */}
-              {loading ? (  // Display loading spinner while data is being fetched
+              {loading ? ( // Display loading spinner while data is being fetched
                 <Spinner />
-              ) : (<CoursesChart
-                pieData={pieData}
-                barData={barData}
-                onBarClick={handleBarClick}
-                centerChart={true}
-                showRatingCounts={showRatingCounts}
-                selectedCourse={selectedCourse}
-                onToggleView={handleToggleView}
-              />)}
+              ) : (
+                <>
+                   <div className="col-md-6 mb-4">
+                    <CoursesChart
+                      pieData={pieData}
+                      barData={barData}
+                      onBarClick={handleBarClick}
+                      centerChart={true}
+                      showRatingCounts={showRatingCounts}
+                      selectedCourse={selectedCourse}
+                      onToggleView={handleToggleView}
+                    />
+                  </div>
+                  <br />
+                  <div>
+                    <CompletionChart courses={courses} />
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

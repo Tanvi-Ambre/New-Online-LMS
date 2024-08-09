@@ -44,35 +44,44 @@ function Orders() {
                 </div>
                 {/* Table */}
                 <div className="table-responsive">
-                  <table className="table mb-0 text-nowrap table-hover table-centered">
-                    <thead className="table-light">
-                      <tr>
-                        <th>Courses</th>
-                        <th>Amount</th>
-                        <th>Invoice</th>
-                        <th>Date</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {orders?.map((o, index) => (
-                        <tr key ={index}>
-                          <td>
-                            <h5 className="mb-0">
-                              <a
-                                href="#"
-                                className="text-inherit text-decoration-none text-dark"
-                              >
-                                {o.course.title}
-                              </a>
-                            </h5>
-                          </td>
-                          <td>${o.price}</td>
-                          <td>#{o.order.oid}</td>
-                          <td>{moment(o.date).format("DD MMM, YYYY")}</td>
+                  {orders.length > 0 ? (
+                    <table className="table mb-0 text-nowrap table-hover table-centered">
+                      <thead className="table-light">
+                        <tr>
+                          <th>Courses</th>
+                          <th>Amount</th>
+                          <th>Invoice</th>
+                          <th>Date</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {orders?.map((o, index) => (
+                          <tr key={index}>
+                            <td>
+                              <h5 className="mb-0">
+                                <a
+                                  href="#"
+                                  className="text-inherit text-decoration-none text-dark"
+                                >
+                                  {o.course.title}
+                                </a>
+                              </h5>
+                            </td>
+                            <td>${o.price}</td>
+                            <td>#{o.order.oid}</td>
+                            <td>{moment(o.date).format("DD MMM, YYYY")}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div
+                      className="alert alert-warning text-center"
+                      role="alert"
+                    >
+                      No Orders yet
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

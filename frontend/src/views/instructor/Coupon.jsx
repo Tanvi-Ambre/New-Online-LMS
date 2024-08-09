@@ -138,58 +138,70 @@ function Coupon() {
                 {/* Card body */}
                 <div className="card-body">
                   {/* List group */}
-                  <ul className="list-group list-group-flush">
-                    {/* List group item */}
-                    {coupons?.map((c, index) => (
-                      <li className="list-group-item p-4 shadow rounded-3 mb-3" key={index}>
-                        <div className="d-flex">
-                          <div className="ms-3 mt-2">
-                            <div className="d-flex align-items-center justify-content-between">
-                              <div>
-                                <h4 className="mb-0">{c.code}</h4>
-                                <span>{c.used_by} Student</span>
+                  {coupons.length > 0 ? (
+                    <ul className="list-group list-group-flush">
+                      {/* List group item */}
+                      {coupons?.map((c, index) => (
+                        <li
+                          className="list-group-item p-4 shadow rounded-3 mb-3"
+                          key={index}
+                        >
+                          <div className="d-flex">
+                            <div className="ms-3 mt-2">
+                              <div className="d-flex align-items-center justify-content-between">
+                                <div>
+                                  <h4 className="mb-0">{c.code}</h4>
+                                  <span>{c.used_by} Student</span>
+                                </div>
+                              </div>
+                              <div className="mt-2">
+                                <p className="mt-2">
+                                  <span className="me-2 fw-bold">
+                                    Discount:{" "}
+                                    <span className="fw-light">
+                                      {c.discount}% Discount
+                                    </span>
+                                  </span>
+                                </p>
+                                <p className="mt-1">
+                                  <span className="me-2 fw-bold">
+                                    Date Created:{" "}
+                                    <span className="fw-light">
+                                      {moment(c.date).format("DD MMM, YYYY")}
+                                    </span>
+                                  </span>
+                                </p>
+                                <p>
+                                  <button
+                                    class="btn btn-outline-secondary"
+                                    type="button"
+                                    onClick={() => handleShow(c)}
+                                  >
+                                    Update Coupon
+                                  </button>
+
+                                  <button
+                                    class="btn btn-danger ms-2"
+                                    type="button"
+                                    onClick={() => handleDeleteCoupon(c.id)}
+                                  >
+                                    <i className="fas fa-trash"></i>
+                                  </button>
+                                </p>
                               </div>
                             </div>
-                            <div className="mt-2">
-                              <p className="mt-2">
-                                <span className="me-2 fw-bold">
-                                  Discount:{" "}
-                                  <span className="fw-light">
-                                    {c.discount}% Discount
-                                  </span>
-                                </span>
-                              </p>
-                              <p className="mt-1">
-                                <span className="me-2 fw-bold">
-                                  Date Created:{" "}
-                                  <span className="fw-light">
-                                    {moment(c.date).format("DD MMM, YYYY")}
-                                  </span>
-                                </span>
-                              </p>
-                              <p>
-                                <button
-                                  class="btn btn-outline-secondary"
-                                  type="button"
-                                  onClick={() => handleShow(c)}
-                                >
-                                  Update Coupon
-                                </button>
-
-                                <button
-                                  class="btn btn-danger ms-2"
-                                  type="button"
-                                  onClick={() => handleDeleteCoupon(c.id)}
-                                >
-                                  <i className="fas fa-trash"></i>
-                                </button>
-                              </p>
-                            </div>
                           </div>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div
+                      className="alert alert-warning text-center"
+                      role="alert"
+                    >
+                      No coupons created yet.
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

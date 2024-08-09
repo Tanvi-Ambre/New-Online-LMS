@@ -27,6 +27,7 @@ function Index() {
 
   const country = GetCurrentAddress().country;
   const userId = UserData()?.user_id;
+  const fullName = UserData()?.full_name; 
   const cartId = CartId();
 
   const fetchCourse = async (retryCount = 3) => {
@@ -132,6 +133,14 @@ function Index() {
             {/* col */}
             <div className="col-lg-6 mb-6 mb-lg-0">
               <div>
+                {/* Display the greeting message */}
+                {fullName && (
+                  <div className="bg-light mb-4">
+                  <h2 className="m-0">
+                    Welcome back, {fullName}!
+                  </h2>
+                </div>
+                )}
                 {/* heading */}
                 <h5 className="text-dark mb-4">
                   <i className="fe fe-check icon-xxs icon-shape bg-light-success text-success rounded-circle me-2" />
@@ -147,16 +156,6 @@ function Index() {
                   courses, Professional Certificates, and degrees from
                   world-class universities and companies.
                 </p>
-                {/* btn */}
-                {/* <a href="#" className="btn btn-primary fs-4 text-inherit ms-3">
-                  Join Free Now <i className="fas fa-plus"></i>
-                </a> */}
-                {/* <a
-                  href="https://www.youtube.com/watch?v=Nfzi7034Kbg"
-                  className="btn btn-outline-success fs-4 text-inherit ms-3"
-                >
-                  Watch Demo <i className="fas fa-video"></i>
-                </a> */}
               </div>
             </div>
             {/* col */}

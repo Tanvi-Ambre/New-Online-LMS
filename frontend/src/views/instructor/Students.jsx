@@ -44,8 +44,9 @@ function Students() {
               </div>
               {/* Tab content */}
               <div className="row">
-                {student?.map((s, index) => (
-                  <div className="col-lg-4 col-md-6 col-12">
+              {student.length > 0 ? (
+                student?.map((s, index) => (
+                  <div className="col-lg-4 col-md-6 col-12" key={index}>
                     <div className="card mb-4">
                       <div className="card-body">
                         <div className="text-center">
@@ -75,8 +76,15 @@ function Students() {
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
+                   ))
+                  ) : (
+                    <div className="col-12">
+                      <div className="alert alert-warning text-center" role="alert">
+                        No students enrolled yet.
+                      </div>
+                    </div>
+                  )}
+                </div>
             </div>
           </div>
         </div>
