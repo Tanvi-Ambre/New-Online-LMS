@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
-import Swal from "sweetalert2"; 
+import Swal from "sweetalert2";
 
 import Sidebar from "./Partials/Sidebar";
 import Header from "./Partials/Header";
@@ -42,28 +42,35 @@ function Courses() {
   const handleDelete = (courseId) => {
     // Show a confirmation dialog before deleting
     Swal.fire({
-      title: 'Are you sure?',
-      text: 'You will not be able to recover this course!',
-      icon: 'warning',
+      title: "Are you sure?",
+      text: "You will not be able to recover this course!",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it'
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, keep it",
     }).then((result) => {
       if (result.isConfirmed) {
         // Make the delete request if the user confirms
-        useAxios().delete(`/course/course-detail/${courseId}/`)
+        useAxios()
+          .delete(`/course/course-detail/${courseId}/`)
           .then((response) => {
             // Filter out the deleted course from the state
-            setCourses(courses.filter((course) => course.course_id !== courseId));
-            Swal.fire('Deleted!', 'Your course has been deleted.', 'success');
+            setCourses(
+              courses.filter((course) => course.course_id !== courseId)
+            );
+            Swal.fire("Deleted!", "Your course has been deleted.", "success");
           })
           .catch((error) => {
             console.error("There was an error deleting the course:", error);
-            Swal.fire('Error!', 'There was an error deleting the course.', 'error');
+            Swal.fire(
+              "Error!",
+              "There was an error deleting the course.",
+              "error"
+            );
           });
       }
     });
-  }
+  };
 
   return (
     <>
@@ -104,105 +111,118 @@ function Courses() {
                   </form>
                 </div>
                 <div className="table-responsive overflow-y-hidden">
-                  <table className="table mb-0 text-nowrap table-hover table-centered text-nowrap">
-                    <thead className="table-light">
-                      <tr>
-                        <th>Courses</th>
-                        <th>Enrolled</th>
-                        <th>Level</th>
-                        <th>Status</th>
-                        <th>Date Created</th>
-                        <th>Action</th>
-                        <th />
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {courses?.map((c, index) => (
-                        <tr key={index}>
-                          <td>
-                            <div className="d-flex align-items-center">
-                              <div>
-                                <img
-                                  src={c.image}
-                                  alt="course"
-                                  className="rounded img-4by3-lg"
-                                  style={{
-                                    width: "100px",
-                                    height: "70px",
-                                    borderRadius: "50%",
-                                    objectFit: "cover",
-                                  }}
-                                />
-                              </div>
-                              <div className="ms-3">
-                                <h4 className="mb-1 h6">
-                                  <a className="text-inherit text-decoration-none text-dark">
-                                    {c.title}
-                                  </a>
-                                </h4>
-                                <ul className="list-inline fs-6 mb-0">
-                                  <li className="list-inline-item">
-                                    <small>
-                                      <i className="fas fa-user"></i>
-                                      <span className="ms-1">{c.language}</span>
-                                    </small>
-                                  </li>
-                                  <li className="list-inline-item">
-                                    <small>
-                                      <i className="bi bi-reception-4"></i>
-                                      <span className="ms-1">{c.level}</span>
-                                    </small>
-                                  </li>
-                                  <li className="list-inline-item">
-                                    <small>
-                                      <i className="fas fa-dollar-sign"></i>
-                                      <span>{c.price}</span>
-                                    </small>
-                                  </li>
-                                </ul>
-                              </div>
-                            </div>
-                          </td>
-                          <td>
-                            <p className="mt-3">{c.students?.length}</p>
-                          </td>
-                          <td>
-                            <p className="mt-3 badge bg-success">{c.level}</p>
-                          </td>
-                          <td>
-                            <p className="mt-3 badge bg-warning text-dark">
-                              Published
-                            </p>
-                          </td>
-                          <td>
-                            <p className="mt-3">
-                              {moment(c.date).format("DD MMM, YYYY")}
-                            </p>
-                          </td>
-                          <td>
-                            <Link
-                              to={`/instructor/edit-course/${c.course_id}/`}
-                              className="btn btn-primary btn-sm mt-3 me-1"
-                            >
-                              <i className="fas fa-edit"></i>
-                            </Link>
-                            <button
-                              className="btn btn-danger btn-sm mt-3 me-1"
-                              onClick={() => handleDelete(c.course_id)}
-                            >
-                              <i className="fas fa-trash"></i>
-                            </button>
-                            <Link
-                              to={`/instructor/courses/${c.course_id}/`}
-                              className="btn btn-secondary btn-sm mt-3 me-1"
-                            >
-                              <i className="fas fa-eye"></i>
-                            </Link>
-                          </td>
+                  {courses.length > 0 ? (
+                    <table className="table mb-0 text-nowrap table-hover table-centered text-nowrap">
+                      <thead className="table-light">
+                        <tr>
+                          <th>Courses</th>
+                          <th>Enrolled</th>
+                          <th>Level</th>
+                          <th>Status</th>
+                          <th>Date Created</th>
+                          <th>Action</th>
+                          <th />
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {courses?.map((c, index) => (
+                          <tr key={index}>
+                            <td>
+                              <div className="d-flex align-items-center">
+                                <div>
+                                  <img
+                                    src={c.image}
+                                    alt="course"
+                                    className="rounded img-4by3-lg"
+                                    style={{
+                                      width: "100px",
+                                      height: "70px",
+                                      borderRadius: "50%",
+                                      objectFit: "cover",
+                                    }}
+                                  />
+                                </div>
+                                <div className="ms-3">
+                                  <h4 className="mb-1 h6">
+                                    <a className="text-inherit text-decoration-none text-dark">
+                                      {c.title}
+                                    </a>
+                                  </h4>
+                                  <ul className="list-inline fs-6 mb-0">
+                                    <li className="list-inline-item">
+                                      <small>
+                                        <i className="fas fa-user"></i>
+                                        <span className="ms-1">
+                                          {c.language}
+                                        </span>
+                                      </small>
+                                    </li>
+                                    <li className="list-inline-item">
+                                      <small>
+                                        <i className="bi bi-reception-4"></i>
+                                        <span className="ms-1">{c.level}</span>
+                                      </small>
+                                    </li>
+                                    <li className="list-inline-item">
+                                      <small>
+                                        <i className="fas fa-dollar-sign"></i>
+                                        <span>{c.price}</span>
+                                      </small>
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <p className="mt-3">{c.students?.length}</p>
+                            </td>
+                            <td>
+                              <p className="mt-3 badge bg-success">{c.level}</p>
+                            </td>
+                            <td>
+                              <p className="mt-3 badge bg-warning text-dark">
+                                Published
+                              </p>
+                            </td>
+                            <td>
+                              <p className="mt-3">
+                                {moment(c.date).format("DD MMM, YYYY")}
+                              </p>
+                            </td>
+                            <td>
+                              <Link
+                                to={`/instructor/edit-course/${c.course_id}/`}
+                                className="btn btn-primary btn-sm mt-3 me-1"
+                              >
+                                <i className="fas fa-edit"></i>
+                              </Link>
+                              <button
+                                className="btn btn-danger btn-sm mt-3 me-1"
+                                onClick={() => handleDelete(c.course_id)}
+                              >
+                                <i className="fas fa-trash"></i>
+                              </button>
+                              <Link
+                                to={`/instructor/courses/${c.course_id}/`}
+                                className="btn btn-secondary btn-sm mt-3 me-1"
+                              >
+                                <i className="fas fa-eye"></i>
+                              </Link>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="p-3 text-center">
+                      <div
+                        className="alert alert-warning text-center"
+                        role="alert"
+                      >
+                        No courses yet
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

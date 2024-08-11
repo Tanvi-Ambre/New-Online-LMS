@@ -15,6 +15,7 @@ function QA() {
   const [questions, setQuestions] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const lastElementRef = useRef();
+  const messageInputRef = useRef();
   const [createMessage, setCreateMessage] = useState({
     title: "",
     message: "",
@@ -33,7 +34,10 @@ function QA() {
   }, []);
 
   const [ConversationShow, setConversationShow] = useState(false);
-  const handleConversationClose = () => setConversationShow(false);
+  const handleConversationClose = async () => {
+    await fetchQuestions(); // Refetch questions to ensure the list is updated
+    setConversationShow(false); // Close the modal
+  };
   const handleConversationShow = (converation) => {
     setConversationShow(true);
     setSelectedConversation(converation);
@@ -47,17 +51,24 @@ function QA() {
   };
   const sendNewMessage = async (e) => {
     e.preventDefault();
+
+    // Clear the textarea using the ref
+  if (messageInputRef.current) {
+    messageInputRef.current.value = "";
+  }
     const formdata = new FormData();
     formdata.append("course_id", selectedConversation.course);
     formdata.append("user_id", UserData()?.user_id);
     formdata.append("message", createMessage.message);
     formdata.append("qa_id", selectedConversation?.qa_id);
 
-    useAxios()
-      .post(`student/question-answer-message-create/`, formdata)
-      .then((res) => {
-        setSelectedConversation(res.data.question);
-      });
+    try {
+      const res = await useAxios().post(`student/question-answer-message-create/`, formdata);
+      setSelectedConversation(res.data.question); // Update the current conversation with the new data
+      await fetchQuestions(); // Refetch questions to update the list
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   };
 
   useEffect(() => {
@@ -146,7 +157,9 @@ function QA() {
                                   </a>
                                 </h6>
                                 <small>
-                                  {moment(q.date).format("DD MMM, YYYY")}
+                                  {moment(q.date).format(
+                                    "DD MMM, YYYY [at] hh:mm A"
+                                  )}
                                 </small>
                               </div>
                             </div>
@@ -168,9 +181,11 @@ function QA() {
                       ))
                     ) : (
                       <div
-                      className="alert alert-warning text-center"
-                      role="alert"
-                    >No Questions to respond.</div>
+                        className="alert alert-warning text-center"
+                        role="alert"
+                      >
+                        No Questions to respond.
+                      </div>
                     )}
 
                     {/* {questions?.length < 1 && <p>No Questions</p>} */}
@@ -251,6 +266,7 @@ function QA() {
                 id="autoheighttextarea"
                 rows="2"
                 onChange={handleMessageChange}
+                ref={messageInputRef}
                 placeholder="What's your question?"
               ></textarea>
               <button className="btn btn-primary ms-2 mb-0 w-25" type="submit">

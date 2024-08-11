@@ -136,7 +136,16 @@ class Course(models.Model):
         super(Course, self).save(*args, **kwargs)
 
     def students(self):
-        return EnrolledCourse.objects.filter(course=self)
+        enrolled_courses = EnrolledCourse.objects.filter(course=self)
+        seen_users = set()
+        unique_students = []
+        
+        for enrolled in enrolled_courses:
+            if enrolled.user_id not in seen_users:
+                unique_students.append(enrolled)
+                seen_users.add(enrolled.user_id)
+        
+        return unique_students
     
     def curriculum(self):
         # return "this is 234"

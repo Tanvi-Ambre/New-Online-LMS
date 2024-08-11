@@ -75,11 +75,13 @@ function Orders() {
                       </tbody>
                     </table>
                   ) : (
-                    <div
-                      className="alert alert-warning text-center"
-                      role="alert"
-                    >
-                      No Orders yet
+                    <div className="mt-4 p-3">
+                      <div
+                        className="alert alert-warning text-center"
+                        role="alert"
+                      >
+                        No Orders yet
+                      </div>
                     </div>
                   )}
                 </div>

@@ -236,7 +236,7 @@ class EnrolledCourseSerializer(serializers.ModelSerializer):
             self.Meta.depth = 3
 
 class CourseSerializer(serializers.ModelSerializer):
-    students = EnrolledCourseSerializer(many=True, required=False, read_only=True,)
+    students =  serializers.SerializerMethodField()
     curriculum = VariantSerializer(many=True, required=False, read_only=True,)
     lectures = VariantItemSerializer(many=True, required=False, read_only=True,)
     reviews = ReviewSerializer(many=True, read_only=True, required=False)
@@ -252,7 +252,9 @@ class CourseSerializer(serializers.ModelSerializer):
         else:
             self.Meta.depth = 3
 
-
+    def get_students(self, obj):
+        enrolled_courses = obj.students()
+        return EnrolledCourseSerializer(enrolled_courses, many=True, context=self.context).data
 
 class StudentSummarySerializer(serializers.Serializer):
     total_courses = serializers.IntegerField(default=0)

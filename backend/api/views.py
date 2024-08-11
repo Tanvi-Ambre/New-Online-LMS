@@ -552,7 +552,7 @@ class StudentSummaryAPIView(generics.ListAPIView):
         user_id = self.kwargs['user_id']
         user = User.objects.get(id=user_id)
 
-        total_courses = api_models.EnrolledCourse.objects.filter(user=user).count()
+        total_courses = api_models.EnrolledCourse.objects.filter(user=user).values('course').distinct().count()
         completed_lessons = api_models.CompletedLesson.objects.filter(user=user).count()
         achieved_certificates = api_models.Certificate.objects.filter(user=user).count()
 
@@ -573,8 +573,16 @@ class StudentCourseListAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         user_id = self.kwargs['user_id']
-        user =  User.objects.get(id=user_id)
-        return api_models.EnrolledCourse.objects.filter(user=user)
+        user = User.objects.get(id=user_id)
+        enrolled_courses = api_models.EnrolledCourse.objects.filter(user=user)
+
+        # Remove duplicates based on course ID
+        unique_courses = {}
+        for enrollment in enrolled_courses:
+            if enrollment.course.id not in unique_courses:
+                unique_courses[enrollment.course.id] = enrollment
+
+        return unique_courses.values()
     
 
 class StudentCourseDetailAPIView(generics.RetrieveAPIView):
