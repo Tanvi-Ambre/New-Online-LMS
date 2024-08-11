@@ -552,7 +552,7 @@ class StudentSummaryAPIView(generics.ListAPIView):
         user_id = self.kwargs['user_id']
         user = User.objects.get(id=user_id)
 
-        total_courses = api_models.EnrolledCourse.objects.filter(user=user).count()
+        total_courses = api_models.EnrolledCourse.objects.filter(user=user).values('course').distinct().count()
         completed_lessons = api_models.CompletedLesson.objects.filter(user=user).count()
         achieved_certificates = api_models.Certificate.objects.filter(user=user).count()
 
