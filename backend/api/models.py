@@ -339,6 +339,9 @@ class EnrolledCourse(models.Model):
     enrollment_id = ShortUUIDField(unique=True, length=6, max_length=20, alphabet="1234567890")
     date = models.DateTimeField(default=timezone.now)
 
+    class Meta:
+        unique_together = ('course', 'user')
+        
     def __str__(self):
         return self.course.title
     
@@ -396,6 +399,9 @@ class Notification(models.Model):
     seen = models.BooleanField(default=False)
     date = models.DateTimeField(default=timezone.now)  
 
+    class Meta:
+            unique_together = ('teacher', 'order', 'order_item', 'type')
+            
     def __str__(self):
         return self.type
 

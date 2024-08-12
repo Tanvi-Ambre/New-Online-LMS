@@ -108,14 +108,11 @@ function CourseDetail() {
           </p>
         ) : (
           <>
-            <section className="bg-light py-0 py-sm-5">
+            <section className="bg-light py-0">
               <div className="container">
                 <div className="row py-5">
                   <div className="col-lg-8">
-                    {/* Badge */}
-                    <h6 className="mb-3 font-base bg-primary text-white py-2 px-4 rounded-2 d-inline-block">
-                      {course.title}
-                    </h6>
+                    
                     {/* Title */}
                     <h1 className="mb-3">{course.title}</h1>
                     <p
@@ -546,7 +543,7 @@ function CourseDetail() {
                               <hr />
                             </div>
                           
-                             <div className="mt-2">
+                             {/* <div className="mt-2">
                               <h5 className="mb-4">Leave a Review</h5>
                               <form className="row g-3">
                               
@@ -582,7 +579,7 @@ function CourseDetail() {
                                   </button>
                                 </div>
                               </form>
-                            </div>
+                            </div> */}
                             {/* Leave Review END */}
                           </div>
                           {/* Content END */}

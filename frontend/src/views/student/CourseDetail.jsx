@@ -28,7 +28,7 @@ function CourseDetail() {
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [createReview, setCreateReview] = useState({ rating: 1, review: "" });
   const [studentReview, setStudentReview] = useState([]);
-  
+
   const param = useParams();
   const lastElementRef = useRef();
   const messageInputRef = useRef();
@@ -78,7 +78,7 @@ function CourseDetail() {
       });
   };
   useEffect(() => {
-      fetchCourseDetail();
+    fetchCourseDetail();
   }, [param.enrollment_id]);
 
   const handleMarkLessonAsCompleted = (variantItemId) => {
@@ -182,7 +182,7 @@ function CourseDetail() {
       [event.target.name]: event.target.value,
     });
   };
-  
+
   const handleSaveQuestion = async (e) => {
     e.preventDefault();
     const formdata = new FormData();
@@ -232,7 +232,6 @@ function CourseDetail() {
       console.error("Error sending message:", error);
     }
   };
-
 
   useEffect(() => {
     if (lastElementRef.current) {
@@ -463,7 +462,8 @@ function CourseDetail() {
                                           {c.title}
                                           <span className="small ms-0 ms-sm-2">
                                             ({c.variant_items?.length} Lecture
-                                          {c.variant_items?.length > 1 && "s"})
+                                            {c.variant_items?.length > 1 && "s"}
+                                            )
                                           </span>
                                         </button>
                                       </h6>
