@@ -9,6 +9,7 @@ import BaseFooter from "../partials/BaseFooter";
 import useAxios from "../../utils/useAxios";
 import UserData from "../plugin/UserData";
 import CoursesChart from "../charts/CoursesChart";
+import LineChart from "../charts/LineChart"; 
 import CompletionChart from "../charts/CompletionChart";
 import Spinner from "./Partials/Spinner";
 
@@ -19,7 +20,7 @@ function Dashboard() {
   const [averageRatings, setAverageRatings] = useState([]);
   const [showRatingCounts, setShowRatingCounts] = useState(false);
   const [loading, setLoading] = useState(true);
-
+  const [monthlyEarnings, setMonthlyEarnings] = useState([]); 
   
   //To Display stats
   const fetchCourseData = () => {
@@ -47,6 +48,14 @@ function Dashboard() {
           })
           .filter((course) => !isNaN(course.avgRating)); // Filter out courses with no ratings
         setAverageRatings(avgRatings);
+        setLoading(false);
+      });
+
+      // Fetch monthly earnings
+      useAxios()
+      .get(`teacher/all-months-earning/${UserData()?.teacher_id}/`)
+      .then((res) => {
+        setMonthlyEarnings(res.data);
         setLoading(false);
       });
   };
@@ -203,6 +212,10 @@ function Dashboard() {
                   <br />
                   <div>
                     <CompletionChart courses={courses} />
+                  </div>
+                  <div className="mb-4">
+                    <h5>Monthly Earnings</h5>
+                    <LineChart data={monthlyEarnings} />
                   </div>
                 </>
               )}

@@ -43,7 +43,18 @@ class Profile(models.Model):
         if self.full_name == "" or self.full_name == None:
             self.full_name = self.user.username
         super(Profile, self).save(*args, **kwargs)
+    
+        from api.models import Teacher
 
+        try:
+            teacher = Teacher.objects.get(user=self.user)
+            teacher.full_name = self.full_name
+            teacher.image = self.image
+            teacher.country = self.country
+            teacher.about = self.about
+            teacher.save()
+        except Teacher.DoesNotExist:
+            pass
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
