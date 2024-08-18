@@ -7,7 +7,6 @@ import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 
 import useAxios from "../../utils/useAxios";
-import Useta from "../plugin/UserData";
 import { teacherId } from "../../utils/constants";
 import UserData from "../plugin/UserData";
 
@@ -24,7 +23,7 @@ function Earning() {
       });
 
     useAxios()
-      .get(`teacher/all-months-earning/${UserData()?.teacher_id}/`)
+    .get(`teacher/all-months-earning/${UserData()?.teacher_id}/?interval=month`)
       .then((res) => {
         setEarning(res.data);
       });
@@ -199,23 +198,12 @@ function Earning() {
                       </tr>
                     </thead>
                     <tbody>
-                      {earning?.map((e, index) => (
+                      {Array.isArray(earning.intervals) && earning.intervals.map((interval, index) => (
                         <tr key={index}>
                           <td>
-                            {e.month === 1 && "January"}
-                            {e.month === 2 && "February"}
-                            {e.month === 3 && "March"}
-                            {e.month === 4 && "April"}
-                            {e.month === 5 && "May"}
-                            {e.month === 6 && "June"}
-                            {e.month === 7 && "July"}
-                            {e.month === 8 && "August"}
-                            {e.month === 9 && "Sepetember"}
-                            {e.month === 10 && "OCtober"}
-                            {e.month === 11 && "November"}
-                            {e.month === 12 && "December"}
+                            {moment(interval, 'YYYY-MM').format('MMMM YYYY')}
                           </td>
-                          <td>${e.total_earning?.toFixed(2)}</td>
+                          <td>${earning.earnings[index]?.toFixed(2)}</td>
                         </tr>
                       ))}
                     </tbody>

@@ -42,7 +42,7 @@ urlpatterns = [
     path("student/wishlist/<user_id>/", api_views.StudentWishListListCreateAPIView.as_view()),
     path("student/question-answer-list-create/<course_id>/", api_views.QuestionAnswerListCreateAPIView.as_view()),
     path("student/question-answer-message-create/", api_views.QuestionAnswerMessageSendAPIView.as_view()),
-
+    path('student/course-progress/<int:user_id>/', api_views.student_course_progress, name='student-course-progress'),
 
     # Teacher Routes
     path("teacher/summary/<teacher_id>/", api_views.TeacherSummaryAPIView.as_view()),
@@ -63,6 +63,10 @@ urlpatterns = [
     path("teacher/course-detail/<course_id>/", api_views.CourseDetailAPIView.as_view()),
     path("teacher/course/variant-delete/<variant_id>/<teacher_id>/<course_id>/", api_views.CourseVariantDeleteAPIView.as_view()),
     path("teacher/course/variant-item-delete/<variant_id>/<variant_item_id>/<teacher_id>/<course_id>/", api_views.CourseVariantItemDeleteAPIVIew.as_view()),
+    path('teacher/enrollment-trends/<int:teacher_id>/', api_views.enrollment_trends, name='enrollment-trends'),
+    path('teacher/all-months-earning/<int:teacher_id>/', api_views.TeacherAllMonthEarningAPIView, name='all-months-earning'),
+    path('teacher/revenue-distribution/<int:teacher_id>/', api_views.revenue_distribution, name='revenue-distribution'),
+    path('teacher/course-popularity-vs-revenue/<int:teacher_id>/', api_views.course_popularity_vs_revenue, name='course-popularity-vs-revenue'),
 
 ]
 

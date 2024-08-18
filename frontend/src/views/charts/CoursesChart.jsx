@@ -1,22 +1,42 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect, useRef } from "react";
 import { Bar, Pie } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
-import './charts.css';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  Filler,
+} from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
+import "./charts.css";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, ChartDataLabels);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  ChartDataLabels,
+  Filler
+);
 
-// eslint-disable-next-line react/prop-types
-const CoursesChart = ({ pieData, barData, onBarClick, centerChart, showRatingCounts, selectedCourse, onToggleView }) => {
+const CoursesChart = ({
+  pieData,
+  barData,
+  onBarClick,
+  centerChart,
+  showRatingCounts,
+  selectedCourse,
+  onToggleView,
+}) => {
   const chartRef = useRef(null);
-
-  useEffect(() => {
-    return () => {
-      if (chartRef.current) {
-        chartRef.current.destroy();
-      }
-    };
-  }, []);
 
   const handleBarClick = (elements) => {
     if (elements.length > 0) {
@@ -26,31 +46,48 @@ const CoursesChart = ({ pieData, barData, onBarClick, centerChart, showRatingCou
   };
 
   return (
-    <div className="chart-container">
-      <button onClick={onToggleView}>
+    <div>
+      <button onClick={onToggleView} className="toggle-view-btn">
         {showRatingCounts ? "Show Bar Chart" : "Show Pie Chart"}
       </button>
       {showRatingCounts && selectedCourse ? (
-        <div className="chart">
+        <>
           <h3>{selectedCourse.title} - Rating Counts</h3>
-          <Pie
-            data={pieData}
-            options={{
-              maintainAspectRatio: false,
-              plugins: {
-                datalabels: {
-                  formatter: (value, context) => {
-                    return `${value} (${context.chart.data.labels[context.dataIndex]})`;
+          <div  className="chart">
+            <Pie
+              data={pieData}
+              options={{
+                plugins: {
+                  datalabels: {
+                    formatter: (value, context) => {
+                      return `${value} (${context.chart.data.labels[context.dataIndex]})`;
+                    },
+                    color: "#fff",
                   },
-                  color: '#fff',
+                  legend: {
+                    display: true,
+                    position: "bottom",
+                    labels: {
+                      font: {
+                        size: 12,
+                      },
+                      generateLabels: (chart) => {
+                        const data = chart.data;
+                        return data.labels.map((label, i) => ({
+                          text: `${label}: ${data.datasets[0].data[i]}`,
+                          fillStyle: data.datasets[0].backgroundColor[i],
+                        }));
+                      },
+                    },
+                  },
                 },
-              },
-            }}
-            ref={chartRef}
-          />
-        </div>
+              }}
+              ref={chartRef}
+            />
+          </div>
+        </>
       ) : (
-        <div className="chart">
+        <div>
           <h3>Average Ratings</h3>
           <Bar
             data={barData}
