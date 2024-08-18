@@ -4,19 +4,20 @@ import { Bar } from "react-chartjs-2";
 import "./charts.css";
 
 const CourseCompletionBarChart = ({ courses }) => {
-  console.log("courses", courses)
+  //console.log("courses", courses)
   const chartRef = useRef();
 
   const courseData = courses.map((course) => {
     const totalStudents = course.students.length;
     const totalLectures = course.lectures.length;
-    console.log("totalStudents-totalLectures", totalStudents,totalLectures)
+    //console.log("totalStudents-totalLectures", totalStudents,totalLectures)
     const completedStudents = course.students.filter((student) => {
       const completedLessons = student.completed_lesson.length;
       return completedLessons === totalLectures;
     }).length;
 
-    const completionRate = totalStudents > 0 ? (completedStudents / totalStudents) * 100 : 0;
+    const completionRate =
+      totalStudents > 0 ? (completedStudents / totalStudents) * 100 : 0;
     return {
       title: course.title,
       completionRate: completionRate,
@@ -52,7 +53,12 @@ const CourseCompletionBarChart = ({ courses }) => {
     }
   }, [courses]);
 
-  return <Bar data={chartData} options={options} />;
+  return (
+    <div className="chart">
+      <h3>Course Completion</h3>
+      <Bar data={chartData} options={options} />
+    </div>
+  );
 };
 
 export default CourseCompletionBarChart;

@@ -49,6 +49,7 @@ import InstructorCourseDetail from "./views/instructor/InstructorCourseDetail";
 function App() {
   const [cartCount, setCartCount] = useState(0);
   const [profile, setProfile] = useState([]);
+  const userId = UserData()?.user_id
 
   useEffect(() => {
     apiInstance.get(`course/cart-list/${CartId()}/`).then((res) => {
@@ -56,7 +57,7 @@ function App() {
     });
 
     useAxios()
-      .get(`user/profile/${UserData()?.user_id}/`)
+      .get(`user/profile/${userId}/`)
       .then((res) => {
         setProfile(res.data);
       });

@@ -1,31 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
 import useAxios from '../../utils/useAxios';
-import moment from 'moment';
 
-// Register required components
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
-
-const LineChart = ({ teacherId }) => {
-    const [earningsData, setEarningsData] = useState({ intervals: [], earnings: [] });
+const EnrollmentTrendsChart = ({ teacherId }) => {
+    const [enrollmentData, setEnrollmentData] = useState({ intervals: [], counts: [] });
     const [loading, setLoading] = useState(true);
     const [interval, setInterval] = useState('day');  // Default to month
 
     useEffect(() => {
-        fetchEarningsData();
+        fetchEnrollmentData();
     }, [teacherId, interval]);
 
-    const fetchEarningsData = () => {
+    const fetchEnrollmentData = () => {
         setLoading(true);
         useAxios()
-            .get(`/teacher/all-months-earning/${teacherId}/?interval=${interval}`)
+            .get(`/teacher/enrollment-trends/${teacherId}/?interval=${interval}`)
             .then((res) => {
-                setEarningsData(res.data);
+                setEnrollmentData(res.data);
                 setLoading(false);
             })
             .catch((error) => {
-                console.error('Error fetching earnings trends:', error);
+                console.error('Error fetching enrollment trends:', error);
                 setLoading(false);
             });
     };
@@ -33,15 +28,11 @@ const LineChart = ({ teacherId }) => {
     if (loading) return <div>Loading...</div>;
 
     const chartData = {
-        labels: earningsData.intervals.map(interval => 
-            interval.length === 7 ? moment(interval, 'YYYY-MM').format('MMMM YYYY') : 
-            interval.length === 10 ? moment(interval, 'YYYY-MM-DD').format('MMMM DD, YYYY') :
-            interval
-        ),
+        labels: enrollmentData.intervals,
         datasets: [
             {
-                label: `Earnings by ${interval}`,
-                data: earningsData.earnings,
+                label: 'Enrollments',
+                data: enrollmentData.counts,
                 borderColor: 'rgba(75, 192, 192, 1)',
                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
                 fill: true,
@@ -53,7 +44,7 @@ const LineChart = ({ teacherId }) => {
 
     return (
         <div className="chart">
-            <h3>Earnings Trends</h3>
+            <h3>Student Enrollment Trends</h3>
             <div>
                 <label>View by: </label>
                 <select value={interval} onChange={(e) => setInterval(e.target.value)}>
@@ -67,4 +58,4 @@ const LineChart = ({ teacherId }) => {
     );
 };
 
-export default LineChart;
+export default EnrollmentTrendsChart;

@@ -218,8 +218,8 @@ function Coupon() {
         </Modal.Header>
         <Modal.Body>
           <form onSubmit={handleCouponUpdateSubmit}>
-            <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">
+            <div className="mb-3">
+              <label htmlFor="exampleInputEmail1" className="form-label">
                 Code
               </label>
               <input
@@ -230,7 +230,7 @@ function Coupon() {
                 name="code"
                 onChange={handleCreateCouponChange}
               />
-              <label for="exampleInputEmail1" class="form-label mt-3">
+              <label htmlFor="exampleInputEmail1" className="form-label mt-3">
                 Discount
               </label>
               <input
@@ -262,7 +262,7 @@ function Coupon() {
         <Modal.Body>
           <form onSubmit={handleCouponSubmit}>
             <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">
+              <label htmlFor="exampleInputEmail1" className="form-label">
                 Code
               </label>
               <input
@@ -273,7 +273,7 @@ function Coupon() {
                 name="code"
                 onChange={handleCreateCouponChange}
               />
-              <label for="exampleInputEmail1" class="form-label mt-3">
+              <label htmlFor="exampleInputEmail1" className="form-label mt-3">
                 Discount
               </label>
               <input
@@ -287,7 +287,7 @@ function Coupon() {
               />
             </div>
 
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" className="btn btn-primary">
               Create Coupon <i className="fas fa-plus"> </i>
             </button>
 

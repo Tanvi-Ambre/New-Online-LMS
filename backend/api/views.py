@@ -6,6 +6,10 @@ from django.conf import settings
 from django.contrib.auth.hashers import check_password
 from django.db import models
 from django.db.models.functions import ExtractMonth
+from django.db.models.functions import  TruncDay, TruncMonth, TruncYear
+from django.db.models import Sum, Count, Avg
+from django.shortcuts import get_object_or_404
+
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import IntegrityError
 
@@ -892,20 +896,39 @@ class TeacherStudentsListAPIVIew(viewsets.ViewSet):
 @api_view(("GET", ))
 def TeacherAllMonthEarningAPIView(request, teacher_id):
     teacher = api_models.Teacher.objects.get(id=teacher_id)
+    
+    # Get the interval from query parameters (default to month)
+    interval = request.GET.get('interval', 'month')
+
+    # Determine the truncation function based on the interval
+    if interval == 'day':
+        trunc_func = TruncDay
+    elif interval == 'year':
+        trunc_func = TruncYear
+    else:
+        trunc_func = TruncMonth
+
+    # Filter orders by teacher and aggregate earnings
     monthly_earning_tracker = (
         api_models.CartOrderItem.objects
         .filter(teacher=teacher, order__payment_status="Paid")
         .annotate(
-            month=ExtractMonth("date")
+            period=trunc_func("date")
         )
-        .values("month")
+        .values("period")
         .annotate(
-            total_earning=models.Sum("price")
+            total_earning=Sum("price")
         )
-        .order_by("month")
+        .order_by("period")
     )
-    #print("monthly_earning_tracker", monthly_earning_tracker)
-    return Response(monthly_earning_tracker)
+
+    # Prepare the response data
+    data = {
+        'intervals': [entry['period'].strftime('%Y-%m-%d') if interval == 'day' else entry['period'].strftime('%Y-%m') for entry in monthly_earning_tracker],
+        'earnings': [entry['total_earning'] for entry in monthly_earning_tracker]
+    }
+
+    return Response(data)
 
 class TeacherBestSellingCourseAPIView(viewsets.ViewSet):
 
@@ -1206,3 +1229,99 @@ class CourseVariantItemDeleteAPIVIew(generics.DestroyAPIView):
         course = api_models.Course.objects.get(teacher=teacher, course_id=course_id)
         variant = api_models.Variant.objects.get(variant_id=variant_id, course=course)
         return api_models.VariantItem.objects.get(variant=variant, variant_item_id=variant_item_id)
+    
+@api_view(['GET'])
+def enrollment_trends(request, teacher_id):
+    # Get the interval from query parameters (default to month)
+    interval = request.GET.get('interval', 'month')
+
+    # Determine the truncation function based on the interval
+    if interval == 'day':
+        trunc_func = TruncDay
+    elif interval == 'year':
+        trunc_func = TruncYear
+    else:
+        trunc_func = TruncMonth
+
+    # Filter enrollments for the teacher's courses
+    enrollments = api_models.EnrolledCourse.objects.filter(teacher__id=teacher_id)
+    
+    # Aggregate enrollments by the selected interval
+    enrollments_by_interval = enrollments.annotate(interval=trunc_func('date')).values('interval').annotate(count=Count('id')).order_by('interval')
+
+    data = {
+        'intervals': [entry['interval'].strftime('%Y-%m-%d') if interval == 'day' else entry['interval'].strftime('%Y-%m') for entry in enrollments_by_interval],
+        'counts': [entry['count'] for entry in enrollments_by_interval]
+    }
+
+    return Response(data)
+
+@api_view(['GET'])
+def revenue_distribution(request, teacher_id):
+    # Aggregate total revenue per course for a specific teacher
+    revenue_data = (
+        api_models.CartOrderItem.objects
+        .filter(teacher_id=teacher_id, order__payment_status="Paid")
+        .values('course__title')
+        .annotate(total_revenue=Sum('price'))
+        .order_by('-total_revenue')
+    )
+
+    # Prepare data for the frontend
+    data = {
+        'courses': [entry['course__title'] for entry in revenue_data],
+        'revenues': [entry['total_revenue'] for entry in revenue_data],
+    }
+
+    return Response(data)
+
+@api_view(['GET'])
+def course_popularity_vs_revenue(request, teacher_id):
+    # Get all courses by the teacher
+    courses = api_models.Course.objects.filter(teacher_id=teacher_id)
+    
+    # Prepare data for each course
+    data = []
+    for course in courses:
+        enrollments = api_models.EnrolledCourse.objects.filter(course=course).count()
+        total_revenue = api_models.CartOrderItem.objects.filter(course=course, order__payment_status="Paid").aggregate(total=Sum('price'))['total'] or 0
+        
+        # Calculate the total number of completed lessons for the course
+        total_completed_lessons = api_models.CompletedLesson.objects.filter(course=course).count()
+        
+        # Assuming the total number of lessons in the course is equal to the number of variant items
+        total_lessons = api_models.VariantItem.objects.filter(variant__course=course).count()
+
+        # Calculate completion rate
+        completion_rate = (total_completed_lessons / (total_lessons * enrollments)) * 100 if total_lessons > 0 and enrollments > 0 else 0
+        
+        data.append({
+            'course_title': course.title,
+            'enrollments': enrollments,
+            'revenue': total_revenue,
+            'completion_rate': completion_rate,  # This will be the bubble size
+        })
+    
+    return Response(data)
+
+@api_view(['GET'])
+def student_course_progress(request, user_id):
+    enrolled_courses = api_models.EnrolledCourse.objects.filter(user_id=user_id)
+    
+    course_progress = []
+
+    for enrollment in enrolled_courses:
+        total_lessons = api_models.VariantItem.objects.filter(variant__course=enrollment.course).count()
+        completed_lessons = api_models.CompletedLesson.objects.filter(course=enrollment.course, user_id=user_id).count()
+
+        if total_lessons > 0:
+            progress_percentage = round((completed_lessons / total_lessons) * 100, 2)
+        else:
+            progress_percentage = 0
+        
+        course_progress.append({
+            'course_title': enrollment.course.title,
+            'progress': progress_percentage
+        })
+
+    return Response({'course_progress': course_progress})

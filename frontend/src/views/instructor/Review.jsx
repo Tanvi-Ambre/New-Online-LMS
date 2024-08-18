@@ -220,7 +220,7 @@ function Review() {
                                   <div>
                                     <div className="mb-3">
                                       <label
-                                        for="exampleInputEmail1"
+                                        htmlFor="exampleInputEmail1"
                                         className="form-label"
                                       >
                                         Write Response

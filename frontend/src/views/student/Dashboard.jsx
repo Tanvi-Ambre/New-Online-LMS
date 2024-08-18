@@ -9,6 +9,7 @@ import Header from "./Partials/Header";
 import useAxios from "../../utils/useAxios";
 import UserData from "../plugin/UserData";
 
+import CourseProgressChart from "../charts/CourseProgressChart";
 function Dashboard() {
   const [courses, setCourses] = useState([]);
   const [stats, setStats] = useState([]);
@@ -116,9 +117,20 @@ function Dashboard() {
                 </div>
               </div>
 
-              {/* {fetching === true && <p className="mt-3 p-3">Loading...</p>} */}
-
-              
+              {fetching ? (
+                <p className="mt-3 p-3">Loading...</p>
+              ) : (
+                <>
+                  <div className="row mb-4">
+                    <div className="col-md-6">
+                      <div className="card p-3 mb-4">
+                        <CourseProgressChart />
+                      </div>
+                    </div>
+                    {/* Other charts or content */}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

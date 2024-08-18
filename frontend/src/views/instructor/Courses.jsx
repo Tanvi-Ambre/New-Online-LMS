@@ -1,238 +1,228 @@
-/* eslint-disable react/jsx-key */
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import moment from "moment";
-import Swal from "sweetalert2";
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import moment from 'moment';
+import Swal from 'sweetalert2';
 
-import Sidebar from "./Partials/Sidebar";
-import Header from "./Partials/Header";
-import BaseHeader from "../partials/BaseHeader";
-import BaseFooter from "../partials/BaseFooter";
+import Sidebar from './Partials/Sidebar';
+import Header from './Partials/Header';
+import BaseHeader from '../partials/BaseHeader';
+import BaseFooter from '../partials/BaseFooter';
 
-import useAxios from "../../utils/useAxios";
-import UserData from "../plugin/UserData";
+import useAxios from '../../utils/useAxios';
+import UserData from '../plugin/UserData';
 
 function Courses() {
-  const [courses, setCourses] = useState([]);
+    const [courses, setCourses] = useState([]);
+    const teacherId = UserData()?.teacher_id;
 
-  const fetchCourseData = () => {
-    useAxios()
-      .get(`teacher/course-lists/${UserData()?.teacher_id}/`)
-      .then((res) => {
-        setCourses(res.data);
-      });
-  };
-
-  useEffect(() => {
-    fetchCourseData();
-  }, []);
-
-  const handleSearch = (event) => {
-    const query = event.target.value.toLowerCase();
-    if (query === "") {
-      fetchCourseData();
-    } else {
-      const filtered = courses.filter((c) => {
-        return c.title.toLowerCase().includes(query);
-      });
-      setCourses(filtered);
-    }
-  };
-
-  const handleDelete = (courseId) => {
-    // Show a confirmation dialog before deleting
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You will not be able to recover this course!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "No, keep it",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Make the delete request if the user confirms
+    const fetchCourseData = () => {
         useAxios()
-          .delete(`/course/course-detail/${courseId}/`)
-          .then((response) => {
-            // Filter out the deleted course from the state
-            setCourses(
-              courses.filter((course) => course.course_id !== courseId)
-            );
-            Swal.fire("Deleted!", "Your course has been deleted.", "success");
-          })
-          .catch((error) => {
-            console.error("There was an error deleting the course:", error);
-            Swal.fire(
-              "Error!",
-              "There was an error deleting the course.",
-              "error"
-            );
-          });
-      }
-    });
-  };
+            .get(`teacher/course-lists/${UserData()?.teacher_id}/`)
+            .then((res) => {
+                setCourses(res.data);
+            });
+    };
 
-  return (
-    <>
-      <BaseHeader />
+    useEffect(() => {
+        fetchCourseData();
+    }, []);
 
-      <section className="pt-5 pb-5">
-        <div className="container">
-          {/* Header Here */}
-          <Header />
-          <div className="row mt-0 mt-md-4">
-            {/* Sidebar Here */}
-            <Sidebar />
-            <div className="col-lg-9 col-md-8 col-12">
-              <div className="row mb-4">
-                <h4 className="mb-0 mb-2 mt-4">
-                  {" "}
-                  <i className="bi bi-grid-fill"></i> Courses
-                </h4>
-              </div>
-              <div className="card mb-4">
-                <div className="card-header">
-                  <h3 className="mb-0">Courses</h3>
-                  <span>
-                    Manage your courses from here, earch, view, edit or delete
-                    courses.
-                  </span>
-                </div>
-                <div className="card-body">
-                  <form className="row gx-3">
-                    <div className="col-lg-12 col-md-12 col-12 mb-lg-0 mb-2">
-                      <input
-                        type="search"
-                        className="form-control"
-                        placeholder="Search Your Courses"
-                        onChange={handleSearch}
-                      />
-                    </div>
-                  </form>
-                </div>
-                <div className="table-responsive overflow-y-hidden">
-                  {courses.length > 0 ? (
-                    <table className="table mb-0 text-nowrap table-hover table-centered text-nowrap">
-                      <thead className="table-light">
-                        <tr>
-                          <th>Courses</th>
-                          <th>Enrolled</th>
-                          <th>Level</th>
-                          <th>Status</th>
-                          <th>Date Created</th>
-                          <th>Action</th>
-                          <th />
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {courses?.map((c, index) => (
-                          <tr key={index}>
-                            <td>
-                              <div className="d-flex align-items-center">
-                                <div>
-                                  <img
-                                    src={c.image}
-                                    alt="course"
-                                    className="rounded img-4by3-lg"
-                                    style={{
-                                      width: "100px",
-                                      height: "70px",
-                                      borderRadius: "50%",
-                                      objectFit: "cover",
-                                    }}
-                                  />
+    const handleSearch = (event) => {
+        const query = event.target.value.toLowerCase();
+        if (query === "") {
+            fetchCourseData();
+        } else {
+            const filtered = courses.filter((c) => {
+                return c.title.toLowerCase().includes(query);
+            });
+            setCourses(filtered);
+        }
+    };
+
+    const handleDelete = (courseId) => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You will not be able to recover this course!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "No, keep it",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                useAxios()
+                    .delete(`/course/course-detail/${courseId}/`)
+                    .then((response) => {
+                        setCourses(
+                            courses.filter((course) => course.course_id !== courseId)
+                        );
+                        Swal.fire("Deleted!", "Your course has been deleted.", "success");
+                    })
+                    .catch((error) => {
+                        console.error("There was an error deleting the course:", error);
+                        Swal.fire(
+                            "Error!",
+                            "There was an error deleting the course.",
+                            "error"
+                        );
+                    });
+            }
+        });
+    };
+
+    return (
+        <>
+            <BaseHeader />
+            <section className="pt-5 pb-5">
+                <div className="container">
+                    <Header />
+                    <div className="row mt-0 mt-md-4">
+                        <Sidebar />
+                        <div className="col-lg-9 col-md-8 col-12">
+                            <div className="row mb-4">
+                                <h4 className="mb-0 mb-2 mt-4">
+                                    <i className="bi bi-grid-fill"></i> Courses
+                                </h4>
+                            </div>
+                            <div className="card mb-4">
+                                <div className="card-header">
+                                    <h3 className="mb-0">Courses</h3>
+                                    <span>
+                                        Manage your courses from here, search, view, edit, or delete courses.
+                                    </span>
                                 </div>
-                                <div className="ms-3">
-                                  <h4 className="mb-1 h6">
-                                    <a className="text-inherit text-decoration-none text-dark">
-                                      {c.title}
-                                    </a>
-                                  </h4>
-                                  <ul className="list-inline fs-6 mb-0">
-                                    <li className="list-inline-item">
-                                      <small>
-                                        <i className="fas fa-user"></i>
-                                        <span className="ms-1">
-                                          {c.language}
-                                        </span>
-                                      </small>
-                                    </li>
-                                    <li className="list-inline-item">
-                                      <small>
-                                        <i className="bi bi-reception-4"></i>
-                                        <span className="ms-1">{c.level}</span>
-                                      </small>
-                                    </li>
-                                    <li className="list-inline-item">
-                                      <small>
-                                        <i className="fas fa-dollar-sign"></i>
-                                        <span>{c.price}</span>
-                                      </small>
-                                    </li>
-                                  </ul>
+                                <div className="card-body">
+                                    <form className="row gx-3">
+                                        <div className="col-lg-12 col-md-12 col-12 mb-lg-0 mb-2">
+                                            <input
+                                                type="search"
+                                                className="form-control"
+                                                placeholder="Search Your Courses"
+                                                onChange={handleSearch}
+                                            />
+                                        </div>
+                                    </form>
                                 </div>
-                              </div>
-                            </td>
-                            <td>
-                              <p className="mt-3">{c.students?.length}</p>
-                            </td>
-                            <td>
-                              <p className="mt-3 badge bg-success">{c.level}</p>
-                            </td>
-                            <td>
-                              <p className="mt-3 badge bg-warning text-dark">
-                                Published
-                              </p>
-                            </td>
-                            <td>
-                              <p className="mt-3">
-                                {moment(c.date).format("DD MMM, YYYY")}
-                              </p>
-                            </td>
-                            <td>
-                              <Link
-                                to={`/instructor/edit-course/${c.course_id}/`}
-                                className="btn btn-primary btn-sm mt-3 me-1"
-                              >
-                                <i className="fas fa-edit"></i>
-                              </Link>
-                              <button
-                                className="btn btn-danger btn-sm mt-3 me-1"
-                                onClick={() => handleDelete(c.course_id)}
-                              >
-                                <i className="fas fa-trash"></i>
-                              </button>
-                              <Link
-                                to={`/instructor/courses/${c.course_id}/`}
-                                className="btn btn-secondary btn-sm mt-3 me-1"
-                              >
-                                <i className="fas fa-eye"></i>
-                              </Link>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  ) : (
-                    <div className="p-3 text-center">
-                      <div
-                        className="alert alert-warning text-center"
-                        role="alert"
-                      >
-                        No courses yet
-                      </div>
+                                <div className="table-responsive overflow-y-hidden">
+                                    {courses.length > 0 ? (
+                                        <table className="table mb-0 text-nowrap table-hover table-centered text-nowrap">
+                                            <thead className="table-light">
+                                                <tr>
+                                                    <th>Courses</th>
+                                                    <th>Enrolled</th>
+                                                    <th>Level</th>
+                                                    <th>Status</th>
+                                                    <th>Date Created</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {courses?.map((course, index) => (
+                                                    <tr key={index}>
+                                                        <td>
+                                                            <div className="d-flex align-items-center">
+                                                                <div>
+                                                                    <img
+                                                                        src={course.image}
+                                                                        alt="course"
+                                                                        className="rounded img-4by3-lg"
+                                                                        style={{
+                                                                            width: "100px",
+                                                                            height: "70px",
+                                                                            borderRadius: "50%",
+                                                                            objectFit: "cover",
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                                <div className="ms-3">
+                                                                    <h4 className="mb-1 h6">
+                                                                        <a className="text-inherit text-decoration-none text-dark">
+                                                                            {course.title}
+                                                                        </a>
+                                                                    </h4>
+                                                                    <ul className="list-inline fs-6 mb-0">
+                                                                        <li className="list-inline-item">
+                                                                            <small>
+                                                                                <i className="fas fa-user"></i>
+                                                                                <span className="ms-1">
+                                                                                    {course.language}
+                                                                                </span>
+                                                                            </small>
+                                                                        </li>
+                                                                        <li className="list-inline-item">
+                                                                            <small>
+                                                                                <i className="bi bi-reception-4"></i>
+                                                                                <span className="ms-1">{course.level}</span>
+                                                                            </small>
+                                                                        </li>
+                                                                        <li className="list-inline-item">
+                                                                            <small>
+                                                                                <i className="fas fa-dollar-sign"></i>
+                                                                                <span>{course.price}</span>
+                                                                            </small>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <p className="mt-3">{course.students?.length}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p className="mt-3 badge bg-success">{course.level}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p className="mt-3 badge bg-warning text-dark">
+                                                                Published
+                                                            </p>
+                                                        </td>
+                                                        <td>
+                                                            <p className="mt-3">
+                                                                {moment(course.date).format("DD MMM, YYYY")}
+                                                            </p>
+                                                        </td>
+                                                        <td>
+                                                            <Link
+                                                                to={`/instructor/edit-course/${course.course_id}/`}
+                                                                className="btn btn-primary btn-sm mt-3 me-1"
+                                                            >
+                                                                <i className="fas fa-edit"></i>
+                                                            </Link>
+                                                            <button
+                                                                className="btn btn-danger btn-sm mt-3 me-1"
+                                                                onClick={() => handleDelete(course.course_id)}
+                                                            >
+                                                                <i className="fas fa-trash"></i>
+                                                            </button>
+                                                            <Link
+                                                                to={`/instructor/courses/${course.course_id}/`}
+                                                                className="btn btn-secondary btn-sm mt-3 me-1"
+                                                            >
+                                                                <i className="fas fa-eye"></i>
+                                                            </Link>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    ) : (
+                                        <div className="p-3 text-center">
+                                            <div
+                                                className="alert alert-warning text-center"
+                                                role="alert"
+                                            >
+                                                No courses yet
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  )}
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <BaseFooter />
-    </>
-  );
+            </section>
+            <BaseFooter />
+        </>
+    );
 }
 
 export default Courses;
