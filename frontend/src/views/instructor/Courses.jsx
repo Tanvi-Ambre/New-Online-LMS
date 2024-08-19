@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-key */
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
@@ -8,7 +7,6 @@ import Sidebar from "./Partials/Sidebar";
 import Header from "./Partials/Header";
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
-
 import useAxios from "../../utils/useAxios";
 import UserData from "../plugin/UserData";
 
@@ -40,7 +38,6 @@ function Courses() {
   };
 
   const handleDelete = (courseId) => {
-    // Show a confirmation dialog before deleting
     Swal.fire({
       title: "Are you sure?",
       text: "You will not be able to recover this course!",
@@ -50,11 +47,9 @@ function Courses() {
       cancelButtonText: "No, keep it",
     }).then((result) => {
       if (result.isConfirmed) {
-        // Make the delete request if the user confirms
         useAxios()
           .delete(`/course/course-detail/${courseId}/`)
           .then((response) => {
-            // Filter out the deleted course from the state
             setCourses(
               courses.filter((course) => course.course_id !== courseId)
             );
@@ -78,10 +73,8 @@ function Courses() {
 
       <section className="pt-5 pb-5">
         <div className="container">
-          {/* Header Here */}
           <Header />
           <div className="row mt-0 mt-md-4">
-            {/* Sidebar Here */}
             <Sidebar />
             <div className="col-lg-9 col-md-8 col-12">
               <div className="row mb-4">
@@ -116,7 +109,7 @@ function Courses() {
                       <thead className="table-light">
                         <tr>
                           <th>Courses</th>
-                          <th>Quiz Present</th>
+                          <th>Quiz Status</th>
                           <th>Enrolled</th>
                           <th>Level</th>
                           <th>Status</th>
@@ -173,7 +166,14 @@ function Courses() {
                                 </div>
                               </div>
                             </td>
-                            <td>{c.quiz ? "Yes" : "No"}</td>
+                            <td>
+                              <p className="mt-3">
+                                {/* Displaying the quiz status */}
+                                {c.quiz_status === "Published"
+                                  ? "Published"
+                                  : "No Quiz"}
+                              </p>
+                            </td>
                             <td>
                               <p className="mt-3">{c.students?.length}</p>
                             </td>

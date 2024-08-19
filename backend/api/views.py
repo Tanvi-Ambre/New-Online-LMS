@@ -1326,31 +1326,19 @@ def student_course_progress(request, user_id):
 
     return Response({'course_progress': course_progress})
 
+# View for creating a new quiz
 class QuizCreateAPIView(generics.CreateAPIView):
     queryset = api_models.Quiz.objects.all()
     serializer_class = api_serializer.QuizSerializer
     permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
-        questions_data = self.request.data.get('questions', [])
-
-        # Create the quiz first
+        course_name = self.request.data.get('course_name', '')
         quiz = serializer.save()
 
-        # Loop through each question in the submitted data
-        for question_data in questions_data:
-            answers_data = question_data.pop('answers', [])
-
-            # Explicitly map 'question_text' to 'text'
-            question_text = question_data.pop('question_text')
-            question = api_models.QuizQuestion.objects.create(quiz=quiz, text=question_text, **question_data)
-
-            # Loop through each answer in the submitted data
-            for answer_data in answers_data:
-                # Explicitly map 'answer_text' to 'text'
-                answer_text = answer_data.pop('answer_text')
-                api_models.QuizAnswer.objects.create(question=question, text=answer_text, **answer_data)
-
+        # Save the course name if needed, or use it however required
+        quiz.course_name = course_name
+        quiz.save()
 
 class QuizListAPIView(generics.ListAPIView):
     serializer_class = api_serializer.QuizSerializer
@@ -1358,7 +1346,37 @@ class QuizListAPIView(generics.ListAPIView):
     def get_queryset(self):
         teacher_id = self.request.query_params.get('teacher_id')
         return api_models.Quiz.objects.filter(course__teacher_id=teacher_id)
-    
+
 class QuizDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = api_models.Quiz.objects.all()
     serializer_class = api_serializer.QuizSerializer
+
+class QuizEditAPIView(generics.RetrieveUpdateAPIView):
+    queryset = api_models.Quiz.objects.all()
+    serializer_class = api_serializer.QuizSerializer
+    permission_classes = [AllowAny]
+
+    def perform_update(self, serializer):
+        questions_data = self.request.data.get('questions', [])
+        is_draft = self.request.data.get('is_draft', True)
+        
+        quiz = serializer.save(status='draft' if is_draft else 'published')
+
+        api_models.QuizQuestion.objects.filter(quiz=quiz).delete()
+
+        for question_data in questions_data:
+            answers_data = question_data.pop('answers', [])
+            question = api_models.QuizQuestion.objects.create(quiz=quiz, **question_data)
+
+            for answer_data in answers_data:
+                api_models.QuizAnswer.objects.create(question=question, **answer_data)
+
+class QuizDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = api_models.Quiz.objects.all()
+    serializer_class = api_serializer.QuizSerializer
+
+    def post(self, request, *args, **kwargs):
+        instance = self.get_object()  # Retrieve the quiz instance using the primary key from URL
+        instance.status = 'published'  # Update the status to 'published'
+        instance.save()  # Save the changes to the database
+        return Response({'message': 'Quiz published successfully'}, status=status.HTTP_200_OK)

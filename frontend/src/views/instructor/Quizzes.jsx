@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import moment from "moment";
 import Swal from "sweetalert2";
 
@@ -12,6 +12,7 @@ import UserData from "../plugin/UserData";
 
 function Quizzes() {
     const [quizzes, setQuizzes] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         useAxios().get(`teacher/quizzes/?teacher_id=${UserData()?.teacher_id}`)
@@ -37,6 +38,28 @@ function Quizzes() {
                     })
                     .catch((error) => {
                         Swal.fire("Error!", "There was an error deleting the quiz.", "error");
+                    });
+            }
+        });
+    };
+
+    const handlePublish = (quizId) => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You want to publish this quiz?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, publish it!",
+            cancelButtonText: "No, keep it as draft",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                useAxios().post(`/teacher/publish-quiz/${quizId}/`)
+                    .then(() => {
+                        Swal.fire("Published!", "Your quiz has been published.", "success")
+                            .then(() => navigate("/instructor/courses/"));
+                    })
+                    .catch((error) => {
+                        Swal.fire("Error!", "There was an error publishing the quiz.", "error");
                     });
             }
         });
@@ -87,6 +110,9 @@ function Quizzes() {
                                                             <Link to={`/instructor/quiz-detail/${quiz.id}/`} className="btn btn-secondary btn-sm mt-3 me-1">
                                                                 <i className="fas fa-eye"></i>
                                                             </Link>
+                                                            <button className="btn btn-success btn-sm mt-3 me-1" onClick={() => handlePublish(quiz.id)}>
+                                                                <i className="fas fa-upload"></i> Publish
+                                                            </button>
                                                         </td>
                                                     </tr>
                                                 ))}
@@ -111,4 +137,3 @@ function Quizzes() {
 }
 
 export default Quizzes;
-

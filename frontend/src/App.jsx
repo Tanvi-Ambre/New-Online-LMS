@@ -45,10 +45,12 @@ import Profile from "./views/instructor/Profile";
 import CourseCreate from "./views/instructor/CourseCreate";
 import CourseEdit from "./views/instructor/CourseEdit";
 import InstructorCourseDetail from "./views/instructor/InstructorCourseDetail";
+import EditQuiz from "./views/instructor/EditQuiz";
 
 // Import the new Quiz components
 import QuizCreate from "./views/instructor/QuizCreate";
 import Quizzes from "./views/instructor/Quizzes";
+import QuizDetail from "./views/instructor/QuizDetail";
 
 function App() {
   const [cartCount, setCartCount] = useState(0);
@@ -116,6 +118,9 @@ function App() {
                   {/* New Quiz Routes */}
                   <Route path="/instructor/create-quiz/" element={<QuizCreate />} />
                   <Route path="/instructor/quizzes/" element={<Quizzes />} />
+                  <Route path="/instructor/quiz-detail/:quizId" element={<QuizDetail />} />
+                  <Route path="/instructor/edit-quiz/:quizId/" element={<EditQuiz />} />
+
                 </Routes>
               </MainWrapper>
             </ProfileContext.Provider>
