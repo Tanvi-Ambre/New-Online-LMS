@@ -227,7 +227,11 @@ class Question_Answer(models.Model):
         return Question_Answer_Message.objects.filter(question=self)
     
     def profile(self):
-        return Profile.objects.get(user=self.user)
+        try:
+            return Profile.objects.get(user=self.user)
+        except Profile.DoesNotExist:
+            # Handle the case where the profile does not exist
+            return None  # or handle it in another appropriate way
     
 class Question_Answer_Message(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -245,7 +249,11 @@ class Question_Answer_Message(models.Model):
         ordering = ['date']
 
     def profile(self):
-        return Profile.objects.get(user=self.user)
+        try:
+            return Profile.objects.get(user=self.user)
+        except Profile.DoesNotExist:
+            # Handle the case where the profile does not exist
+            return None  # or handle it in another appropriate way
     
 class Cart(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -387,7 +395,11 @@ class Review(models.Model):
         return self.course.title
     
     def profile(self):
-        return Profile.objects.get(user=self.user)
+        try:
+            return Profile.objects.get(user=self.user)
+        except Profile.DoesNotExist:
+            # Handle the case where the profile does not exist
+            return None  # or handle it in another appropriate way
     
 class Notification(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
@@ -430,3 +442,30 @@ class Country(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Quiz(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='quizzes')
+    title = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=10, choices=[('draft', 'Draft'), ('published', 'Published')], default='draft')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+class QuizQuestion(models.Model):
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="questions")
+    question_text = models.CharField(max_length=1000)
+    score = models.PositiveIntegerField(default=1)
+    explanation = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.question_text} - {self.quiz.title}"
+
+class QuizAnswer(models.Model):
+    question = models.ForeignKey(QuizQuestion, on_delete=models.CASCADE, related_name="answers")
+    answer_text = models.CharField(max_length=1000)  # Updated to match the payload
+    is_correct = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.answer_text

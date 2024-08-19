@@ -45,11 +45,17 @@ import Profile from "./views/instructor/Profile";
 import CourseCreate from "./views/instructor/CourseCreate";
 import CourseEdit from "./views/instructor/CourseEdit";
 import InstructorCourseDetail from "./views/instructor/InstructorCourseDetail";
+import EditQuiz from "./views/instructor/EditQuiz";
+
+// Import the new Quiz components
+import QuizCreate from "./views/instructor/QuizCreate";
+import Quizzes from "./views/instructor/Quizzes";
+import QuizDetail from "./views/instructor/QuizDetail";
 
 function App() {
   const [cartCount, setCartCount] = useState(0);
   const [profile, setProfile] = useState([]);
-  const userId = UserData()?.user_id
+  const userId = UserData()?.user_id;
 
   useEffect(() => {
     apiInstance.get(`course/cart-list/${CartId()}/`).then((res) => {
@@ -74,85 +80,47 @@ function App() {
                   <Route path="/register/" element={<Register />} />
                   <Route path="/login/" element={<Login />} />
                   <Route path="/logout/" element={<Logout />} />
-                  <Route
-                    path="/forgot-password/"
-                    element={<ForgotPassword />}
-                  />
-                  <Route
-                    path="/create-new-password/"
-                    element={<CreateNewPassword />}
-                  />
+                  <Route path="/forgot-password/" element={<ForgotPassword />} />
+                  <Route path="/create-new-password/" element={<CreateNewPassword />} />
 
                   {/* Base Routes */}
                   <Route path="/" element={<Index />} />
-                  <Route
-                    path="/course-detail/:course_id/"
-                    element={<CourseDetail />}
-                  />
+                  <Route path="/course-detail/:course_id/" element={<CourseDetail />} />
                   <Route path="/cart/" element={<Cart />} />
                   <Route path="/checkout/:order_oid/" element={<Checkout />} />
-                  <Route
-                    path="/payment-success/:order_oid/"
-                    element={<Success />}
-                  />
+                  <Route path="/payment-success/:order_oid/" element={<Success />} />
                   <Route path="/search/" element={<Search />} />
 
                   {/* Student Routes */}
-                  <Route
-                    path="/student/dashboard/"
-                    element={<StudentDashboard />}
-                  />
-                  <Route
-                    path="/student/courses/"
-                    element={<StudentCourses />}
-                  />
-                  <Route
-                    path="/student/courses/:enrollment_id/"
-                    element={<StudentCourseDetail />}
-                  />
+                  <Route path="/student/dashboard/" element={<StudentDashboard />} />
+                  <Route path="/student/courses/" element={<StudentCourses />} />
+                  <Route path="/student/courses/:enrollment_id/" element={<StudentCourseDetail />} />
                   <Route path="/student/wishlist/" element={<Wishlist />} />
-                  <Route
-                    path="/student/profile/"
-                    element={<StudentProfile />}
-                  />
-                  <Route
-                    path="/student/change-password/"
-                    element={<StudentChangePassword />}
-                  />
+                  <Route path="/student/profile/" element={<StudentProfile />} />
+                  <Route path="/student/change-password/" element={<StudentChangePassword />} />
 
                   {/* Teacher Routes */}
-                  <Route
-                    path="/instructor/dashboard/"
-                    element={<Dashboard />}
-                  />
+                  <Route path="/instructor/dashboard/" element={<Dashboard />} />
                   <Route path="/instructor/courses/" element={<Courses />} />
                   <Route path="/instructor/reviews/" element={<Review />} />
                   <Route path="/instructor/students/" element={<Students />} />
                   <Route path="/instructor/earning/" element={<Earning />} />
                   <Route path="/instructor/orders/" element={<Orders />} />
                   <Route path="/instructor/coupon/" element={<Coupon />} />
-                  <Route
-                    path="/instructor/notifications/"
-                    element={<TeacherNotification />}
-                  />
+                  <Route path="/instructor/notifications/" element={<TeacherNotification />} />
                   <Route path="/instructor/question-answer/" element={<QA />} />
-                  <Route
-                    path="/instructor/change-password/"
-                    element={<ChangePassword />}
-                  />
+                  <Route path="/instructor/change-password/" element={<ChangePassword />} />
                   <Route path="/instructor/profile/" element={<Profile />} />
-                  <Route
-                    path="/instructor/create-course/"
-                    element={<CourseCreate />}
-                  />
-                  <Route
-                    path="/instructor/edit-course/:course_id/"
-                    element={<CourseEdit />}
-                  />
-                  <Route
-                    path="/instructor/courses/:course_id/"
-                    element={<InstructorCourseDetail />}
-                  />
+                  <Route path="/instructor/create-course/" element={<CourseCreate />} />
+                  <Route path="/instructor/edit-course/:course_id/" element={<CourseEdit />} />
+                  <Route path="/instructor/courses/:course_id/" element={<InstructorCourseDetail />} />
+
+                  {/* New Quiz Routes */}
+                  <Route path="/instructor/create-quiz/" element={<QuizCreate />} />
+                  <Route path="/instructor/quizzes/" element={<Quizzes />} />
+                  <Route path="/instructor/quiz-detail/:quizId" element={<QuizDetail />} />
+                  <Route path="/instructor/edit-quiz/:quizId/" element={<EditQuiz />} />
+
                 </Routes>
               </MainWrapper>
             </ProfileContext.Provider>

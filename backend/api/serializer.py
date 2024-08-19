@@ -214,14 +214,36 @@ class CountrySerializer(serializers.ModelSerializer):
 
 
 
+# class EnrolledCourseSerializer(serializers.ModelSerializer):
+#     lectures = VariantItemSerializer(many=True, read_only=True)
+#     completed_lesson = CompletedLessonSerializer(many=True, read_only=True)
+#     curriculum =  VariantSerializer(many=True, read_only=True)
+#     note = NoteSerializer(many=True, read_only=True)
+#     question_answer = Question_AnswerSerializer(many=True, read_only=True)
+#     review = ReviewSerializer(many=False, read_only=True)
+
+
+#     class Meta:
+#         fields = '__all__'
+#         model = api_models.EnrolledCourse
+
+#     def __init__(self, *args, **kwargs):
+#         super(EnrolledCourseSerializer, self).__init__(*args, **kwargs)
+#         request = self.context.get("request")
+#         if request and request.method == "POST":
+#             self.Meta.depth = 0
+#         else:
+#             self.Meta.depth = 3
+
+
 class EnrolledCourseSerializer(serializers.ModelSerializer):
     lectures = VariantItemSerializer(many=True, read_only=True)
     completed_lesson = CompletedLessonSerializer(many=True, read_only=True)
-    curriculum =  VariantSerializer(many=True, read_only=True)
+    curriculum = VariantSerializer(many=True, read_only=True)
     note = NoteSerializer(many=True, read_only=True)
     question_answer = Question_AnswerSerializer(many=True, read_only=True)
     review = ReviewSerializer(many=False, read_only=True)
-
+    profile = serializers.SerializerMethodField()
 
     class Meta:
         fields = '__all__'
@@ -235,13 +257,22 @@ class EnrolledCourseSerializer(serializers.ModelSerializer):
         else:
             self.Meta.depth = 3
 
+    def get_profile(self, obj):
+        try:
+            return ProfileSerializer(obj.user.profile, context=self.context).data
+        except Profile.DoesNotExist:
+            # Log the issue or handle it appropriately
+            print(f"Profile does not exist for user ID: {obj.user.id}, Email: {obj.user.email}")
+            return None  # Or return a default value if required
+
 class CourseSerializer(serializers.ModelSerializer):
+    quiz_status = serializers.SerializerMethodField()
     students =  serializers.SerializerMethodField()
     curriculum = VariantSerializer(many=True, required=False, read_only=True,)
     lectures = VariantItemSerializer(many=True, required=False, read_only=True,)
     reviews = ReviewSerializer(many=True, read_only=True, required=False)
     class Meta:
-        fields = ["id", "category", "teacher", "file", "image", "title", "description", "price", "language", "level", "platform_status", "teacher_course_status", "featured", "course_id", "slug", "date", "students", "curriculum", "lectures", "average_rating", "rating_count", "reviews"]
+        fields = ["id", "category", "teacher", "file", "image", "title", "description", "price", "language", "level", "platform_status", "teacher_course_status", "featured", "course_id", "slug", "date", "students", "curriculum", "lectures", "average_rating", "rating_count", "reviews", "quiz_status"]
         model = api_models.Course
 
     def __init__(self, *args, **kwargs):
@@ -252,10 +283,53 @@ class CourseSerializer(serializers.ModelSerializer):
         else:
             self.Meta.depth = 3
 
+    # def get_students(self, obj):
+    #     enrolled_courses = obj.students()
+    #     student_data = []
+
+    #     for enrolled in enrolled_courses:
+    #         if enrolled.user is None:
+    #             # Handle the case where the user is None
+    #             print(f"Enrolled course with ID {enrolled.id} has no associated user.")
+    #             continue
+
+    #         try:
+    #             student_data.append(EnrolledCourseSerializer(enrolled, context=self.context).data)
+    #         except Profile.DoesNotExist:
+    #             # Handle the case where the profile does not exist
+    #             print(f"Profile does not exist for user ID: {enrolled.user.id}, Email: {enrolled.user.email}")
+    #             student_data.append({"user": {"id": enrolled.user.id, "email": enrolled.user.email}, "profile": None})
+
+    #     return student_data
+
     def get_students(self, obj):
         enrolled_courses = obj.students()
-        return EnrolledCourseSerializer(enrolled_courses, many=True, context=self.context).data
+        student_data = []
 
+        for enrolled in enrolled_courses:
+            if enrolled.user is None:
+                # Handle the case where the user is None
+                print(f"Enrolled course with ID {enrolled.id} has no associated user.")
+                continue
+
+            try:
+                profile = enrolled.user.profile
+            except Profile.DoesNotExist:
+                # Handle the case where the profile does not exist
+                print(f"Profile does not exist for user ID: {enrolled.user.id}, Email: {enrolled.user.email}")
+                student_data.append({"user": {"id": enrolled.user.id, "email": enrolled.user.email}, "profile": None})
+                continue
+
+            # Serialize the enrolled course including the profile data
+            student_data.append(EnrolledCourseSerializer(enrolled, context=self.context).data)
+
+        return student_data
+
+
+    def get_quiz_status(self, obj):
+        quiz = obj.quizzes.filter(status='published').first()
+        return 'Published' if quiz else 'No Quiz'
+    
 class StudentSummarySerializer(serializers.Serializer):
     total_courses = serializers.IntegerField(default=0)
     completed_lessons = serializers.IntegerField(default=0)
@@ -266,3 +340,100 @@ class TeacherSummarySerializer(serializers.Serializer):
     total_students = serializers.IntegerField(default=0)
     total_revenue = serializers.IntegerField(default=0)
     monthly_revenue = serializers.IntegerField(default=0)
+
+from rest_framework import serializers
+from api import models as api_models
+
+class QuizAnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = api_models.QuizAnswer
+        fields = ['id', 'answer_text', 'is_correct']  # Use 'answer_text' as in the payload
+
+class QuizQuestionSerializer(serializers.ModelSerializer):
+    answers = QuizAnswerSerializer(many=True)
+
+    class Meta:
+        model = api_models.QuizQuestion
+        fields = ['question_text', 'score', 'explanation', 'answers']  # Use 'question_text' as in the payload
+
+    def create(self, validated_data):
+        answers_data = validated_data.pop('answers')
+        question = api_models.QuizQuestion.objects.create(**validated_data)
+        for answer_data in answers_data:
+            api_models.QuizAnswer.objects.create(question=question, **answer_data)
+        return question
+
+class QuizSerializer(serializers.ModelSerializer):
+    course_name = serializers.SerializerMethodField()
+    questions = QuizQuestionSerializer(many=True)
+    class Meta:
+        model = api_models.Quiz
+        fields = ['id', 'title', 'description', 'course', 'course_name','questions']
+
+    def create(self, validated_data):
+        questions_data = validated_data.pop('questions')
+        quiz = api_models.Quiz.objects.create(**validated_data)
+        for question_data in questions_data:
+            answers_data = question_data.pop('answers')
+            question = api_models.QuizQuestion.objects.create(quiz=quiz, **question_data)
+            for answer_data in answers_data:
+                api_models.QuizAnswer.objects.create(question=question, **answer_data)
+        return quiz
+
+    def get_course_name(self, obj):
+        return obj.course.title
+    
+    def update(self, instance, validated_data):
+        questions_data = validated_data.pop('questions', [])
+        instance.title = validated_data.get('title', instance.title)
+        instance.description = validated_data.get('description', instance.description)
+        instance.course = validated_data.get('course', instance.course)
+        instance.save()
+
+        existing_question_ids = [item.id for item in instance.questions.all()]
+        new_question_ids = [item['id'] for item in questions_data if 'id' in item]
+
+        # Delete questions that are no longer in the updated data
+        for question_id in existing_question_ids:
+            if question_id not in new_question_ids:
+                api_models.QuizQuestion.objects.filter(id=question_id).delete()
+
+        for question_data in questions_data:
+            answers_data = question_data.pop('answers', [])
+            question_id = question_data.get('id')
+
+            if question_id:
+                # Update existing question
+                question = api_models.QuizQuestion.objects.get(id=question_id, quiz=instance)
+                question.question_text = question_data.get('question_text', question.question_text)
+                question.score = question_data.get('score', question.score)
+                question.explanation = question_data.get('explanation', question.explanation)
+                question.save()
+
+                # Handle updating answers
+                existing_answer_ids = [item.id for item in question.answers.all()]
+                new_answer_ids = [item['id'] for item in answers_data if 'id' in item]
+
+                # Delete answers that are no longer in the updated data
+                for answer_id in existing_answer_ids:
+                    if answer_id not in new_answer_ids:
+                        api_models.QuizAnswer.objects.filter(id=answer_id).delete()
+
+                for answer_data in answers_data:
+                    answer_id = answer_data.get('id')
+                    if answer_id:
+                        # Update existing answer
+                        answer = api_models.QuizAnswer.objects.get(id=answer_id, question=question)
+                        answer.answer_text = answer_data.get('answer_text', answer.answer_text)
+                        answer.is_correct = answer_data.get('is_correct', answer.is_correct)
+                        answer.save()
+                    else:
+                        # Create new answer
+                        api_models.QuizAnswer.objects.create(question=question, **answer_data)
+            else:
+                # Create new question
+                new_question = api_models.QuizQuestion.objects.create(quiz=instance, **question_data)
+                for answer_data in answers_data:
+                    api_models.QuizAnswer.objects.create(question=new_question, **answer_data)
+
+        return instance
