@@ -266,3 +266,42 @@ class TeacherSummarySerializer(serializers.Serializer):
     total_students = serializers.IntegerField(default=0)
     total_revenue = serializers.IntegerField(default=0)
     monthly_revenue = serializers.IntegerField(default=0)
+
+from rest_framework import serializers
+from api import models as api_models
+
+class QuizAnswerSerializer(serializers.ModelSerializer):
+    answer_text = serializers.CharField(source='text')  # Mapping `answer_text` to `text`
+
+    class Meta:
+        model = api_models.QuizAnswer
+        fields = ['id', 'answer_text', 'is_correct', 'explanation']
+
+class QuizQuestionSerializer(serializers.ModelSerializer):
+    question_text = serializers.CharField(source='text')  # Mapping `question_text` to `text`
+    answers = QuizAnswerSerializer(many=True)
+
+    class Meta:
+        model = api_models.QuizQuestion
+        fields = ['id', 'question_text', 'score', 'answers']
+
+class QuizSerializer(serializers.ModelSerializer):
+    course_name = serializers.CharField(source='course.title', read_only=True)
+    questions = QuizQuestionSerializer(many=True)
+
+    class Meta:
+        model = api_models.Quiz
+        fields = ['id', 'course', 'course_name', 'title', 'description', 'questions']
+
+    def create(self, validated_data):
+        questions_data = validated_data.pop('questions')
+        quiz = api_models.Quiz.objects.create(**validated_data)
+        
+        for question_data in questions_data:
+            answers_data = question_data.pop('answers')
+            question = api_models.QuizQuestion.objects.create(quiz=quiz, **question_data)
+            
+            for answer_data in answers_data:
+                api_models.QuizAnswer.objects.create(question=question, **answer_data)
+        
+        return quiz

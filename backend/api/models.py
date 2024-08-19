@@ -430,3 +430,29 @@ class Country(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Quiz(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+class QuizQuestion(models.Model):
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="questions")
+    text = models.CharField(max_length=1000)
+    score = models.PositiveIntegerField(default=1)  # Default score is 1
+
+    def __str__(self):
+        return f"{self.text} - {self.quiz.title}"
+
+class QuizAnswer(models.Model):
+    question = models.ForeignKey(QuizQuestion, on_delete=models.CASCADE, related_name="answers")
+    text = models.CharField(max_length=1000)
+    is_correct = models.BooleanField(default=False)
+    explanation = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Answer to {self.question.text}"

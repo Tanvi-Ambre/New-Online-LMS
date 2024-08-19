@@ -26,63 +26,75 @@ function Sidebar() {
           <div className="navbar-nav flex-column">
             <ul className="list-unstyled ms-n2 mb-4">
               <li className="nav-item">
-                <Link className="nav-link " to={`/instructor/dashboard/`}>
+                <Link className="nav-link" to={`/instructor/dashboard/`}>
                   {" "}
                   <i className="bi bi-grid-fill me-2"></i> Dashboard
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link " to={`/instructor/courses/`}>
+                <Link className="nav-link" to={`/instructor/courses/`}>
                   {" "}
-                  <i className="fas fa-shopping-cart me-2"></i>My Courses
+                  <i className="fas fa-shopping-cart me-2"></i> My Courses
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link " to={`/instructor/create-course/`}>
+                <Link className="nav-link" to={`/instructor/create-course/`}>
                   {" "}
-                  <i className="fas fa-plus me-2"></i>Create Course
+                  <i className="fas fa-plus me-2"></i> Create Course
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link " to={`/instructor/reviews/`}>
+                <Link className="nav-link" to={`/instructor/quizzes/`}>
                   {" "}
-                  <i className="fas fa-star me-2"></i>Review
+                  <i className="fas fa-question-circle me-2"></i> Quizzes
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link " to={`/instructor/students/`}>
+                <Link className="nav-link" to={`/instructor/create-quiz/`}>
                   {" "}
-                  <i className="fas fa-graduation-cap me-2"></i>Students
+                  <i className="fas fa-plus me-2"></i> Create Quiz
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link " to={`/instructor/earning/`}>
+                <Link className="nav-link" to={`/instructor/reviews/`}>
                   {" "}
-                  <i className="fas fa-dollar-sign me-2"></i>Earning
+                  <i className="fas fa-star me-2"></i> Review
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link " to={`/instructor/coupon/`}>
+                <Link className="nav-link" to={`/instructor/students/`}>
                   {" "}
-                  <i className="fas fa-tag me-2"></i>Coupons
+                  <i className="fas fa-graduation-cap me-2"></i> Students
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link " to={`/instructor/notifications/`}>
+                <Link className="nav-link" to={`/instructor/earning/`}>
                   {" "}
-                  <i className="fas fa-bell me-2"></i>Notifications
+                  <i className="fas fa-dollar-sign me-2"></i> Earning
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to={`/instructor/coupon/`}>
+                  {" "}
+                  <i className="fas fa-tag me-2"></i> Coupons
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to={`/instructor/notifications/`}>
+                  {" "}
+                  <i className="fas fa-bell me-2"></i> Notifications
                 </Link>
               </li>
               <li className="nav-item">
                 <Link className="nav-link" to={`/instructor/orders/`}>
                   {" "}
-                  <i className="fas fa-shopping-cart me-2"></i> Orders{" "}
+                  <i className="fas fa-shopping-cart me-2"></i> Orders
                 </Link>
               </li>
               <li className="nav-item">
                 <Link className="nav-link" to={`/instructor/question-answer/`}>
                   {" "}
-                  <i className="fas fa-envelope me-2"></i> Q/A{" "}
+                  <i className="fas fa-envelope me-2"></i> Q/A
                 </Link>
               </li>
             </ul>
@@ -96,7 +108,7 @@ function Sidebar() {
                   <i className="fas fa-edit"></i> Edit Profile
                 </Link>
               </li>
-              <li className="nav-item ">
+              <li className="nav-item">
                 <Link className="nav-link" to={`/instructor/change-password/`}>
                   {" "}
                   <i className="fas fa-lock"></i> Change Password

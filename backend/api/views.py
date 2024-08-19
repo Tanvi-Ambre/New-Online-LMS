@@ -1325,3 +1325,40 @@ def student_course_progress(request, user_id):
         })
 
     return Response({'course_progress': course_progress})
+
+class QuizCreateAPIView(generics.CreateAPIView):
+    queryset = api_models.Quiz.objects.all()
+    serializer_class = api_serializer.QuizSerializer
+    permission_classes = [AllowAny]
+
+    def perform_create(self, serializer):
+        questions_data = self.request.data.get('questions', [])
+
+        # Create the quiz first
+        quiz = serializer.save()
+
+        # Loop through each question in the submitted data
+        for question_data in questions_data:
+            answers_data = question_data.pop('answers', [])
+
+            # Explicitly map 'question_text' to 'text'
+            question_text = question_data.pop('question_text')
+            question = api_models.QuizQuestion.objects.create(quiz=quiz, text=question_text, **question_data)
+
+            # Loop through each answer in the submitted data
+            for answer_data in answers_data:
+                # Explicitly map 'answer_text' to 'text'
+                answer_text = answer_data.pop('answer_text')
+                api_models.QuizAnswer.objects.create(question=question, text=answer_text, **answer_data)
+
+
+class QuizListAPIView(generics.ListAPIView):
+    serializer_class = api_serializer.QuizSerializer
+
+    def get_queryset(self):
+        teacher_id = self.request.query_params.get('teacher_id')
+        return api_models.Quiz.objects.filter(course__teacher_id=teacher_id)
+    
+class QuizDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = api_models.Quiz.objects.all()
+    serializer_class = api_serializer.QuizSerializer
