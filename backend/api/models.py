@@ -469,3 +469,14 @@ class QuizAnswer(models.Model):
 
     def __str__(self):
         return self.answer_text
+
+
+class QuizAttempt(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    score = models.DecimalField(max_digits=5, decimal_places=2)
+    total_score = models.DecimalField(max_digits=5, decimal_places=2)
+    date_taken = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user} - {self.quiz} - {self.score}/{self.total_score}'

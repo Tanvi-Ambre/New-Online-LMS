@@ -51,6 +51,7 @@ import EditQuiz from "./views/instructor/EditQuiz";
 import QuizCreate from "./views/instructor/QuizCreate";
 import Quizzes from "./views/instructor/Quizzes";
 import QuizDetail from "./views/instructor/QuizDetail";
+import StudentQuiz from "./views/student/StudentQuiz";
 
 function App() {
   const [cartCount, setCartCount] = useState(0);
@@ -121,6 +122,7 @@ function App() {
                   <Route path="/instructor/quiz-detail/:quizId" element={<QuizDetail />} />
                   <Route path="/instructor/edit-quiz/:quizId/" element={<EditQuiz />} />
 
+                  <Route path="/student/quiz/:quizId/" element={<StudentQuiz />} />
                 </Routes>
               </MainWrapper>
             </ProfileContext.Provider>

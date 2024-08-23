@@ -72,7 +72,11 @@ urlpatterns = [
     path("teacher/quizzes/", api_views.QuizListAPIView.as_view(), name='quiz-list'),
     path("teacher/quiz-detail/<int:pk>/", api_views.QuizDetailAPIView.as_view(), name='quiz-detail'),
     path('teacher/edit-quiz/<int:pk>/', api_views.QuizEditAPIView.as_view(), name='edit-quiz'),
-    
     path('teacher/publish-quiz/<int:pk>/', api_views.QuizDetailAPIView.as_view(), name='publish-quiz'),
+    
+    path("student/quizzes/<int:course_id>/", api_views.StudentQuizListAPIView.as_view(), name='student-quiz-list'),
+    path("student/quiz-detail/<int:quiz_id>/", api_views.StudentQuizDetailAPIView.as_view(), name='student-quiz-detail'),
+    path("student/submit-quiz/<int:student_id>/", api_views.SubmitQuizAPIView.as_view(), name='submit-quiz'),
+    path('student/quiz-scores/<int:user_id>/', api_views.StudentQuizScoresAPIView.as_view(), name='student-quiz-scores'),
 ]
 

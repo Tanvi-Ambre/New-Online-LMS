@@ -354,7 +354,7 @@ class QuizQuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = api_models.QuizQuestion
-        fields = ['question_text', 'score', 'explanation', 'answers']  # Use 'question_text' as in the payload
+        fields = ['id', 'question_text', 'score', 'explanation', 'answers']
 
     def create(self, validated_data):
         answers_data = validated_data.pop('answers')

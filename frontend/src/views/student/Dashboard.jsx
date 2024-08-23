@@ -10,25 +10,27 @@ import useAxios from "../../utils/useAxios";
 import UserData from "../plugin/UserData";
 
 import CourseProgressChart from "../charts/CourseProgressChart";
+import QuizScoresChart from "../charts/QuizScoresChart"; // Import the new chart
+
 function Dashboard() {
   const [courses, setCourses] = useState([]);
   const [stats, setStats] = useState([]);
   const [fetching, setFetching] = useState(true);
 
-  const fetchData = () => {
-    setFetching(true);
-    useAxios()
-      .get(`student/summary/${UserData()?.user_id}/`)
-      .then((res) => {
-        setStats(res.data[0]);
-      });
-
-    useAxios()
-      .get(`student/course-list/${UserData()?.user_id}/`)
-      .then((res) => {
-        setCourses(res.data);
-        setFetching(false);
-      });
+  const fetchData = async () => {
+    try {
+      setFetching(true);
+      const [summaryRes, coursesRes] = await Promise.all([
+        useAxios().get(`student/summary/${UserData()?.user_id}/`),
+        useAxios().get(`student/course-list/${UserData()?.user_id}/`),
+      ]);
+      setStats(summaryRes.data[0]);
+      setCourses(coursesRes.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setFetching(false);
+    }
   };
 
   useEffect(() => {
@@ -53,10 +55,8 @@ function Dashboard() {
 
       <section className="pt-5 pb-5">
         <div className="container">
-          {/* Header Here */}
           <Header />
           <div className="row mt-0 mt-md-4">
-            {/* Sidebar Here */}
             <Sidebar />
             <div className="col-lg-9 col-md-8 col-12">
               <div className="row mb-4">
@@ -64,7 +64,6 @@ function Dashboard() {
                   {" "}
                   <i className="bi bi-grid-fill"></i> Dashboard
                 </h4>
-                {/* Counter item */}
 
                 <div className="col-sm-6 col-lg-4 mb-3 mb-lg-0">
                   <div className="d-flex justify-content-center align-items-center p-4 bg-warning bg-opacity-10 rounded-3">
@@ -81,7 +80,7 @@ function Dashboard() {
                     </div>
                   </div>
                 </div>
-                {/* Counter item */}
+
                 <div className="col-sm-6 col-lg-4 mb-3 mb-lg-0">
                   <div className="d-flex justify-content-center align-items-center p-4 bg-danger bg-opacity-10 rounded-3">
                     <span className="display-6 lh-1 text-purple mb-0">
@@ -98,7 +97,7 @@ function Dashboard() {
                     </div>
                   </div>
                 </div>
-                {/* Counter item */}
+
                 <div className="col-sm-6 col-lg-4 mb-3 mb-lg-0">
                   <div className="d-flex justify-content-center align-items-center p-4 bg-success bg-opacity-10 rounded-3">
                     <span className="display-6 lh-1 text-success mb-0">
@@ -120,16 +119,17 @@ function Dashboard() {
               {fetching ? (
                 <p className="mt-3 p-3">Loading...</p>
               ) : (
-                <>
-                  <div className="row mb-4">
-                    <div className="col-md-6">
-                      <div className="card p-3 mb-4">
-                        <CourseProgressChart />
-                      </div>
+                <div className="row mb-4">
+                  <div className="col-md-12">
+                    <div className="card p-3 mb-4">
+                      <CourseProgressChart />
                     </div>
-                    {/* Other charts or content */}
+                    <div className="card p-3 mb-4">
+                      <QuizScoresChart />
+                    </div>
+                    
                   </div>
-                </>
+                </div>
               )}
             </div>
           </div>

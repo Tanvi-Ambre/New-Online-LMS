@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-key */
 import { useState, useEffect, useMemo } from "react";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
+import { useNavigate } from "react-router-dom";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import Sidebar from "./Partials/Sidebar";
 import Header from "./Partials/Header";
@@ -40,6 +41,7 @@ function CourseCreate() {
   ]);
 
   const axiosInstance = useMemo(() => useAxios(), []);
+  const navigate = useNavigate()
 
   useEffect(() => {
     axiosInstance.get(`course/category/`).then((res) => {
@@ -196,7 +198,9 @@ function CourseCreate() {
       Swal.fire({
         icon: "success",
         title: "Course Created Successfully",
-      });
+      }).then(() => {
+      navigate("/instructor/courses/");
+    });
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -253,7 +257,7 @@ function CourseCreate() {
                       style={{
                         width: "100%",
                         height: "330px",
-                        objectFit: "cover",
+                        objectFit: "none",
                         borderRadius: "10px",
                       }}
                       className="mb-4"

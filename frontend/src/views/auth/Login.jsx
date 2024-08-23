@@ -29,7 +29,8 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    const { error, token } = await login(email, password);
+    const { access, error, refresh } = await login(email, password);
+   // console.log("token", access)
     if (error) {
       setIsLoading(false);
       alert(error);
@@ -44,7 +45,7 @@ function Login() {
         localStorage.removeItem("rememberedPassword");
       }
 
-      localStorage.setItem("authToken", token);
+      localStorage.setItem("authToken", access);
       navigate("/");
       setIsLoading(false);
     }
