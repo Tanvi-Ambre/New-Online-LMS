@@ -9,6 +9,8 @@ from django.db.models.functions import ExtractMonth
 from django.db.models.functions import  TruncDay, TruncMonth, TruncYear
 from django.db.models import Sum, Count, Avg
 from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
+from collections import defaultdict
 
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import IntegrityError
@@ -19,10 +21,10 @@ from userauths.models import User, Profile
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics, status, viewsets
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 
 
 import random
@@ -1380,3 +1382,104 @@ class QuizDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
         instance.status = 'published'  # Update the status to 'published'
         instance.save()  # Save the changes to the database
         return Response({'message': 'Quiz published successfully'}, status=status.HTTP_200_OK)
+    
+# In views.py
+class StudentQuizListAPIView(generics.ListAPIView):
+    serializer_class = api_serializer.QuizSerializer
+
+    def get_queryset(self):
+        course_id = self.kwargs['course_id']
+        return api_models.Quiz.objects.filter(course_id=course_id, status='published')
+
+class SubmitQuizAPIView(APIView):
+    def post(self, request, student_id, *args, **kwargs):
+        try:
+            student = api_models.User.objects.get(id=student_id)
+        except api_models.User.DoesNotExist:
+            return Response({"detail": "Student not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        quiz_id = request.data.get('quiz_id')
+        answers = request.data.get('answers', [])
+
+        if not quiz_id or not answers:
+            return Response({"detail": "Quiz ID and answers are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            quiz = api_models.Quiz.objects.get(id=quiz_id)
+
+            total_score = 0
+            student_score = 0
+
+            for answer in answers:
+                question_id = answer.get('question_id')
+                answer_id = answer.get('answer_id')
+
+                if not question_id or not answer_id:
+                    continue
+
+                try:
+                    question = api_models.QuizQuestion.objects.get(id=question_id, quiz=quiz)
+                    selected_answer = api_models.QuizAnswer.objects.get(id=answer_id, question=question)
+                    total_score += question.score
+
+                    if selected_answer.is_correct:
+                        student_score += question.score
+
+                except (api_models.QuizQuestion.DoesNotExist, api_models.QuizAnswer.DoesNotExist):
+                    continue
+
+            quiz_attempt = api_models.QuizAttempt.objects.create(
+                user=student,
+                quiz=quiz,
+                score=student_score,
+                total_score=total_score
+            )
+
+            return Response({
+                "score": quiz_attempt.score,
+                "total_score": quiz_attempt.total_score,
+                "course_name": quiz.course.title
+            }, status=status.HTTP_201_CREATED)
+
+        except api_models.Quiz.DoesNotExist:
+            return Response({"detail": "Quiz not found."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+class StudentQuizDetailAPIView(generics.RetrieveAPIView):
+    queryset = api_models.Quiz.objects.all()
+    serializer_class = api_serializer.QuizSerializer
+
+    def get_object(self):
+        quiz_id = self.kwargs.get("quiz_id")
+        return self.queryset.filter(id=quiz_id).first()
+
+
+class StudentQuizScoresAPIView(generics.ListAPIView):
+    permission_classes = [AllowAny] 
+
+    def get(self, request, user_id, *args, **kwargs):
+       
+        try:
+            student = api_models.User.objects.get(id=user_id)
+        except api_models.User.DoesNotExist:
+            return Response({"detail": "Student not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        quiz_attempts = api_models.QuizAttempt.objects.filter(user=student)
+        highest_scores = defaultdict(lambda: {"score": 0, "total_score": 0})
+
+        for attempt in quiz_attempts:
+            course_name = attempt.quiz.course.title
+            percentage_score = round((attempt.score / attempt.total_score) * 100, 2)
+
+            if percentage_score > highest_scores[course_name]["score"]:
+                highest_scores[course_name] = {
+                    "course_name": course_name,
+                    "quiz_title": attempt.quiz.title,
+                    "percentage_score": percentage_score,
+                    "score": attempt.score,
+                    "total_score": attempt.total_score,
+                    "score_label": f"{int(attempt.score)}/{int(attempt.total_score)}", 
+                }
+
+        return Response({"quiz_scores": list(highest_scores.values())}, status=status.HTTP_200_OK)

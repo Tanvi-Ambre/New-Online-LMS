@@ -15,10 +15,11 @@ export const login = async (email, password) => {
       setAuthUser(data.access, data.refresh);
     }
 
-    return { data, error: null };
+    return { access: data.access, refresh: data.refresh, error: null };
   } catch (error) {
     return {
-      data: null,
+      access: null,
+      refresh: null,
       error: error.response.data?.detail || "Something went wrong",
     };
   }
@@ -98,9 +99,11 @@ export const getRefreshedToken = async () => {
 export const isAccessTokenExpired = (access_token) => {
   try {
     const decodedToken = jwt_decode(access_token);
-    return decodedToken.exp < Date.now() / 1000;
+    // Add a small buffer (e.g., 30 seconds) to avoid issues with almost-expired tokens
+    const bufferTime = 30;
+    return decodedToken.exp < Date.now() / 1000 - bufferTime;
   } catch (error) {
-    console.log(error);
-    return true;
+    console.log("Error decoding token:", error);
+    return true; // If there's an error decoding the token, consider it expired
   }
 };

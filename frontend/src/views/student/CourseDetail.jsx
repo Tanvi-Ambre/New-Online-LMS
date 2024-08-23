@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
+
 import ReactPlayer from "react-player";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -28,10 +29,12 @@ function CourseDetail() {
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [createReview, setCreateReview] = useState({ rating: 1, review: "" });
   const [studentReview, setStudentReview] = useState([]);
+  const [quizzes, setQuizzes] = useState([]);
 
   const param = useParams();
   const lastElementRef = useRef();
   const messageInputRef = useRef();
+  const navigate = useNavigate()
   // Play Lecture Modal
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
@@ -63,7 +66,6 @@ function CourseDetail() {
   const handleQuestionShow = () => setAddQuestionShow(true);
 
   const fetchCourseDetail = async () => {
-   
     useAxios()
       .get(
         `student/course-detail/${UserData()?.user_id}/${param.enrollment_id}/`
@@ -72,6 +74,13 @@ function CourseDetail() {
         setCourse(res.data);
         setQuestions(res.data.question_answer);
         setStudentReview(res.data?.review);
+
+        useAxios()
+          .get(`/student/quizzes/${res.data.course?.id}/`) // Assuming this endpoint returns quizzes for a course
+          .then((quizRes) => {
+            setQuizzes(quizRes.data); 
+          });
+
         const percentageCompleted =
           (res.data.completed_lesson?.length / res.data.lectures?.length) * 100;
         setCompletionPercentage(percentageCompleted?.toFixed(0));
@@ -405,6 +414,24 @@ function CourseDetail() {
                                   Leave a Review
                                 </button>
                               </li>
+                              {/*Tab item for Quizzes */}
+                              <li
+                                className="nav-item me-2 me-sm-4"
+                                role="presentation"
+                              >
+                                <button
+                                  className="nav-link mb-2 mb-md-0"
+                                  id="course-pills-tab-5"
+                                  data-bs-toggle="pill"
+                                  data-bs-target="#course-pills-5"
+                                  type="button"
+                                  role="tab"
+                                  aria-controls="course-pills-5"
+                                  aria-selected="false"
+                                >
+                                  Quiz
+                                </button>
+                              </li>
                             </ul>
                           </div>
                           {/* Tabs END */}
@@ -667,6 +694,7 @@ function CourseDetail() {
                                   </div>
                                 </div>
                               </div>
+
                               <div
                                 className="tab-pane fade"
                                 id="course-pills-3"
@@ -766,6 +794,7 @@ function CourseDetail() {
                                   </div>
                                 </div>
                               </div>
+
                               <div
                                 className="tab-pane fade"
                                 id="course-pills-4"
@@ -897,6 +926,49 @@ function CourseDetail() {
                                         </form>
                                       )}
                                     </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div
+                                className="tab-pane fade"
+                                id="course-pills-5"
+                                role="tabpanel"
+                                aria-labelledby="course-pills-tab-5"
+                              >
+                                <div className="card">
+                                  <div className="card-header border-bottom p-0 pb-3">
+                                    <h4 className="mb-0 p-3">
+                                      Available Quiz
+                                    </h4>
+                                  </div>
+                                  <div className="card-body p-0 pt-3">
+                                    {/* Display list of quizzes */}
+                                    {quizzes.length > 0 ? (
+                                      quizzes.map((quiz, index) => (
+                                        <div
+                                          className="p-3 border-bottom"
+                                          key={index}
+                                        >
+                                          <h5>{quiz.title}</h5>
+                                          <p>{quiz.description}</p>
+                                          <button
+                                            className="btn btn-primary"
+                                            onClick={() =>
+                                              navigate(
+                                                `/student/quiz/${quiz.id}/`
+                                              )
+                                            }
+                                          >
+                                            Take Quiz
+                                          </button>
+                                        </div>
+                                      ))
+                                    ) : (
+                                      <p className="p-3">
+                                        No quizzes available for this course.
+                                      </p>
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -1058,25 +1130,6 @@ function CourseDetail() {
                 Post <i className="fas fa-paper-plane"></i>
               </button>
             </form>
-
-            {/* <form className="w-100">
-              <input
-                name="title"
-                type="text"
-                className="form-control mb-2"
-                placeholder="Question Title"
-              />
-              <textarea
-                name="message"
-                className="one form-control pe-4 mb-2 bg-light"
-                id="autoheighttextarea"
-                rows="5"
-                placeholder="What's your question?"
-              ></textarea>
-              <button className="btn btn-primary mb-0 w-25" type="button">
-                Post <i className="fas fa-paper-plane"></i>
-              </button>
-            </form> */}
           </div>
         </Modal.Body>
       </Modal>
