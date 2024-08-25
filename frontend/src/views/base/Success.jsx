@@ -29,7 +29,7 @@ function Success() {
     setOrderMessage("Processing Payment");
 
     try {
-      apiInstance.post(`payment/payment-sucess/`, formdata).then((res) => {
+      apiInstance.post(`payment/payment-success/`, formdata).then((res) => {
         console.log(res.data);
         setOrderMessage(res.data.message);
       });

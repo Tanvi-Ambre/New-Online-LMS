@@ -71,7 +71,7 @@ const PopularityRevenue = ({ teacherId }) => {
               `Course: ${item.course_title}`,
               `Enrollments: ${item.enrollments}`,
               `Revenue: $${item.revenue.toFixed(2)}`,
-              `Completion Rate: ${item.completion_rate}%`,
+              `Completion Rate: ${Math.round(item.completion_rate)}%`,
             ];
           },
         },
@@ -79,7 +79,7 @@ const PopularityRevenue = ({ teacherId }) => {
       datalabels: {
         formatter: (value, context) => {
           const item = chartData[context.dataIndex];
-          return `${item.completion_rate}%`; // Display the completion rate as a percentage
+          return `${Math.round(item.completion_rate)}%`; // Display the completion rate as a percentage
         },
         color: "#000", // Set the color of the percentage text
         font: {

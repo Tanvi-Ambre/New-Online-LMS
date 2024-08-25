@@ -5,22 +5,43 @@ import Sidebar from "./Partials/Sidebar";
 import Header from "./Partials/Header";
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
+import Spinner from "./Partials/Spinner";
 
 import useAxios from "../../utils/useAxios";
-import Useta from "../plugin/UserData";
 import { teacherId } from "../../utils/constants";
-import UserData from "../plugin/UserData";
+import { useAuthStore } from "../../store/auth";
 
 function Orders() {
   const [orders, setOrders] = useState([]);
+  const { user, loading } = useAuthStore((state) => ({
+    user: state.user,
+    loading: state.loading,
+  }));
+  const teacherId = user?.teacher_id;
+
+  console.log("user--", user);
 
   useEffect(() => {
-    useAxios()
-      .get(`teacher/course-order-list/${UserData()?.teacher_id}/`)
-      .then((res) => {
-        setOrders(res.data);
-      });
-  }, []);
+    if (teacherId) {
+      useAxios()
+        .get(`teacher/course-order-list/${teacherId}/`)
+        .then((res) => {
+          setOrders(res.data);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch orders:", err);
+        });
+    }
+  }, [teacherId]); // Dependency array with teacherId
+
+  if (loading) {
+    return <Spinner />; // Show a loading indicator while fetching user data
+  }
+
+  if (!user) {
+    return <div>User not found</div>; // Handle the case where user is not available
+  }
+
   return (
     <>
       <BaseHeader />

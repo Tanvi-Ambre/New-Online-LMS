@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 import apiInstance from "../../utils/axios";
-import { login } from "../../utils/auth";
+import { login, setAuthUser } from "../../utils/auth";
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 import { Link, useNavigate } from "react-router-dom";
@@ -45,7 +45,7 @@ function Login() {
         localStorage.removeItem("rememberedPassword");
       }
 
-      localStorage.setItem("authToken", access);
+      setAuthUser(access, refresh);
       navigate("/");
       setIsLoading(false);
     }

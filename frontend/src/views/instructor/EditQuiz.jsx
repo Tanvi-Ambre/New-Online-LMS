@@ -7,19 +7,21 @@ import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 import Swal from "sweetalert2";
 import { FaTrashAlt } from "react-icons/fa";
-import UserData from "../plugin/UserData";
+import { useAuthStore } from "../../store/auth";
 
 function EditQuiz() {
   const { quizId } = useParams(); // Get the quiz ID from the URL
   const [courses, setCourses] = useState([]);
   const [quiz, setQuiz] = useState(null);
+  const {user} = useAuthStore((state) => state.user); // Access user data from useAuthStore
+  const teacherId = user?.teacher_id;
   const axiosInstance = useAxios();
   const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch the list of courses for the instructor
     axiosInstance
-      .get(`/teacher/course-lists/${UserData()?.teacher_id}/`)
+      .get(`/teacher/course-lists/${teacherId}/`)
       .then((res) => {
         setCourses(res.data);
       });

@@ -2,6 +2,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { usePurchasedCoursesStore } from "../../store/courseStore"; // Import the Zustand store
+
 import { Link } from "react-router-dom";
 import moment from "moment";
 import Swal from "sweetalert2";
@@ -12,11 +14,10 @@ import { useParams } from "react-router-dom";
 import useAxios from "../../utils/useAxios";
 import CartId from "../plugin/CartId";
 import GetCurrentAddress from "../plugin/UserCountry";
-import UserData from "../plugin/UserData";
 import Toast from "../plugin/Toast";
 import { CartContext } from "../plugin/Context";
 import apiInstance from "../../utils/axios";
-//import { ProfileContext } from "../plugin/Context";
+import { useAuthStore } from "../../store/auth";
 
 function CourseDetail() {
   const navigate = useNavigate();
@@ -31,13 +32,46 @@ function CourseDetail() {
   const { course_id } = useParams();
 
   const country = GetCurrentAddress().country;
-  const userId = UserData().user_id;
+  const { user } = useAuthStore((state) => ({ user: state.user })); // Access user data from useAuthStore
+  const userId = user?.user_id;
 
+  const purchasedCourses = usePurchasedCoursesStore(
+    (state) => state.purchasedCourses
+  );
+  console.log("purchasedCourses", purchasedCourses);
+  const setPurchasedCourses = usePurchasedCoursesStore(
+    (state) => state.setPurchasedCourses
+  );
+
+  console.log("user", user);
   useEffect(() => {
     fetchCourse();
-  }, [course_id]);
+    if (userId) {
+      fetchPurchasedCourses();
+    }
+  }, [course_id, userId]);
+
+  const fetchPurchasedCourses = async () => {
+    try {
+      const response = await useAxios().get(`student/course-list/${userId}/`);
+      setPurchasedCourses(response.data);
+    } catch (error) {
+      console.log("Failed to fetch purchased courses:", error);
+    }
+  };
+
+  const isCoursePurchased = () => {
+    return purchasedCourses.some(
+      (purchasedCourse) => purchasedCourse.course_id === course.id
+    );
+  };
 
   const enrollNow = async () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("course_id", course.id);
     formData.append("user_id", userId);
@@ -61,9 +95,9 @@ function CourseDetail() {
 
   const fetchCourse = async () => {
     try {
-      const response = await useAxios().get(
-        `/course/course-detail/${course_id}/`
-      );
+      const response = user
+        ? await useAxios().get(`/course/course-detail/${course_id}/`)
+        : await apiInstance.get(`/course/course-detail/${course_id}/`);
       setCourse(response.data);
       setIsLoading(false);
     } catch (err) {
@@ -73,6 +107,11 @@ function CourseDetail() {
   };
 
   const addToCart = async () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("course_id", course.id);
     formData.append("user_id", userId);
@@ -99,10 +138,9 @@ function CourseDetail() {
   };
 
   const handlePlayClick = (videoUrl) => {
-    console.log("videoUrl", videoUrl)
+    //console.log("videoUrl", videoUrl)
     setSelectedVideo(videoUrl);
   };
-
 
   return (
     <>
@@ -320,9 +358,7 @@ function CourseDetail() {
                                                 }-soft btn-round btn-sm mb-0 stretched-link position-static`}
                                                 onClick={() => {
                                                   if (l.preview) {
-                                                    handlePlayClick(
-                                                      l.file
-                                                    );
+                                                    handlePlayClick(l.file);
                                                   }
                                                 }}
                                                 disabled={!l.preview} // Disable button if no preview
@@ -748,80 +784,54 @@ function CourseDetail() {
                             </div>
                             {/* Buttons */}
                             <div className="mt-3 d-sm-flex justify-content-sm-between ">
-                              {addToCartBtn === "Add To Cart" && (
+                              {isCoursePurchased() ? (
                                 <button
                                   type="button"
-                                  className="btn btn-primary mb-0 w-100 me-2"
-                                  onClick={() =>
-                                    addToCart(
-                                      course?.id,
-                                      userId,
-                                      course.price,
-                                      country,
-                                      CartId()
-                                    )
-                                  }
-                                >
-                                  <i className="fas fa-shopping-cart"></i> Add
-                                  To Cart
-                                </button>
-                              )}
-                              {addToCartBtn === "Added To Cart" && (
-                                <button
+                                  className="btn btn-secondary mb-0 w-100 me-2"
                                   disabled
-                                  type="button"
-                                  className="btn btn-primary mb-0 w-100 me-2"
                                 >
-                                  <i className="fas fa-shopping-cart"></i> Added
-                                  To Cart
+                                  <i className="fas fa-check-circle"></i>{" "}
+                                  Already Purchased
                                 </button>
+                              ) : (
+                                <>
+                                  {addToCartBtn === "Add To Cart" && (
+                                    <button
+                                      type="button"
+                                      className="btn btn-primary mb-0 w-100 me-2"
+                                      onClick={() =>
+                                        addToCart(
+                                          course?.id,
+                                          userId,
+                                          course.price,
+                                          country,
+                                          CartId()
+                                        )
+                                      }
+                                    >
+                                      <i className="fas fa-shopping-cart"></i>{" "}
+                                      Add To Cart
+                                    </button>
+                                  )}
+                                  {addToCartBtn === "Added To Cart" && (
+                                    <button
+                                      disabled
+                                      type="button"
+                                      className="btn btn-primary mb-0 w-100 me-2"
+                                    >
+                                      <i className="fas fa-shopping-cart"></i>{" "}
+                                      Added To Cart
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={enrollNow}
+                                    className="btn btn-success mb-0 w-100"
+                                  >
+                                    Enroll Now{" "}
+                                    <i className="fas fa-arrow-right"></i>
+                                  </button>
+                                </>
                               )}
-
-                              {/* {addToCartBtn === "Added To Cart" && (
-                                <button
-                                  type="button"
-                                  className="btn btn-primary mb-0 w-100 me-2"
-                                  onClick={() =>
-                                    addToCart(
-                                      course.id,
-                                      1,
-                                      course.price,
-                                      "Nigeria",
-                                      "8325347"
-                                    )
-                                  }
-                                >
-                                  <i className="fas fa-check-circle"></i> Added
-                                  To Cart
-                                </button>
-                              )}
-
-                              {addToCartBtn === "Adding To Cart" && (
-                                <button
-                                  type="button"
-                                  className="btn btn-primary mb-0 w-100 me-2"
-                                  onClick={() =>
-                                    addToCart(
-                                      course.id,
-                                      1,
-                                      course.price,
-                                      "Nigeria",
-                                      "8325347"
-                                    )
-                                  }
-                                >
-                                  <i className="fas fa-spinner fa-spin"></i>{" "}
-                                  Adding To Cart
-                                </button>
-                              )} */}
-                              <button
-                                onClick={enrollNow}
-                                //onClick={handleAddToCart}
-                                className="btn btn-success mb-0 w-100"
-                              >
-                                Enroll Now{" "}
-                                <i className="fas fa-arrow-right"></i>
-                              </button>
                             </div>
                           </div>
                         </div>

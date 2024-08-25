@@ -8,9 +8,9 @@ import Header from "./Partials/Header";
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 import { Link, useParams } from "react-router-dom";
+import { useAuthStore } from "../../store/auth";
 
 import useAxios from "../../utils/useAxios";
-import UserData from "../plugin/UserData";
 import Swal from "sweetalert2";
 import Toast from "../plugin/Toast";
 
@@ -29,6 +29,8 @@ function CourseEdit() {
 
   const [category, setCategory] = useState([]);
   const [ckEdtitorData, setCKEditorData] = useState("");
+  const {user} = useAuthStore((state) => state.user); // Access user data from useAuthStore
+  const teacherId = user?.teacher_id;
   const param = useParams();
   const [variants, setVariants] = useState([
     {
@@ -63,7 +65,7 @@ function CourseEdit() {
   useEffect(() => {
     fetchCourseDetail();
   }, []);
-  console.log(course);
+  //console.log(course);
 
   const handleCourseInputChange = (event) => {
     setCourse({
@@ -78,7 +80,7 @@ function CourseEdit() {
   const handleCkEditorChange = (event, editor) => {
     const data = editor.getData();
     setCKEditorData(data);
-    console.log(ckEdtitorData);
+    //console.log(ckEdtitorData);
   };
 
   const handleCourseImageChange = (event) => {
@@ -111,8 +113,8 @@ function CourseEdit() {
     updatedVariants[index][propertyName] = value;
     setVariants(updatedVariants);
 
-    console.log(`Name: ${propertyName} - value: ${value} - Index: ${index}`);
-    console.log(variants);
+    //console.log(`Name: ${propertyName} - value: ${value} - Index: ${index}`);
+   // console.log(variants);
   };
 
   const handleItemChange = (
@@ -126,9 +128,9 @@ function CourseEdit() {
     updatedVariants[variantIndex].items[itemIndex][propertyName] = value;
     setVariants(updatedVariants);
     
-    console.log(
-      `Name: ${propertyName} - value: ${value} - Index: ${variantIndex} ItemIndex: ${itemIndex} - type: ${type}`
-    );
+    // console.log(
+    //   `Name: ${propertyName} - value: ${value} - Index: ${variantIndex} ItemIndex: ${itemIndex} - type: ${type}`
+    // );
   };
 
   const addVariant = () => {
@@ -148,10 +150,10 @@ function CourseEdit() {
 
     useAxios()
       .delete(
-        `teacher/course/variant-delete/${variantId}/${UserData()?.teacher_id}/${param.course_id}/`
+        `teacher/course/variant-delete/${variantId}/${teacherId}/${param.course_id}/`
       )
       .then((res) => {
-        console.log(res.data);
+       // console.log(res.data);
         fetchCourseDetail();
         Toast().fire({
           icon: "success",
@@ -179,10 +181,10 @@ function CourseEdit() {
 
     useAxios()
       .delete(
-        `teacher/course/variant-item-delete/${variantId}/${itemId}/${UserData()?.teacher_id}/${param.course_id}/`
+        `teacher/course/variant-item-delete/${variantId}/${itemId}/${teacherId}/${param.course_id}/`
       )
       .then((res) => {
-        console.log(res.data);
+        //console.log(res.data);
         fetchCourseDetail();
         Toast().fire({
           icon: "success",
@@ -200,8 +202,8 @@ function CourseEdit() {
     formdata.append("price", course.price);
     formdata.append("level", course.level);
     formdata.append("language", course.language);
-    formdata.append("teacher", parseInt(UserData()?.teacher_id));
-    console.log(course.category);
+    formdata.append("teacher", parseInt(teacherId));
+    //console.log(course.category);
 
     if (newFileSelected && course.file instanceof File) {
       formdata.append("file", course.file);
@@ -217,7 +219,7 @@ function CourseEdit() {
 
     variants.forEach((variant, variantIndex) => {
       Object.entries(variant).forEach(([key, value]) => {
-        console.log(`Key: ${key} = value: ${value}`);
+        //console.log(`Key: ${key} = value: ${value}`);
         formdata.append(
           `variants[${variantIndex}][variant_${key}]`,
           String(value)
@@ -235,7 +237,7 @@ function CourseEdit() {
     });
 
     const response = await useAxios().patch(
-      `teacher/course-update/${UserData()?.teacher_id}/${param.course_id}/`,
+      `teacher/course-update/${teacherId}/${param.course_id}/`,
       formdata,
       {
         headers: {

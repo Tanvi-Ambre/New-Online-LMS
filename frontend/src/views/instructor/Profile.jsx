@@ -1,14 +1,13 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 import Sidebar from "./Partials/Sidebar";
 import Header from "./Partials/Header";
 
-import useAxios from "../../utils/useAxios";
-import UserData from "../plugin/UserData";
 import Toast from "../plugin/Toast";
-import { ProfileContext } from "../plugin/Context";
+import { useAuthStore } from "../../store/auth";
+import { useProfileStore } from "../../store/useProfileStore";
+import useAxios from "../../utils/useAxios";
 
 const countries = [
   { code: "AF", name: "Afghanistan" },
@@ -207,7 +206,21 @@ const countries = [
 ];
 
 function Profile() {
-  const [profile, setProfile] = useContext(ProfileContext);
+  const { user } = useAuthStore((state) => ({
+    user: state.user,
+  })); // Access user data from useAuthStore
+  const teacherId = user?.user_id;
+
+  console.log("user", user)
+
+  const { profile, loading, fetchProfile, setProfile } = useProfileStore((state) => ({
+    profile: state.profile,
+    loading: state.loading,
+    fetchProfile: state.fetchProfile,
+    setProfile: state.setProfile,
+  }));
+
+  console.log("profile", profile)
   const [profileData, setProfileData] = useState({
     image: "",
     full_name: "",
@@ -217,19 +230,18 @@ function Profile() {
   const [imagePreview, setImagePreview] = useState("");
   const [imageError, setImageError] = useState("");
 
-  const fetchProfile = () => {
-    useAxios()
-      .get(`user/profile/${UserData()?.user_id}/`)
-      .then((res) => {
-        setProfile(res.data);
-        setProfileData(res.data);
-        setImagePreview(res.data.image);
-      });
-  };
+  useEffect(() => {
+    if (teacherId) {
+      fetchProfile(teacherId);
+    }
+  }, [teacherId, fetchProfile]);
 
   useEffect(() => {
-    fetchProfile();
-  }, []);
+    if (profile) {
+      setProfileData(profile);
+      setImagePreview(profile.image);
+    }
+  }, [profile]);
 
   const handleProfileChange = (event) => {
     setProfileData({
@@ -263,9 +275,8 @@ function Profile() {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await useAxios().get(`user/profile/${UserData()?.user_id}/`);
     const formdata = new FormData();
-    if (profileData.image && profileData.image !== res.data.image) {
+    if (profileData.image && profileData.image !== profile.image) {
       formdata.append("image", profileData.image);
     }
 
@@ -273,27 +284,29 @@ function Profile() {
     formdata.append("about", profileData.about);
     formdata.append("country", profileData.country);
 
-    await useAxios()
-      .patch(`user/profile/${UserData()?.user_id}/`, formdata, {
+    try {
+      const res = await useAxios().patch(`user/profile/${teacherId}/`, formdata, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      })
-      .then((res) => {
-        setProfile(res.data);
-        Toast().fire({
-          title: "Profile updated successfully",
-          icon: "success",
-        });
-      })
-      .catch((err) => {
-        Toast().fire({
-          title: "Failed to update profile",
-          icon: "error",
-        });
       });
+      console.log("resss", res.data)
+      setProfile(res.data);
+      Toast().fire({
+        title: "Profile updated successfully",
+        icon: "success",
+      });
+    } catch (err) {
+      Toast().fire({
+        title: "Failed to update profile",
+        icon: "error",
+      });
+    }
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
@@ -301,28 +314,20 @@ function Profile() {
 
       <section className="pt-5 pb-5">
         <div className="container">
-          {/* Header Here */}
           <Header />
           <div className="row mt-0 mt-md-4">
-            {/* Sidebar Here */}
             <Sidebar />
             <div className="col-lg-9 col-md-8 col-12">
-              {/* Card */}
               <div className="card">
-                {/* Card header */}
                 <div className="card-header">
                   <h3 className="mb-0">Profile Details</h3>
-                  <p className="mb-0">
-                    You have full control to manage your own account setting.
-                  </p>
+                  <p className="mb-0">You have full control to manage your own account settings.</p>
                 </div>
-                {/* Card body */}
                 <form className="card-body" onSubmit={handleFormSubmit}>
                   <div className="d-lg-flex align-items-center justify-content-between">
                     <div className="d-flex align-items-center mb-4 mb-lg-0">
                       <img
                         src={imagePreview}
-                        id="img-uploaded"
                         className="avatar-xl rounded-circle"
                         alt="avatar"
                         style={{
@@ -334,35 +339,24 @@ function Profile() {
                       />
                       <div className="ms-3">
                         <h4 className="mb-0">Your avatar</h4>
-                        <p className="mb-0">
-                          PNG or JPG no bigger than 800px wide and tall.
-                        </p>
+                        <p className="mb-0">PNG or JPG no bigger than 800px wide and tall.</p>
                         <input
                           type="file"
                           className="form-control mt-3"
                           name="image"
                           onChange={handleFileChange}
-                          id=""
                         />
-                        {imageError && (
-                          <p style={{ color: "red" }}>{imageError}</p>
-                        )}
+                        {imageError && <p style={{ color: "red" }}>{imageError}</p>}
                       </div>
                     </div>
                   </div>
                   <hr className="my-5" />
                   <div>
                     <h4 className="mb-0">Personal Details</h4>
-                    <p className="mb-4">
-                      Edit your personal information and address.
-                    </p>
-                    {/* Form */}
+                    <p className="mb-4">Edit your personal information and address.</p>
                     <div className="row gx-3">
-                      {/* Full Name */}
                       <div className="mb-3 col-12 col-md-12">
-                        <label className="form-label" htmlFor="fname">
-                          Full Name
-                        </label>
+                        <label className="form-label" htmlFor="fname">Full Name</label>
                         <input
                           type="text"
                           id="fname"
@@ -373,15 +367,9 @@ function Profile() {
                           onChange={handleProfileChange}
                           name="full_name"
                         />
-                        <div className="invalid-feedback">
-                          Please enter your full name.
-                        </div>
                       </div>
-                      {/* About Me */}
                       <div className="mb-3 col-12 col-md-12">
-                        <label className="form-label" htmlFor="about">
-                          About Me
-                        </label>
+                        <label className="form-label" htmlFor="about">About Me</label>
                         <textarea
                           onChange={handleProfileChange}
                           name="about"
@@ -391,16 +379,9 @@ function Profile() {
                           className="form-control"
                           value={profileData.about}
                         ></textarea>
-                        <div className="invalid-feedback">
-                          Please enter some information about yourself.
-                        </div>
                       </div>
-
-                      {/* Country */}
                       <div className="mb-3 col-12 col-md-12">
-                        <label className="form-label" htmlFor="country">
-                          Country
-                        </label>
+                        <label className="form-label" htmlFor="country">Country</label>
                         <select
                           id="country"
                           className="form-control"
@@ -409,21 +390,15 @@ function Profile() {
                           onChange={handleProfileChange}
                           name="country"
                         >
-                          <option value="" disabled>
-                            Select your country
-                          </option>
+                          <option value="" disabled>Select your country</option>
                           {countries.map((country) => (
                             <option key={country.code} value={country.name}>
                               {country.name}
                             </option>
                           ))}
                         </select>
-                        <div className="invalid-feedback">
-                          Please choose your country.
-                        </div>
                       </div>
                       <div className="col-12">
-                        {/* Button */}
                         <button className="btn btn-primary" type="submit">
                           Update Profile <i className="fas fa-check-circle"></i>
                         </button>
