@@ -8,7 +8,7 @@ import apiInstance from "../../utils/axios";
 import CartId from "../plugin/CartId";
 import Toast from "../plugin/Toast";
 import { CartContext } from "../plugin/Context";
-import UserData from "../plugin/UserData";
+import { useAuthStore } from "../../store/auth";
 
 const countries = [
   { code: "AF", name: "Afghanistan" },
@@ -210,6 +210,11 @@ function Cart() {
   const [cart, setCart] = useState([]);
   const [cartStats, setCartStats] = useState([]);
   const [cartCount, setCartCount] = useContext(CartContext);
+  const { user } = useAuthStore((state) => ({
+    user: state.user,
+  }));
+
+  const userId = user?.user_id;
   const [bioData, setBioData] = useState({
     full_name: "",
     email: "",
@@ -247,7 +252,7 @@ function Cart() {
         });
         // Set cart count after adding to cart
         apiInstance.get(`course/cart-list/${CartId()}/`).then((res) => {
-          setCartCount(res.data?.length);        
+          setCartCount(res.data?.length);
         });
       });
   };
@@ -267,9 +272,16 @@ function Cart() {
     return newErrors;
   };
 
-
   const createOrder = async (e) => {
     e.preventDefault();
+
+    if (cart.length === 0) {
+      Toast().fire({
+        icon: "error",
+        title: "Your cart is empty!",
+      });
+      return;
+    }
 
     const formErrors = validateForm();
     if (Object.keys(formErrors).length > 0) {
@@ -284,8 +296,8 @@ function Cart() {
     formdata.append("country", bioData.country);
     formdata.append("cart_id", CartId());
     //formdata.append("user_id", userId);
-    if (UserData()?.user_id) {
-      formdata.append("user_id", UserData()?.user_id); 
+    if (userId) {
+      formdata.append("user_id", userId);
     } else {
       console.error("User ID is undefined");
       return;
@@ -314,12 +326,12 @@ function Cart() {
                   <nav aria-label="breadcrumb">
                     <ol className="breadcrumb breadcrumb-dots mb-0">
                       <li className="breadcrumb-item">
-                        <a href="#" className="text-decoration-none text-dark">
+                        <a href="/" className="text-decoration-none text-dark">
                           Home
                         </a>
                       </li>
                       <li className="breadcrumb-item">
-                        <a href="#" className="text-decoration-none text-dark">
+                        <a href="/student/courses/" className="text-decoration-none text-dark">
                           Courses
                         </a>
                       </li>
@@ -496,7 +508,12 @@ function Cart() {
                     </li>
                   </ul>
                   <div className="d-grid">
-                    <button type="submit" className="btn btn-lg btn-success">
+                    <button
+                      type="submit"
+                      className="btn btn-lg btn-success"
+                      disabled={cart.length === 0}
+                      //onClick={createOrder}
+                    >
                       Proceed to Checkout
                     </button>
                   </div>

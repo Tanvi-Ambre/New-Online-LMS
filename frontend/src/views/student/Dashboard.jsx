@@ -7,7 +7,7 @@ import BaseFooter from "../partials/BaseFooter";
 import Sidebar from "./Partials/Sidebar";
 import Header from "./Partials/Header";
 import useAxios from "../../utils/useAxios";
-import UserData from "../plugin/UserData";
+import { useAuthStore } from "../../store/auth";
 
 import CourseProgressChart from "../charts/CourseProgressChart";
 import QuizScoresChart from "../charts/QuizScoresChart"; // Import the new chart
@@ -16,13 +16,15 @@ function Dashboard() {
   const [courses, setCourses] = useState([]);
   const [stats, setStats] = useState([]);
   const [fetching, setFetching] = useState(true);
+  const { user } = useAuthStore((state) => ({ user: state.user })); // Access user data from useAuthStore
+  const studentId = user?.user_id;
 
   const fetchData = async () => {
     try {
       setFetching(true);
       const [summaryRes, coursesRes] = await Promise.all([
-        useAxios().get(`student/summary/${UserData()?.user_id}/`),
-        useAxios().get(`student/course-list/${UserData()?.user_id}/`),
+        useAxios().get(`student/summary/${studentId}/`),
+        useAxios().get(`student/course-list/${studentId}/`),
       ]);
       setStats(summaryRes.data[0]);
       setCourses(coursesRes.data);

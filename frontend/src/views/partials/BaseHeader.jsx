@@ -1,15 +1,33 @@
-import { useContext, useState } from "react";
-import { useAuth } from "../../utils/AuthContext";
+/* eslint-disable react/prop-types */
+import { useContext, useState, useEffect } from "react";
+import { useAuthStore } from "../../store/auth";
 import { Link, useNavigate } from "react-router-dom";
 import { SearchContext } from "../../utils/SearchContext";
 import { CartContext } from "../plugin/Context";
+import './partials.css'
 
-function BaseHeader() {
+function BaseHeader({ mostPopularCoursesRef }) {
   const [cartCount, setCartCount] = useContext(CartContext);
-  const { isAuthenticated, user } = useAuth();
+  const { user, loading, isLoggedIn } = useAuthStore((state) => ({
+    user: state.user,
+    loading: state.loading,
+    isLoggedIn: state.isLoggedIn(),
+  }));
   const [searchInput, setSearchInput] = useState("");
   const { searchQuery, setSearchQuery } = useContext(SearchContext);
   const navigate = useNavigate();
+
+  //console.log("useAuthStore", isLoggedIn, user);
+  useEffect(() => {
+    if (loading) {
+      // You could show a loading spinner or similar
+      console.log("Loading user data...");
+    }
+  }, [loading]);
+
+  if (loading) {
+    return <div>Loading...</div>; // Replace this with a better loading UI
+  }
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -29,8 +47,14 @@ function BaseHeader() {
     setSearchQuery("");
   };
 
+  const handleFocus = () => {
+    if (mostPopularCoursesRef.current) {
+      mostPopularCoursesRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
-    <div>
+    <div className="sticky-header">
       <nav
         className="navbar navbar-expand-lg bg-body-tertiary"
         data-bs-theme="dark"
@@ -62,140 +86,143 @@ function BaseHeader() {
                   <i className="fas fa-address-card"></i> About Us
                 </Link>
               </li>
-              {isAuthenticated && (
+              {isLoggedIn && (
                 <>
-                  <li className="nav-item dropdown">
-                    <a
-                      className="nav-link dropdown-toggle"
-                      href="#"
-                      role="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      <i className="fas fa-chalkboard-user"></i> Instructor
-                    </a>
-                    <ul className="dropdown-menu">
-                      <li>
-                        <Link
-                          className="dropdown-item"
-                          to={`/instructor/dashboard/`}
-                        >
-                          <i className="bi bi-grid-fill"></i> Dashboard
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className="dropdown-item"
-                          to={`/instructor/courses/`}
-                        >
-                          <i className="fas fa-shopping-cart"></i> My Courses
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className="dropdown-item"
-                          to={`/instructor/create-course/`}
-                        >
-                          <i className="fas fa-plus"></i> Create Course
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className="dropdown-item"
-                          to={`/instructor/reviews/`}
-                        >
-                          <i className="fas fa-star"></i> Reviews{" "}
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className="dropdown-item"
-                          to={`/instructor/question-answer/`}
-                        >
-                          <i className="fas fa-envelope"></i> Q/A{" "}
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className="dropdown-item"
-                          to={`/instructor/students/`}
-                        >
-                          <i className="fas fa-users"></i> Students{" "}
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className="dropdown-item"
-                          to={`/instructor/earning/`}
-                        >
-                          <i className="fas fa-dollar-sign"></i> Earning{" "}
-                        </Link>
-                      </li>
+                  {user?.teacher_id > 0 ? (
+                    <li className="nav-item dropdown">
+                      <a
+                        className="nav-link dropdown-toggle"
+                        href="#"
+                        role="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        <i className="fas fa-chalkboard-user"></i> Instructor
+                      </a>
+                      <ul className="dropdown-menu">
+                        <li>
+                          <Link
+                            className="dropdown-item"
+                            to={`/instructor/dashboard/`}
+                          >
+                            <i className="bi bi-grid-fill"></i> Dashboard
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            className="dropdown-item"
+                            to={`/instructor/courses/`}
+                          >
+                            <i className="fas fa-shopping-cart"></i> My Courses
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            className="dropdown-item"
+                            to={`/instructor/create-course/`}
+                          >
+                            <i className="fas fa-plus"></i> Create Course
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            className="dropdown-item"
+                            to={`/instructor/reviews/`}
+                          >
+                            <i className="fas fa-star"></i> Reviews{" "}
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            className="dropdown-item"
+                            to={`/instructor/question-answer/`}
+                          >
+                            <i className="fas fa-envelope"></i> Q/A{" "}
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            className="dropdown-item"
+                            to={`/instructor/students/`}
+                          >
+                            <i className="fas fa-users"></i> Students{" "}
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            className="dropdown-item"
+                            to={`/instructor/earning/`}
+                          >
+                            <i className="fas fa-dollar-sign"></i> Earning{" "}
+                          </Link>
+                        </li>
 
-                      <li>
-                        <Link
-                          className="dropdown-item"
-                          to={`/instructor/profile/`}
-                        >
-                          <i className="fas fa-gear"></i> Settings & Profile{" "}
-                        </Link>
-                      </li>
-                    </ul>
-                  </li>
-                  <li className="nav-item dropdown">
-                    <a
-                      className="nav-link dropdown-toggle"
-                      href="#"
-                      role="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      <i className="fas fa-graduation-cap"></i> Student
-                    </a>
-                    <ul className="dropdown-menu">
-                      <li>
-                        <Link
-                          className="dropdown-item"
-                          to={`/student/dashboard/`}
-                        >
-                          <i className="bi bi-grid-fill"></i> Dashboard
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className="dropdown-item"
-                          to={`/student/courses/`}
-                        >
-                          <i className="fas fa-shopping-cart"></i> My Courses
-                        </Link>
-                      </li>
+                        <li>
+                          <Link
+                            className="dropdown-item"
+                            to={`/instructor/profile/`}
+                          >
+                            <i className="fas fa-gear"></i> Settings & Profile{" "}
+                          </Link>
+                        </li>
+                      </ul>
+                    </li>
+                  ) : (
+                    <li className="nav-item dropdown">
+                      <a
+                        className="nav-link dropdown-toggle"
+                        href="#"
+                        role="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        <i className="fas fa-graduation-cap"></i> Student
+                      </a>
+                      <ul className="dropdown-menu">
+                        <li>
+                          <Link
+                            className="dropdown-item"
+                            to={`/student/dashboard/`}
+                          >
+                            <i className="bi bi-grid-fill"></i> Dashboard
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            className="dropdown-item"
+                            to={`/student/courses/`}
+                          >
+                            <i className="fas fa-shopping-cart"></i> My Courses
+                          </Link>
+                        </li>
 
-                      <li>
-                        <Link
-                          className="dropdown-item"
-                          to={`/student/wishlist/`}
-                        >
-                          <i className="fas fa-heart"></i> Wishlist{" "}
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className="dropdown-item"
-                          to={`/student/question-answer/`}
-                        >
-                          <i className="fas fa-envelope"></i> Q/A{" "}
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className="dropdown-item"
-                          to={`/student/profile/`}
-                        >
-                          <i className="fas fa-gear"></i> Profile & Settings
-                        </Link>
-                      </li>
-                    </ul>
-                  </li>
+                        <li>
+                          <Link
+                            className="dropdown-item"
+                            to={`/student/wishlist/`}
+                          >
+                            <i className="fas fa-heart"></i> Wishlist{" "}
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            className="dropdown-item"
+                            to={`/student/question-answer/`}
+                          >
+                            <i className="fas fa-envelope"></i> Q/A{" "}
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            className="dropdown-item"
+                            to={`/student/profile/`}
+                          >
+                            <i className="fas fa-gear"></i> Profile & Settings
+                          </Link>
+                        </li>
+                      </ul>
+                    </li>
+                  )}
                 </>
               )}
             </ul>
@@ -205,6 +232,7 @@ function BaseHeader() {
                   type="text"
                   value={searchInput}
                   onChange={handleInputChange}
+                  onFocus={handleFocus}
                   placeholder="Search courses..."
                   className="form-control"
                 />
@@ -225,7 +253,7 @@ function BaseHeader() {
               </form>
             </div>
 
-            {isAuthenticated === true ? (
+            {isLoggedIn === true ? (
               <>
                 <Link
                   to="/logout/"
@@ -253,7 +281,7 @@ function BaseHeader() {
                 </Link>
               </>
             )}
-            {isAuthenticated && (
+            {isLoggedIn && (
               <Link className="btn btn-success ms-2" to="/cart/">
                 Cart ({cartCount}) <i className="fas fa-shopping-cart"> </i>
               </Link>

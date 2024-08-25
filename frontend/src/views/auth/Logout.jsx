@@ -2,11 +2,14 @@ import { useEffect } from "react";
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 import { logout } from "../../utils/auth";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Logout() {
+  const navigate = useNavigate();
+
   useEffect(() => {
-    logout();
+    logout(navigate);
+    
   }, []);
 
   return (

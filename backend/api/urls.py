@@ -27,7 +27,7 @@ urlpatterns = [
     path("order/checkout/<oid>/", api_views.CheckoutAPIView.as_view()),
     path("order/coupon/", api_views.CouponApplyAPIView.as_view()),
     path("payment/stripe-checkout/<order_oid>/", api_views.StripeCheckoutAPIView.as_view()),
-    path("payment/payment-sucess/", api_views.PaymentSuccessAPIView.as_view()),
+    path("payment/payment-success/", api_views.PaymentSuccessAPIView.as_view()),
 
 
     # Student API Endpoints
@@ -45,7 +45,7 @@ urlpatterns = [
     path('student/course-progress/<int:user_id>/', api_views.student_course_progress, name='student-course-progress'),
 
     # Teacher Routes
-    path("teacher/summary/<teacher_id>/", api_views.TeacherSummaryAPIView.as_view()),
+    path("teacher/summary/<user_id>/", api_views.TeacherSummaryAPIView.as_view()),
     path("teacher/course-lists/<teacher_id>/", api_views.TeacherCourseListAPIView.as_view()),
     path("teacher/review-lists/<teacher_id>/", api_views.TeacherReviewListAPIView.as_view()),
     path("teacher/review-detail/<teacher_id>/<review_id>/", api_views.TeacherReviewDetailAPIView.as_view()),

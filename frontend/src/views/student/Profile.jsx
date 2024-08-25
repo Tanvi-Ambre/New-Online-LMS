@@ -5,9 +5,9 @@ import Sidebar from "./Partials/Sidebar";
 import Header from "./Partials/Header";
 
 import useAxios from "../../utils/useAxios";
-import UserData from "../plugin/UserData";
 import Toast from "../plugin/Toast";
 import { ProfileContext } from "../plugin/Context";
+import { useAuthStore } from "../../store/auth";
 
 const countries = [
   { code: "AF", name: "Afghanistan" },
@@ -215,10 +215,12 @@ function Profile() {
     country: "",
   });
   const [imagePreview, setImagePreview] = useState("");
+  const user = useAuthStore((state) => state.user); // Access user data from useAuthStore
+  const userId = user?.user_id;
 
   const fetchProfile = () => {
     useAxios()
-      .get(`user/profile/${UserData()?.user_id}/`)
+      .get(`user/profile/${userId}/`)
       .then((res) => {
         setProfile(res.data);
         setProfileData(res.data);
@@ -228,7 +230,7 @@ function Profile() {
 
   useEffect(() => {
     fetchProfile();
-  }, []);
+  }, [userId]);
 
   const handleProfileChange = (event) => {
     setProfileData({
@@ -257,7 +259,7 @@ function Profile() {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await useAxios().get(`user/profile/${UserData()?.user_id}/`);
+    const res = await useAxios().get(`user/profile/${userId}/`);
     const formdata = new FormData();
     if (profileData.image && profileData.image !== res.data.image) {
       formdata.append("image", profileData.image);
@@ -268,7 +270,7 @@ function Profile() {
     formdata.append("country", profileData.country);
 
     await useAxios()
-      .patch(`user/profile/${UserData()?.user_id}/`, formdata, {
+      .patch(`user/profile/${userId}/`, formdata, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

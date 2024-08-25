@@ -1,9 +1,9 @@
-import React, { useContext } from "react";
-import { ProfileContext } from "../../plugin/Context";
+import { useProfileStore } from "../../../store/useProfileStore"; // Access user data from useAuthStore
 
 function Header() {
-  const [profile] = useContext(ProfileContext);
-
+  
+  const profile = useProfileStore((state) => state.profile);
+  //console.log("profile", profile)
   return (
     <div className="row align-items-center">
       <div className="col-xl-12 col-lg-12 col-md-12 col-12">

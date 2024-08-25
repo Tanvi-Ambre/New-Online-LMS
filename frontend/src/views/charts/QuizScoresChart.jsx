@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import useAxios from "../../utils/useAxios";
-import UserData from "../plugin/UserData";
+import { useAuthStore } from "../../store/auth";
 
 function QuizScoresChart() {
   const [chartData, setChartData] = useState(null);
   const axiosInstance = useAxios();
-  const userId = UserData()?.user_id;
+  const { user } = useAuthStore((state) => ({ user: state.user })); // Access user data from useAuthStore
+  const userId = user?.user_id;
 
   useEffect(() => {
     const fetchQuizScores = async () => {

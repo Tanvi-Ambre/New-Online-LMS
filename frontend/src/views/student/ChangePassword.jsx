@@ -6,10 +6,13 @@ import Sidebar from "./Partials/Sidebar";
 import Header from "./Partials/Header";
 
 import useAxios from "../../utils/useAxios";
-import UserData from "../plugin/UserData";
+import { useAuthStore } from "../../store/auth";
 import Toast from "../plugin/Toast";
 
 function ChangePassword() {
+  const user = useAuthStore((state) => state.user); // Access user data from useAuthStore
+  const studentId = user?.user_id;
+
   const [password, setPassword] = useState({
     old_password: "",
     new_password: "",
@@ -34,7 +37,7 @@ function ChangePassword() {
     }
 
     const formdata = new FormData();
-    formdata.append("user_id", UserData()?.user_id);
+    formdata.append("user_id", studentId);
     formdata.append("old_password", password.old_password);
     formdata.append("new_password", password.new_passowrd);
 

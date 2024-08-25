@@ -9,21 +9,26 @@ import Sidebar from "./Partials/Sidebar";
 import Header from "./Partials/Header";
 
 import useAxios from "../../utils/useAxios";
-import UserData from "../plugin/UserData";
 import Toast from "../plugin/Toast";
 import CartId from "../plugin/CartId";
 import GetCurrentAddress from "../plugin/UserCountry";
 import { CartContext } from "../plugin/Context";
+import { useAuthStore } from "../../store/auth";
 
 function Wishlist() {
   const [wishlist, setWishlist] = useState([]);
   const [cartCount, setCartCount] = useContext(CartContext);
+  const { user } = useAuthStore((state) => ({
+    user: state.user,
+  }));
+  
+  const userId = user?.user_id
 
   const fetchWishlist = () => {
     useAxios()
-      .get(`student/wishlist/${UserData()?.user_id}/`)
+      .get(`student/wishlist/${userId}/`)
       .then((res) => {
-        console.log(res.data);
+        //console.log(res.data);
         setWishlist(res.data);
       });
   };
@@ -46,7 +51,7 @@ function Wishlist() {
       await useAxios()
         .post(`course/cart/`, formdata)
         .then((res) => {
-          console.log(res.data);
+          //console.log(res.data);
           Toast().fire({
             title: "Added To Cart",
             icon: "success",
@@ -66,13 +71,13 @@ function Wishlist() {
 
   const addToWishlist = (courseId) => {
     const formdata = new FormData();
-    formdata.append("user_id", UserData()?.user_id);
+    formdata.append("user_id", userId);
     formdata.append("course_id", courseId);
 
     useAxios()
-      .post(`student/wishlist/${UserData()?.user_id}/`, formdata)
+      .post(`student/wishlist/${userId}/`, formdata)
       .then((res) => {
-        console.log(res.data);
+        //console.log(res.data);
         fetchWishlist();
         Toast().fire({
           icon: "success",
@@ -177,7 +182,7 @@ function Wishlist() {
                                   onClick={() =>
                                     addToCart(
                                       w.course.id,
-                                      UserData()?.user_id,
+                                      userId,
                                       w.course.price,
                                       country,
                                       CartId()

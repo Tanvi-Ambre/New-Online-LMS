@@ -6,11 +6,15 @@ import BaseFooter from "../partials/BaseFooter";
 import useAxios from "../../utils/useAxios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import UserData from "../plugin/UserData";
+import { useAuthStore } from "../../store/auth";
 import { FaTrashAlt } from "react-icons/fa"; // Importing the trash icon
 
 function QuizCreate() {
   const [courses, setCourses] = useState([]);
+  const { user } = useAuthStore((state) => ({
+    user: state.user,
+  })); // Access user data from useAuthStore
+  const teacherId = user?.teacher_id;
 
   const axiosInstance = useAxios();
   const navigate = useNavigate();
@@ -30,13 +34,26 @@ function QuizCreate() {
   });
 
   useEffect(() => {
-    // Fetch the list of courses for the instructor
-    axiosInstance
-      .get(`/teacher/course-lists/${UserData()?.teacher_id}/`)
-      .then((res) => {
-        setCourses(res.data);
-      });
-  }, []);
+    // Ensure teacherId is defined before making the request
+    if (teacherId) {
+      // Fetch the list of courses for the instructor
+      axiosInstance
+        .get(`/teacher/course-lists/${teacherId}/`)
+        .then((res) => {
+          setCourses(res.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching courses:", error);
+          Swal.fire({
+            icon: "error",
+            title: "Failed to fetch courses",
+            text: "Please try again later.",
+          });
+        });
+    } else {
+      console.warn("Teacher ID is undefined.");
+    }
+  }, [teacherId]);
 
   const handleQuizInputChange = (event) => {
     setQuiz({
@@ -135,6 +152,15 @@ function QuizCreate() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!teacherId) {
+      Swal.fire({
+        icon: "error",
+        title: "Teacher ID is missing!",
+        text: "Please ensure you are logged in as an instructor.",
+      });
+      return;
+    }
+    
     if (!validateQuiz()) {
       return; // If validation fails, do not submit the form
     }

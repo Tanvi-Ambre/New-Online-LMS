@@ -258,9 +258,9 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:5173', 
-    'http://127.0.0.1:8000',
-]
+# CSRF_TRUSTED_ORIGINS = [
+#     'http://localhost:5173', 
+#     'http://127.0.0.1:8000',
+# ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True

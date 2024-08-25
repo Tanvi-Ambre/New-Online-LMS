@@ -10,7 +10,7 @@ import BaseFooter from "../partials/BaseFooter";
 import Sidebar from "./Partials/Sidebar";
 import Header from "./Partials/Header";
 import useAxios from "../../utils/useAxios";
-import UserData from "../plugin/UserData";
+import { useAuthStore } from "../../store/auth";
 import Toast from "../plugin/Toast";
 import moment from "moment";
 
@@ -30,7 +30,8 @@ function CourseDetail() {
   const [createReview, setCreateReview] = useState({ rating: 1, review: "" });
   const [studentReview, setStudentReview] = useState([]);
   const [quizzes, setQuizzes] = useState([]);
-
+  const user = useAuthStore((state) => state.user); // Access user data from useAuthStore
+  const studentId = user?.user_id;
   const param = useParams();
   const lastElementRef = useRef();
   const messageInputRef = useRef();
@@ -68,7 +69,7 @@ function CourseDetail() {
   const fetchCourseDetail = async () => {
     useAxios()
       .get(
-        `student/course-detail/${UserData()?.user_id}/${param.enrollment_id}/`
+        `student/course-detail/${studentId}/${param.enrollment_id}/`
       )
       .then((res) => {
         setCourse(res.data);
@@ -98,7 +99,7 @@ function CourseDetail() {
     });
 
     const formdata = new FormData();
-    formdata.append("user_id", UserData()?.user_id || 0);
+    formdata.append("user_id", studentId || 0);
     formdata.append("course_id", course.course?.id);
     formdata.append("variant_item_id", variantItemId);
 
@@ -124,7 +125,7 @@ function CourseDetail() {
     e.preventDefault();
     const formdata = new FormData();
 
-    formdata.append("user_id", UserData()?.user_id);
+    formdata.append("user_id", studentId);
     formdata.append("enrollment_id", param.enrollment_id);
     formdata.append("title", createNote.title);
     formdata.append("note", createNote.note);
@@ -132,7 +133,7 @@ function CourseDetail() {
     try {
       await useAxios()
         .post(
-          `student/course-note/${UserData()?.user_id}/${param.enrollment_id}/`,
+          `student/course-note/${studentId}/${param.enrollment_id}/`,
           formdata
         )
         .then((res) => {
@@ -152,14 +153,14 @@ function CourseDetail() {
     e.preventDefault();
     const formdata = new FormData();
 
-    formdata.append("user_id", UserData()?.user_id);
+    formdata.append("user_id", studentId);
     formdata.append("enrollment_id", param.enrollment_id);
     formdata.append("title", createNote.title || selectedNote?.title);
     formdata.append("note", createNote.note || selectedNote?.note);
 
     useAxios()
       .patch(
-        `student/course-note-detail/${UserData()?.user_id}/${param.enrollment_id}/${noteId}/`,
+        `student/course-note-detail/${studentId}/${param.enrollment_id}/${noteId}/`,
         formdata
       )
       .then((res) => {
@@ -174,7 +175,7 @@ function CourseDetail() {
   const handleDeleteNote = (noteId) => {
     useAxios()
       .delete(
-        `student/course-note-detail/${UserData()?.user_id}/${param.enrollment_id}/${noteId}/`
+        `student/course-note-detail/${studentId}/${param.enrollment_id}/${noteId}/`
       )
       .then((res) => {
         fetchCourseDetail();
@@ -197,7 +198,7 @@ function CourseDetail() {
     const formdata = new FormData();
 
     formdata.append("course_id", course.course?.id);
-    formdata.append("user_id", UserData()?.user_id);
+    formdata.append("user_id", studentId);
     formdata.append("title", createMessage.title);
     formdata.append("message", createMessage.message);
 
@@ -225,7 +226,7 @@ function CourseDetail() {
 
     const formdata = new FormData();
     formdata.append("course_id", course.course?.id);
-    formdata.append("user_id", UserData()?.user_id);
+    formdata.append("user_id", studentId);
     formdata.append("message", createMessage.message);
     formdata.append("qa_id", selectedConversation?.qa_id);
 
@@ -272,7 +273,7 @@ function CourseDetail() {
 
     const formdata = new FormData();
     formdata.append("course_id", course.course?.id);
-    formdata.append("user_id", UserData()?.user_id);
+    formdata.append("user_id", studentId);
     formdata.append("rating", createReview?.rating);
     formdata.append("review", createReview?.review);
 
@@ -292,13 +293,13 @@ function CourseDetail() {
 
     const formdata = new FormData();
     formdata.append("course", course.course?.id);
-    formdata.append("user", UserData()?.user_id);
+    formdata.append("user", studentId);
     formdata.append("rating", createReview?.rating || studentReview?.rating);
     formdata.append("review", createReview?.review || studentReview?.review);
 
     useAxios()
       .patch(
-        `student/review-detail/${UserData()?.user_id}/${studentReview?.id}/`,
+        `student/review-detail/${studentId}/${studentReview?.id}/`,
         formdata
       )
       .then((res) => {

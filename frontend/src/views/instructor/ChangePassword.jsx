@@ -5,7 +5,7 @@ import Sidebar from "./Partials/Sidebar";
 import Header from "./Partials/Header";
 
 import useAxios from "../../utils/useAxios";
-import UserData from "../plugin/UserData";
+import { useAuthStore } from "../../store/auth";
 import Toast from "../plugin/Toast";
 
 function ChangePassword() {
@@ -14,6 +14,8 @@ function ChangePassword() {
     new_password: "",
     confirm_new_password: "",
   });
+  const {user} = useAuthStore((state) => state.user); // Access user data from useAuthStore
+  const userId = user?.user_id;
 
   const handlePasswordChange = (event) => {
     setPassword({
@@ -33,7 +35,7 @@ function ChangePassword() {
     }
 
     const formdata = new FormData();
-    formdata.append("user_id", UserData()?.user_id);
+    formdata.append("user_id", userId);
     formdata.append("old_password", password.old_password);
     formdata.append("new_password", password.new_passowrd);
 
