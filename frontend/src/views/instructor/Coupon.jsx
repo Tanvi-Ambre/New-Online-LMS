@@ -10,10 +10,8 @@ import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 
 import useAxios from "../../utils/useAxios";
-import Useta from "../plugin/UserData";
-import { teacherId } from "../../utils/constants";
-import UserData from "../plugin/UserData";
 import Toast from "../plugin/Toast";
+import { useAuthStore } from "../../store/auth";
 
 function Coupon() {
   const [coupons, setCoupons] = useState([]);
@@ -22,7 +20,9 @@ function Coupon() {
 
   const [show, setShow] = useState(false);
   const [showAddCoupon, setShowAddCoupon] = useState(false);
-
+  const user = useAuthStore((state) => state.user); // Access user data from useAuthStore
+  const teacherId = user?.teacher_id;
+  //console.log("teacherId", teacherId)
   const handleClose = () => setShow(false);
   const handleShow = (coupon) => {
     setShow(true);
@@ -34,7 +34,7 @@ function Coupon() {
 
   const fetchCoupons = () => {
     useAxios()
-      .get(`teacher/coupon-list/${UserData()?.teacher_id}/`)
+      .get(`teacher/coupon-list/${teacherId}/`)
       .then((res) => {
         setCoupons(res.data);
       });
@@ -56,12 +56,12 @@ function Coupon() {
 
     const formdata = new FormData();
 
-    formdata.append("teacher", UserData()?.teacher_id);
+    formdata.append("teacher", teacherId);
     formdata.append("code", createCoupon.code);
     formdata.append("discount", createCoupon.discount);
 
     useAxios()
-      .post(`teacher/coupon-list/${UserData()?.teacher_id}/`, formdata)
+      .post(`teacher/coupon-list/${teacherId}/`, formdata)
       .then((res) => {
         fetchCoupons();
         handleAddCouponClose();
@@ -74,7 +74,7 @@ function Coupon() {
 
   const handleDeleteCoupon = (couponId) => {
     useAxios()
-      .delete(`teacher/coupon-detail/${UserData()?.teacher_id}/${couponId}/`)
+      .delete(`teacher/coupon-detail/${teacherId}/${couponId}/`)
       .then((res) => {
         fetchCoupons();
         Toast().fire({
@@ -89,13 +89,13 @@ function Coupon() {
 
     const formdata = new FormData();
 
-    formdata.append("teacher", UserData()?.teacher_id);
+    formdata.append("teacher", teacherId);
     formdata.append("code", createCoupon.code);
     formdata.append("discount", createCoupon.discount);
 
     useAxios()
       .patch(
-        `teacher/coupon-detail/${UserData()?.teacher_id}/${selectedCoupon.id}/`,
+        `teacher/coupon-detail/${teacherId}/${selectedCoupon.id}/`,
         formdata
       )
       .then((res) => {
@@ -173,7 +173,7 @@ function Coupon() {
                                 </p>
                                 <p>
                                   <button
-                                    class="btn btn-outline-secondary"
+                                    className="btn btn-outline-secondary"
                                     type="button"
                                     onClick={() => handleShow(c)}
                                   >
@@ -181,7 +181,7 @@ function Coupon() {
                                   </button>
 
                                   <button
-                                    class="btn btn-danger ms-2"
+                                    className="btn btn-danger ms-2"
                                     type="button"
                                     onClick={() => handleDeleteCoupon(c.id)}
                                   >
@@ -244,7 +244,7 @@ function Coupon() {
               />
             </div>
 
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" className="btn btn-primary">
               Update Coupon <i className="fas fa-check-circle"> </i>
             </button>
 
@@ -261,7 +261,7 @@ function Coupon() {
         </Modal.Header>
         <Modal.Body>
           <form onSubmit={handleCouponSubmit}>
-            <div class="mb-3">
+            <div className="mb-3">
               <label htmlFor="exampleInputEmail1" className="form-label">
                 Code
               </label>

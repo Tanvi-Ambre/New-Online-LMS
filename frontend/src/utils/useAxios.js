@@ -35,7 +35,7 @@ const useAxios = () => {
   });
 
   axiosInstance.interceptors.request.use(async (req) => {
-    if (!isAccessTokenExpired()) {
+    if (!isAccessTokenExpired(accessToken)) {
       return req;
     }
      //   console.log("Token is expired, refreshing...");

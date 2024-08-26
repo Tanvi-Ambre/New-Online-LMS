@@ -9,7 +9,7 @@ import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 import { Link } from "react-router-dom";
 import useAxios from "../../utils/useAxios";
-import UserData from "../plugin/UserData";
+import { useAuthStore } from "../../store/auth";
 import Swal from "sweetalert2";
 
 function CourseCreate() {
@@ -32,7 +32,11 @@ function CourseCreate() {
 
   const [category, setCategory] = useState([]);
   const [ckEditorData, setCKEditorData] = useState("");
-
+  const { user } = useAuthStore((state) => ({
+    user: state.user,
+  })); // Access user data from useAuthStore
+  const teacherId = user?.teacher_id;
+  console.log("teacherId", teacherId)
   const [variants, setVariants] = useState([
     {
       title: "",
@@ -141,6 +145,16 @@ function CourseCreate() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log("teacherId", teacherId)
+    if (!teacherId) {
+      Swal.fire({
+        icon: "error",
+        title: "Teacher ID is missing!",
+        text: "Please ensure you are logged in as an instructor.",
+      });
+      return;
+    }
+
     const formdata = new FormData();
     formdata.append("title", course.title);
     formdata.append("description", ckEditorData);
@@ -154,7 +168,7 @@ function CourseCreate() {
     formdata.append("course_id", course.course_id);
     formdata.append("slug", course.slug);
     formdata.append("date", course.date);
-    formdata.append("teacher", parseInt(UserData()?.teacher_id));
+    formdata.append("teacher", parseInt(teacherId));
 
     if (course.image && course.image.file) {
       formdata.append("image", course.image.file);

@@ -1,68 +1,99 @@
-//THis is working code
 /* eslint-disable react/jsx-key */
-import { useEffect, useState, useContext, useRef } from "react";
+import { useEffect, useState, useContext, useRef, useMemo } from "react";
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Rater from "react-rater";
 import "react-rater/lib/react-rater.css";
 
 import useAxios from "../../utils/useAxios";
 import CartId from "../plugin/CartId";
 import GetCurrentAddress from "../plugin/UserCountry";
-import UserData from "../plugin/UserData";
 import Toast from "../plugin/Toast";
 import { CartContext } from "../plugin/Context";
 import { SearchContext } from "../../utils/SearchContext";
 import apiInstance from "../../utils/axios";
-import imagePath from "../../assets/Landing.avif"
+import imagePath from "../../assets/Landing.avif";
+import { useAuthStore } from "../../store/auth";
+import { useCourseStore } from "../../store/courseStore";
 
 function Index() {
-  const [courses, setCourses] = useState([]);
+  //const [courses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filteredCourses, setFilteredCourses] = useState([]);
   const [cartCount, setCartCount] = useContext(CartContext);
-  const { searchQuery, setSearchQuery } = useContext(SearchContext);
+  //const [wishlist, setWishlist] = useState([]); // Add this line
+  const navigate = useNavigate();
+
+  const { searchQuery } = useContext(SearchContext);
+  const courses = useCourseStore((state) => state.courses); // Get courses from Zustand
+  const setCourses = useCourseStore((state) =>  state.setCourses); // Set courses in Zustand
   const courseListRef = useRef(null);
+  const mostPopularCoursesRef = useRef(null);
 
   const country = GetCurrentAddress().country;
-  const userId = UserData()?.user_id;
-  const fullName = UserData()?.full_name; 
   const cartId = CartId();
+  const user = useAuthStore((state) => state.user); // Access user data from useAuthStore
+  const userId = user?.user_id;
+  const fullName = user?.full_name;
+  console.log("courses", courses);
 
-  const fetchCourse = async (retryCount = 3) => {
-    setIsLoading(true);
-    try {
-      const res = await useAxios().get(`/course/course-list/`);
-      setCourses(res.data);
+ 
+  useEffect(() => {
+    if (courses.length > 0) {
       setIsLoading(false);
-    } catch (error) {
-      if (retryCount > 0) {
-        fetchCourse(retryCount - 1);
-      } else {
-        console.log("Failed to fetch courses:", error);
-        setIsLoading(false);
-      }
     }
-  };
+  }, [courses]);
 
-  useEffect(() => {
-    fetchCourse();
-  }, []);
+  // const fetchCourse = (retryCount = 3) => {
+  //   setIsLoading(true);
+  //   try {
+  //     apiInstance.get(`/course/course-list/`).then((res)=>{
 
+  //       console.log("course-list", res.data);
+  //       setCourses(res.data);
+  //       setIsLoading(false);
+  //     });
+  //   } catch (error) {
+  //     if (retryCount > 0) {
+  //       fetchCourse(retryCount - 1);
+  //     } else {
+  //       console.log("Failed to fetch courses:", error);
+  //       setIsLoading(false);
+  //     }
+  //   }
+  // };
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   if (courses.length === 0) {
+  //     fetchCourse(); // Fetch courses only if they are not already fetched
+  //   } else {
+  //     setIsLoading(false);
+  //   }
+  // }, [courses]);
+
+  const memoizedFilteredCourses = useMemo(() => {
     if (searchQuery) {
-      const filteredCourses = courses.filter((course) =>
+      return courses.filter((course) =>
         course.title.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      setFilteredCourses(filteredCourses);
-    } else {
-      setFilteredCourses(courses);
     }
-  }, [searchQuery, courses]);
-    
+    return courses;
+  }, [courses, searchQuery]);
+
+  useEffect(() => {
+    setFilteredCourses(memoizedFilteredCourses);
+  }, [memoizedFilteredCourses]);
+
   const addToCart = async (courseId, userId, price, country, cartId) => {
+    if (!userId) {
+      Toast().fire({
+        title: "Please log in to add items to your cart",
+        icon: "warning",
+      });
+      return navigate("/login"); // Redirect to login if not logged in
+    }
+
     const formdata = new FormData();
 
     formdata.append("course_id", courseId);
@@ -107,13 +138,13 @@ function Index() {
   //console.log("currentItems", currentItems)
   const addToWishlist = (courseId) => {
     const formdata = new FormData();
-    formdata.append("user_id", UserData()?.user_id);
+    formdata.append("user_id", userId);
     formdata.append("course_id", courseId);
 
     useAxios()
-      .post(`student/wishlist/${UserData()?.user_id}/`, formdata)
+      .post(`student/wishlist/${userId}/`, formdata)
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         Toast().fire({
           icon: "success",
           title: res.data.message,
@@ -123,7 +154,7 @@ function Index() {
 
   return (
     <>
-      <BaseHeader />
+      <BaseHeader mostPopularCoursesRef={mostPopularCoursesRef} />
 
       <section className="py-lg-8 py-5" ref={courseListRef}>
         {/* container */}
@@ -136,10 +167,8 @@ function Index() {
                 {/* Display the greeting message */}
                 {fullName && (
                   <div className="bg-light mb-4">
-                  <h2 className="m-0">
-                    Welcome back, {fullName}!
-                  </h2>
-                </div>
+                    <h2 className="m-0">Welcome back, {fullName}!</h2>
+                  </div>
                 )}
                 {/* heading */}
                 <h5 className="text-dark mb-4">
@@ -164,7 +193,7 @@ function Index() {
               <div className="position-relative">
                 <img
                   src={imagePath}
-                  alt="girl"
+                  alt="profile-img"
                   className="end-0 bottom-0"
                 />
               </div>
@@ -232,7 +261,7 @@ function Index() {
         </div>
       </section>
 
-      <section className="mb-5">
+      <section className="mb-5" ref={mostPopularCoursesRef}>
         <div className="container mb-lg-8 ">
           <div className="row mb-5 mt-3">
             {/* col */}
@@ -321,7 +350,6 @@ function Index() {
                             <div className="col">
                               <h5 className="mb-0">${c.price}</h5>
                             </div>
-                            
                           </div>
                         </div>
                       </div>
@@ -378,8 +406,6 @@ function Index() {
         </div>
       </section>
 
-     
-
       <section className="bg-gray-200 pt-8 pb-8 mt-5">
         <div className="container pb-8">
           {/* row */}
@@ -415,7 +441,6 @@ function Index() {
                     </p>
                   </div>
                 </div>
-                
               </div>
             </div>
           </div>

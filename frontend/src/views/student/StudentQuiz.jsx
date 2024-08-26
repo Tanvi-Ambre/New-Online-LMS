@@ -6,7 +6,7 @@ import BaseFooter from "../partials/BaseFooter";
 import useAxios from "../../utils/useAxios";
 import Swal from "sweetalert2";
 import { useParams, useNavigate } from "react-router-dom";
-import UserData from "../plugin/UserData";
+import { useAuthStore } from "../../store/auth";
 
 function StudentQuiz() {
   const { quizId } = useParams(); // Get quizId from the URL
@@ -18,7 +18,8 @@ function StudentQuiz() {
   const [totalScore, setTotalScore] = useState(null); // Store total score
   const axiosInstance = useAxios();
   const navigate = useNavigate();
-  const studentId = UserData()?.user_id;
+  const user = useAuthStore((state) => state.user); // Access user data from useAuthStore
+  const studentId = user?.user_id;
 
   useEffect(() => {
     // Fetch the quiz details when the component mounts
