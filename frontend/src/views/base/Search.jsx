@@ -8,10 +8,10 @@ import "react-rater/lib/react-rater.css";
 import useAxios from "../../utils/useAxios";
 import CartId from "../plugin/CartId";
 import GetCurrentAddress from "../plugin/UserCountry";
-import UserData from "../plugin/UserData";
 import Toast from "../plugin/Toast";
 import { CartContext } from "../plugin/Context";
 import apiInstance from "../../utils/axios";
+import { useAuthStore } from "../../store/auth";
 
 function Search() {
   const [courses, setCourses] = useState([]);
@@ -19,7 +19,8 @@ function Search() {
   const [cartCount, setCartCount] = useContext(CartContext);
 
   const country = GetCurrentAddress().country;
-  const userId = UserData()?.user_id;
+  const user = useAuthStore((state) => state.user); // Access user data from useAuthStore
+  const userId = user?.user_id;
   const cartId = CartId();
 
   const fetchCourse = async () => {
@@ -235,56 +236,6 @@ function Search() {
           </div>
         </div>
       </section>
-
-      {/* <section className="my-8 py-lg-8">
-      
-        <div className="container">
-          
-          <div className="row align-items-center bg-primary gx-0 rounded-3 mt-5">
-        
-            <div className="col-lg-6 col-12 d-none d-lg-block">
-              <div className="d-flex justify-content-center pt-4">
-                
-                <div className="position-relative">
-                  <img
-                    src="https://geeksui.codescandy.com/geeks/assets/images/png/cta-instructor-1.png"
-                    alt="image"
-                    className="img-fluid mt-n8"
-                  />
-                  <div className="ms-n8 position-absolute bottom-0 start-0 mb-6">
-                    <img
-                      src="https://geeksui.codescandy.com/geeks/assets/images/svg/dollor.svg"
-                      alt="dollor"
-                    />
-                  </div>
-                  
-                  <div className="me-n4 position-absolute top-0 end-0">
-                    <img
-                      src="https://geeksui.codescandy.com/geeks/assets/images/svg/graph.svg"
-                      alt="graph"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-5 col-12">
-              <div className="text-white p-5 p-lg-0">
-              
-                <h2 className="h1 text-white">Become an instructor today</h2>
-                <p className="mb-0">
-                  Instructors from around the world teach millions of students
-                  on Geeks. We provide the tools and skills to teach what you
-                  love.
-                </p>
-                <a href="#" className="btn bg-white text-dark fw-bold mt-4">
-                  Start Teaching Today <i className="fas fa-arrow-right"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section> */}
-
       <BaseFooter />
     </>
   );

@@ -10,15 +10,17 @@ import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 
 import useAxios from "../../utils/useAxios";
-import UserData from "../plugin/UserData";
 import Toast from "../plugin/Toast";
+import { useAuthStore } from "../../store/auth";
 
 function TeacherNotification() {
   const [noti, setNoti] = useState([]);
+  const user = useAuthStore((state) => state.user); // Access user data from useAuthStore
+  const teacherId = user?.teacher_id;
 
   const fetchNoti = () => {
     useAxios()
-      .get(`teacher/noti-list/${UserData()?.teacher_id}/`)
+      .get(`teacher/noti-list/${teacherId}/`)
       .then((res) => {
         setNoti(res.data);
       });
@@ -31,13 +33,13 @@ function TeacherNotification() {
   const handleMarkAsSeen = (notiId) => {
     const formdata = new FormData();
 
-    formdata.append("teacher", UserData()?.teacher_id);
+    formdata.append("teacher", teacherId);
     formdata.append("pk", notiId);
     formdata.append("seen", true);
 
     useAxios()
       .patch(
-        `teacher/noti-detail/${UserData()?.teacher_id}/${notiId}`,
+        `teacher/noti-detail/${teacherId}/${notiId}`,
         formdata
       )
       .then((res) => {

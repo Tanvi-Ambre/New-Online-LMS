@@ -6,6 +6,7 @@ import BaseFooter from "../partials/BaseFooter";
 
 import useAxios from "../../utils/useAxios";
 import UserData from "../plugin/UserData";
+import { useAuthStore } from "../../store/auth";
 import CoursesChart from "../charts/CoursesChart";
 import LineChart from "../charts/LineChart";
 import CompletionChart from "../charts/CompletionChart";
@@ -22,9 +23,13 @@ function Dashboard() {
   const [showRatingCounts, setShowRatingCounts] = useState(false);
   const [loading, setLoading] = useState(true);
   const [monthlyEarnings, setMonthlyEarnings] = useState([]);
-
-  const teacherId = UserData()?.teacher_id;
-
+  const { user } = useAuthStore((state) => ({
+    user: state.user,
+  }));
+  const teacherId = user?.teacher_id;
+  //const userId = user?.user_id;
+  //console.log("teacherId", teacherId)
+  
   const fetchCourseData = () => {
     setLoading(true);
     useAxios()
@@ -191,7 +196,7 @@ function Dashboard() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="row mb-4">
                     <div className="col-md-6">
                       <div className="card p-3 mb-4">
@@ -204,7 +209,7 @@ function Dashboard() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="row mb-4">
                     <div className="col-md-6">
                       <div className="card p-3 mb-4">

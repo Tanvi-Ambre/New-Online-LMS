@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 import Sidebar from "./Partials/Sidebar";
 import Header from "./Partials/Header";
 
 import useAxios from "../../utils/useAxios";
-import UserData from "../plugin/UserData";
 import Toast from "../plugin/Toast";
-import { ProfileContext } from "../plugin/Context";
+import { useAuthStore } from "../../store/auth";
+import { useProfileStore } from "../../store/useProfileStore";
 
 const countries = [
   { code: "AF", name: "Afghanistan" },
@@ -205,30 +205,42 @@ const countries = [
   { code: "ZW", name: "Zimbabwe" },
 ];
 
-
 function Profile() {
-  const [profile, setProfile] = useContext(ProfileContext);
+  const { profile, loading, fetchProfile, setProfile } = useProfileStore(
+    (state) => ({
+      profile: state.profile,
+      loading: state.loading,
+      fetchProfile: state.fetchProfile,
+      setProfile: state.setProfile,
+    })
+  );
+
   const [profileData, setProfileData] = useState({
     image: "",
     full_name: "",
     about: "",
     country: "",
   });
-  const [imagePreview, setImagePreview] = useState("");
 
-  const fetchProfile = () => {
-    useAxios()
-      .get(`user/profile/${UserData()?.user_id}/`)
-      .then((res) => {
-        setProfile(res.data);
-        setProfileData(res.data);
-        setImagePreview(res.data.image);
-      });
-  };
+  const [imagePreview, setImagePreview] = useState("");
+  const [imageError, setImageError] = useState("");
+  const { user } = useAuthStore((state) => ({
+    user: state.user,
+  }));
+  const userId = user?.user_id;
 
   useEffect(() => {
-    fetchProfile();
-  }, []);
+    if (userId) {
+      fetchProfile(userId);
+    }
+  }, [userId, fetchProfile]);
+
+  useEffect(() => {
+    if (profile) {
+      setProfileData(profile);
+      setImagePreview(profile.image);
+    }
+  }, [profile]);
 
   const handleProfileChange = (event) => {
     setProfileData({
@@ -239,6 +251,11 @@ function Profile() {
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
+    if (selectedFile && selectedFile.size > 800 * 1024) {
+      setImageError("Image size exceeds the limit of 800KB.");
+      return;
+    }
+    setImageError("");
     setProfileData({
       ...profileData,
       [event.target.name]: selectedFile,
@@ -257,9 +274,8 @@ function Profile() {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await useAxios().get(`user/profile/${UserData()?.user_id}/`);
     const formdata = new FormData();
-    if (profileData.image && profileData.image !== res.data.image) {
+    if (profileData.image && profileData.image !== profile.image) {
       formdata.append("image", profileData.image);
     }
 
@@ -267,27 +283,29 @@ function Profile() {
     formdata.append("about", profileData.about);
     formdata.append("country", profileData.country);
 
-    await useAxios()
-      .patch(`user/profile/${UserData()?.user_id}/`, formdata, {
+    try {
+      const res = await useAxios().patch(`user/profile/${userId}/`, formdata, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      })
-      .then((res) => {
-        setProfile(res.data);
-        Toast().fire({
-          title: "Profile updated successfully",
-          icon: "success",
-        });
-      })
-      .catch((err) => {
-        Toast().fire({
-          title: "Failed to update profile",
-          icon: "error",
-        });
       });
+      console.log("resss", res.data);
+      setProfile(res.data);
+      Toast().fire({
+        title: "Profile updated successfully",
+        icon: "success",
+      });
+    } catch (err) {
+      Toast().fire({
+        title: "Failed to update profile",
+        icon: "error",
+      });
+    }
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
@@ -295,15 +313,11 @@ function Profile() {
 
       <section className="pt-5 pb-5">
         <div className="container">
-          {/* Header Here */}
           <Header />
           <div className="row mt-0 mt-md-4">
-            {/* Sidebar Here */}
             <Sidebar />
             <div className="col-lg-9 col-md-8 col-12">
-              {/* Card */}
               <div className="card">
-                {/* Card header */}
                 <div className="card-header">
                   <h3 className="mb-0">Profile Details</h3>
                   <p className="mb-0">
@@ -338,6 +352,9 @@ function Profile() {
                           onChange={handleFileChange}
                           id=""
                         />
+                        {imageError && (
+                          <p style={{ color: "red" }}>{imageError}</p>
+                        )}
                       </div>
                     </div>
                   </div>

@@ -8,7 +8,7 @@ import apiInstance from "../../utils/axios";
 import CartId from "../plugin/CartId";
 import Toast from "../plugin/Toast";
 import { CartContext } from "../plugin/Context";
-import { userId } from "../../utils/constants";
+import { usePurchasedCoursesStore } from "../../store/courseStore";
 import { PAYPAL_CLIENT_ID } from "../../utils/constants";
 
 function Checkout() {
@@ -18,20 +18,35 @@ function Checkout() {
   const [cartCount, setCartCount] = useContext(CartContext);
   const [cartItems, setCartItems] = useState([]);
   const [cart, setCart] = useState([]);
- 
+
+  const [hasPurchasedItems, setHasPurchasedItems] = useState(false);
   const param = useParams();
+  const navigate = useNavigate();
+
+  const purchasedCourses = usePurchasedCoursesStore(
+    (state) => state.purchasedCourses
+  );
+  const purchasedCourseIds = purchasedCourses.map((course) => course.course.id);
+
+  console.log("purchasedCourses???", purchasedCourses);
 
   const fetchCartItems = async () => {
     try {
-      apiInstance.get(`course/cart-list/${CartId()}/`).then((res) => {
-        setCartCount(res.data?.length);
-        setCart(res.data)
-      });
+      const response = await apiInstance.get(`course/cart-list/${CartId()}/`);
+      const cartItems = response.data;
+
+      console.log("cartItems", cartItems);
+      // Filter out already purchased courses
+      const hasPurchased = cartItems.some((item) =>
+        purchasedCourseIds.includes(item.course.id)
+      );
+      setHasPurchasedItems(hasPurchased);
+      setCartCount(cartItems.length);
+      setCart(cartItems);
     } catch (error) {
-      console.error('Error fetching cart items', error);
+      console.error("Error fetching cart items", error);
     }
   };
-
 
   const fetchOrder = async () => {
     try {
@@ -47,8 +62,6 @@ function Checkout() {
     fetchCartItems();
   }, []);
 
-  const navigate = useNavigate();
-
   const applyCoupon = async () => {
     const formdata = new FormData();
     formdata.append("order_oid", order?.oid);
@@ -63,7 +76,9 @@ function Checkout() {
         });
       });
     } catch (error) {
-      if (error.response.data.includes("Coupon matching query does not exist")) {
+      if (
+        error.response.data.includes("Coupon matching query does not exist")
+      ) {
         Toast().fire({
           icon: "error",
           title: "Coupon does not exist",
@@ -83,19 +98,20 @@ function Checkout() {
   };
 
   const clearCart = async () => {
-    
     try {
-      for (const item of cart) {        
-        await apiInstance.delete(`/course/cart-item-delete/${CartId()}/${item.id}/`);
+      for (const item of cart) {
+        await apiInstance.delete(
+          `/course/cart-item-delete/${CartId()}/${item.id}/`
+        );
       }
-      
+
       setCartCount(0);
       Toast().fire({
-        icon: 'success',
-        title: 'Cart Cleared Successfully',
+        icon: "success",
+        title: "Cart Cleared Successfully",
       });
     } catch (error) {
-      console.error('Error clearing cart', error);
+      console.error("Error clearing cart", error);
     }
   };
 
@@ -103,9 +119,8 @@ function Checkout() {
     await clearCart();
     navigate(`/payment-success/${order.oid}`);
   };
-  
+
   const payWithStripe = async (event) => {
-    
     setPaymentLoading(true);
     event.target.form.submit();
     await handlePaymentSuccess();
@@ -126,17 +141,23 @@ function Checkout() {
                   <nav aria-label="breadcrumb">
                     <ol className="breadcrumb breadcrumb-dots mb-0">
                       <li className="breadcrumb-item">
-                        <a href="#" className="text-decoration-none text-dark">
+                        <a href="/" className="text-decoration-none text-dark">
                           Home
                         </a>
                       </li>
                       <li className="breadcrumb-item">
-                        <a href="#" className="text-decoration-none text-dark">
+                        <a
+                          href="/student/courses/"
+                          className="text-decoration-none text-dark"
+                        >
                           Courses
                         </a>
                       </li>
                       <li className="breadcrumb-item">
-                        <a href="#" className="text-decoration-none text-dark">
+                        <a
+                          href="/cart"
+                          className="text-decoration-none text-dark"
+                        >
                           Cart
                         </a>
                       </li>
@@ -211,6 +232,17 @@ function Checkout() {
                           </td>
                           <td className="text-center">
                             <h5 className="text-success mb-0">${o.price}</h5>
+                          </td>
+                          <td className="text-center">
+                            {purchasedCourseIds.includes(o.course.id) ? (
+                              <span className="text-danger mb-0">
+                                Already Purchased
+                              </span>
+                            ) : (
+                              <span className="text-success mb-0">
+                                Available for purchase
+                              </span>
+                            )}
                           </td>
                         </tr>
                       ))}
@@ -336,6 +368,7 @@ function Checkout() {
                           ) : (
                             <button
                               type="submit"
+                              disabled={hasPurchasedItems}
                               onClick={payWithStripe}
                               className="btn btn-lg btn-success mt-2 w-100"
                             >
@@ -375,7 +408,9 @@ function Checkout() {
                               });
                             }}
                             onError={(err) => {
-                              alert('An error occurred during the PayPal transaction. Please try again.');
+                              alert(
+                                "An error occurred during the PayPal transaction. Please try again."
+                              );
                             }}
                           />
                         </PayPalScriptProvider>

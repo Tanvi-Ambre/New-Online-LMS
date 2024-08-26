@@ -7,18 +7,20 @@ import BaseFooter from "../partials/BaseFooter";
 import Sidebar from "./Partials/Sidebar";
 import Header from "./Partials/Header";
 import useAxios from "../../utils/useAxios";
-import UserData from "../plugin/UserData";
+import { useAuthStore } from "../../store/auth";
 
 function Courses() {
   const [courses, setCourses] = useState([]);
   const [stats, setStats] = useState([]);
   const [fetching, setFetching] = useState(true);
+  const { user } = useAuthStore((state) => ({ user: state.user })); // Access user data from useAuthStore
+  const studentId = user?.user_id;
 
   const fetchData = () => {
     setFetching(true);
 
     useAxios()
-      .get(`student/course-list/${UserData()?.user_id}/`)
+      .get(`student/course-list/${studentId}/`)
       .then((res) => {
         setCourses(res.data);
         setFetching(false);

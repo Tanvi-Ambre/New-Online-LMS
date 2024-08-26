@@ -7,29 +7,32 @@ import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 
 import useAxios from "../../utils/useAxios";
-import { teacherId } from "../../utils/constants";
-import UserData from "../plugin/UserData";
+import { useAuthStore } from "../../store/auth";
 
 function Earning() {
   const [stats, setStats] = useState([]);
   const [earning, setEarning] = useState([]);
   const [bestSellingCourse, setBestSellingCourse] = useState([]);
+  const { user } = useAuthStore((state) => ({
+    user: state.user,
+  }));
+  const teacherId = user?.teacher_id
 
   useEffect(() => {
     useAxios()
-      .get(`teacher/summary/${UserData()?.teacher_id}/`)
+      .get(`teacher/summary/${teacherId}/`)
       .then((res) => {
         setStats(res.data[0]);
       });
 
     useAxios()
-    .get(`teacher/all-months-earning/${UserData()?.teacher_id}/?interval=month`)
+    .get(`teacher/all-months-earning/${teacherId}/?interval=month`)
       .then((res) => {
         setEarning(res.data);
       });
 
     useAxios()
-      .get(`teacher/best-course-earning/${UserData()?.teacher_id}/`)
+      .get(`teacher/best-course-earning/${teacherId}/`)
       .then((res) => {
         setBestSellingCourse(res.data);
       });

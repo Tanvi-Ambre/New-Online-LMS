@@ -7,18 +7,26 @@ import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 
 import useAxios from "../../utils/useAxios";
-import UserData from "../plugin/UserData";
+import { useAuthStore } from "../../store/auth";
 
 function Students() {
   const [student, setStudents] = useState([]);
+  const { user } = useAuthStore((state) => ({
+    user: state.user,
+  }));
+
+  const teacherId = user?.teacher_id
 
   useEffect(() => {
     useAxios()
-      .get(`teacher/student-lists/${UserData()?.teacher_id}/`)
+      .get(`teacher/student-lists/${teacherId}/`)
       .then((res) => {
         setStudents(res.data);
+      }).catch((error) => {
+        console.error("Error fetching students:", error);
+        // Optionally, you can display a user-friendly message in the UI
       });
-  }, []);
+  }, [teacherId]);
   return (
     <>
       <BaseHeader />

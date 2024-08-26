@@ -9,15 +9,21 @@ import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 
 import useAxios from "../../utils/useAxios";
-import UserData from "../plugin/UserData";
-import { teacherId } from "../../utils/constants";
+import { useAuthStore } from "../../store/auth";
+
+
 import Toast from "../plugin/Toast";
 
 function Review() {
   const [reviews, setReviews] = useState([]);
   const [reply, setReply] = useState("");
   const [filteredReviews, setFilteredReview] = useState([]);
+  const { user } = useAuthStore((state) => ({
+    user: state.user,
+  }));
 
+  const teacherId = user?.teacher_id
+  //console.log("teacherId", user, teacherId)
   const fetchReviewsData = () => {
     useAxios()
       .get(`teacher/review-lists/${teacherId}/`)
@@ -83,7 +89,6 @@ function Review() {
       setFilteredReview(filtered);
     }
   };
-
   return (
     <>
       <BaseHeader />
@@ -148,14 +153,16 @@ function Review() {
                   {/* List group */}
                   <ul className="list-group list-group-flush">
                     {/* List group item */}
-                    {filteredReviews?.map((r, index) => (
+                    {filteredReviews?.map((r, index) => {
+                      console.log("r", r)
+                      return(
                       <li
                         className="list-group-item p-4 shadow rounded-3 mb-4"
                         key={index}
                       >
                         <div className="d-flex">
                           <img
-                            src={r.profile.image}
+                            src={r.profile?.image}
                             alt="avatar"
                             className="rounded-circle avatar-lg"
                             style={{
@@ -168,7 +175,7 @@ function Review() {
                           <div className="ms-3 mt-2">
                             <div className="d-flex align-items-center justify-content-between">
                               <div>
-                                <h4 className="mb-0">{r.profile.full_name}</h4>
+                                <h4 className="mb-0">{r.profile?.full_name}</h4>
                                 <span>
                                   {moment(r.date).format("DD MMM, YYYY")}
                                 </span>
@@ -186,7 +193,7 @@ function Review() {
                             </div>
                             <div className="mt-2">
                               <span className="fs-6 me-1 align-top">
-                                <Rater total={5} rating={r.rating || 0} />
+                                <Rater total={5} rating={r?.rating || 0} />
                               </span>
                               <span className="me-1">for</span>
                               <span className="h5">{r.course?.title}</span>
@@ -253,7 +260,7 @@ function Review() {
                           </div>
                         </div>
                       </li>
-                    ))}
+                    )})}
 
                     {filteredReviews?.length < 1 && (
                       <div className="mt-4 p-3">

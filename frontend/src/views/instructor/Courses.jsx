@@ -8,22 +8,32 @@ import Header from "./Partials/Header";
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
 import useAxios from "../../utils/useAxios";
-import UserData from "../plugin/UserData";
+import { useAuthStore } from "../../store/auth";
 
 function Courses() {
   const [courses, setCourses] = useState([]);
+  const { user, loading } = useAuthStore((state) => ({
+    user: state.user,
+    loading: state.loading,
+  }));  const teacherId = user?.teacher_id;
+
+  //console.log('teacherId', user, teacherId)
 
   const fetchCourseData = () => {
-    useAxios()
-      .get(`teacher/course-lists/${UserData()?.teacher_id}/`)
-      .then((res) => {
-        setCourses(res.data);
-      });
+    if (teacherId) {
+      useAxios()
+        .get(`teacher/course-lists/${teacherId}/`)
+        .then((res) => {
+          setCourses(res.data);
+        });
+    }
   };
 
   useEffect(() => {
-    fetchCourseData();
-  }, []);
+    if (!loading && teacherId) {
+      fetchCourseData();
+    }
+  }, [loading, teacherId]);
 
   const handleSearch = (event) => {
     const query = event.target.value.toLowerCase();

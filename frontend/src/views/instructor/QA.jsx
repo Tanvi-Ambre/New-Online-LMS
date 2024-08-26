@@ -9,7 +9,7 @@ import BaseFooter from "../partials/BaseFooter";
 import { Link } from "react-router-dom";
 
 import useAxios from "../../utils/useAxios";
-import UserData from "../plugin/UserData";
+import { useAuthStore } from "../../store/auth";
 
 function QA() {
   const [questions, setQuestions] = useState([]);
@@ -21,17 +21,27 @@ function QA() {
     message: "",
   });
 
+  const { user, loading } = useAuthStore((state) => ({
+    user: state.user,
+    loading: state.loading,
+  }));
+  // Access user data from useAuthStore
+  const teacherId = user?.teacher_id;
+  const userId = user?.user_id;
+
   const fetchQuestions = async () => {
     useAxios()
-      .get(`teacher/question-answer-list/${UserData()?.teacher_id}/`)
+      .get(`teacher/question-answer-list/${teacherId}/`)
       .then((res) => {
         setQuestions(res.data);
       });
   };
 
   useEffect(() => {
-    fetchQuestions();
-  }, []);
+    if (!loading && user) {
+      fetchQuestions();
+    }
+  }, [loading, user]);
 
   const [ConversationShow, setConversationShow] = useState(false);
   const handleConversationClose = async () => {
@@ -53,17 +63,20 @@ function QA() {
     e.preventDefault();
 
     // Clear the textarea using the ref
-  if (messageInputRef.current) {
-    messageInputRef.current.value = "";
-  }
+    if (messageInputRef.current) {
+      messageInputRef.current.value = "";
+    }
     const formdata = new FormData();
     formdata.append("course_id", selectedConversation.course);
-    formdata.append("user_id", UserData()?.user_id);
+    formdata.append("user_id", userId);
     formdata.append("message", createMessage.message);
     formdata.append("qa_id", selectedConversation?.qa_id);
 
     try {
-      const res = await useAxios().post(`student/question-answer-message-create/`, formdata);
+      const res = await useAxios().post(
+        `student/question-answer-message-create/`,
+        formdata
+      );
       setSelectedConversation(res.data.question); // Update the current conversation with the new data
       await fetchQuestions(); // Refetch questions to update the list
     } catch (error) {

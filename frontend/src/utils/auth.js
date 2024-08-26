@@ -5,6 +5,7 @@ import Cookie from "js-cookie";
 import Swal from "sweetalert2";
 
 export const login = async (email, password) => {
+  //console.log("check", email, password)
   try {
     const { data, status } = await axios.post(`user/token/`, {
       email,
@@ -46,10 +47,13 @@ export const register = async (full_name, email, password, password2) => {
   }
 };
 
-export const logout = () => {
+export const logout = (navigate) => {
   Cookie.remove("access_token");
   Cookie.remove("refresh_token");
-  useAuthStore.getState().setUser(null);
+  localStorage.removeItem("authToken");
+  const authStore = useAuthStore.getState();
+  authStore.setUser(null);
+  navigate("/login");
 };
 
 export const setUser = async () => {
@@ -63,7 +67,11 @@ export const setUser = async () => {
 
   if (isAccessTokenExpired(access_token)) {
     const response = getRefreshedToken(refresh_token);
-    setAuthUser(response.access, response.refresh);
+    if (response && response.access) {
+      setAuthUser(response.access, response.refresh);
+    } else {
+      logout();
+    }
   } else {
     setAuthUser(access_token, refresh_token);
   }
@@ -97,11 +105,12 @@ export const getRefreshedToken = async () => {
 };
 
 export const isAccessTokenExpired = (access_token) => {
+  //console.log("access_token", access_token)
   try {
     const decodedToken = jwt_decode(access_token);
     // Add a small buffer (e.g., 30 seconds) to avoid issues with almost-expired tokens
     const bufferTime = 30;
-    return decodedToken.exp < Date.now() / 1000 - bufferTime;
+    return decodedToken.exp < Date.now() / 1000 + bufferTime;
   } catch (error) {
     console.log("Error decoding token:", error);
     return true; // If there's an error decoding the token, consider it expired
