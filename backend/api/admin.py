@@ -1,5 +1,9 @@
 from django.contrib import admin
 from api import models 
+from api import views as api_views
+from django.urls import path
+
+from rest_framework_simplejwt.views import TokenRefreshView
 
 admin.site.register(models.Teacher)
 admin.site.register(models.Category)
@@ -41,3 +45,20 @@ admin.site.register(models.Country)
 # admin.site.register(models.Quiz, QuizAdmin)
 # admin.site.register(models.Question, QuestionAdmin)
 # admin.site.register(models.UserQuizResponse, UserQuizResponseAdmin)
+
+class CustomAdminSite(admin.AdminSite):
+    site_header = "LMS Admin Dashboard"
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('dashboard/', self.admin_view(path('dashboard/', self.admin_view(api_views.AdminDashboardView.as_view()), name="admin_dashboard"),), name="admin_dashboard"),
+        ]
+        return custom_urls + urls
+
+admin_site = CustomAdminSite(name='custom_admin')
+
+# Register your models here
+admin_site.register(models.Course)
+admin_site.register(models.Teacher)
+# etc.

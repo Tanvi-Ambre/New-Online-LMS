@@ -189,7 +189,10 @@ JAZZMIN_SETTINGS  = {
     "welcome_sign": "Welcome to the LMS",
     "copyright": "LMS Ltd",
     "show_ui_builder": True,
-
+    "topmenu_links": [
+        {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "Detailed Reports", "url": "admin_dashboard", "permissions": ["auth.view_user"]},
+    ]
 }
 
 

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 
+//Store for all the courses available
 const useCourseStore = create((set) => ({
   courses: [],
 

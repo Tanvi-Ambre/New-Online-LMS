@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% load static %}
+</head>
+<body>
+
+    <h1>Admin Dashboard</h1>
+
+    <!-- Enrollment Chart -->
+    <div style="width: 600px; height: 400px;">
+        <canvas id="enrollmentChart"></canvas>
+    </div>
+
+    <!-- Completion Rate Chart -->
+    <div style="width: 600px; height: 400px;">
+        <canvas id="completionRateChart"></canvas>
+    </div>
+
+    <!-- Revenue Bar Chart -->
+    <div style="width: 600px; height: 400px;">
+        <canvas id="revenueChart"></canvas>
+    </div>
+
+    <!-- JSON data for JavaScript -->
+    <script type="application/json" id="courseTitles">{{ course_titles|safe }}</script>
+    <script type="application/json" id="studentCounts">{{ student_counts|safe }}</script>
+    <script type="application/json" id="completionRates">{{ completion_rates|safe }}</script>
+    <script type="application/json" id="revenueData">{{ revenue_data|safe }}</script>
+
+    <!-- JavaScript files -->
+    <script src="{% static 'js/enrollment_chart.js' %}"></script>
+    <script src="{% static 'js/completion_rate_chart.js' %}"></script>
+    <script src="{% static 'js/revenue_chart.js' %}"></script>
+
+</body>
+</html>

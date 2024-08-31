@@ -66,22 +66,39 @@ function Checkout() {
     const formdata = new FormData();
     formdata.append("order_oid", order?.oid);
     formdata.append("coupon_code", coupon);
-
+  
     try {
-      await apiInstance.post(`order/coupon/`, formdata).then((res) => {
-        fetchOrder();
-        Toast().fire({
-          icon: res.data.icon,
-          title: res.data.message,
-        });
+      const response = await apiInstance.post(`order/coupon/`, formdata);
+      fetchOrder(); // Refresh the order details to reflect any applied discounts
+      Toast().fire({
+        icon: response.data.icon,
+        title: response.data.message,
       });
     } catch (error) {
-      if (
-        error.response.data.includes("Coupon matching query does not exist")
-      ) {
+      if (error.response && error.response.data) {
+        const errorMessage = error.response.data.detail || error.response.data;
+        if (typeof errorMessage === "string") {
+          if (errorMessage.includes("Coupon matching query does not exist")) {
+            Toast().fire({
+              icon: "error",
+              title: "Coupon does not exist",
+            });
+          } else {
+            Toast().fire({
+              icon: "error",
+              title: errorMessage,
+            });
+          }
+        } else {
+          Toast().fire({
+            icon: "error",
+            title: "An unexpected error occurred. Please try again.",
+          });
+        }
+      } else {
         Toast().fire({
           icon: "error",
-          title: "Coupon does not exist",
+          title: "An unexpected error occurred. Please try again.",
         });
       }
     }
@@ -381,6 +398,7 @@ function Checkout() {
                         <PayPalScriptProvider options={initialOptions}>
                           <PayPalButtons
                             className="mt-3"
+                            disabled={hasPurchasedItems}
                             createOrder={(data, actions) => {
                               return actions.order.create({
                                 purchase_units: [
