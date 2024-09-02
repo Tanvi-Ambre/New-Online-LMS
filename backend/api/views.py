@@ -11,6 +11,8 @@ from django.db.models import Sum, Count, Avg
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from collections import defaultdict
+from django.contrib.admin.views.decorators import staff_member_required
+from django.utils.safestring import mark_safe
 
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import IntegrityError
@@ -1483,3 +1485,151 @@ class StudentQuizScoresAPIView(generics.ListAPIView):
                 }
 
         return Response({"quiz_scores": list(highest_scores.values())}, status=status.HTTP_200_OK)
+    
+class CreateOrderAPIView(generics.CreateAPIView):
+    serializer_class = api_serializer.CartOrderSerializer
+    permission_classes = [AllowAny]
+    queryset = api_models.CartOrder.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        # Existing logic for order creation
+        full_name = request.data['full_name']
+        email = request.data['email']
+        country = request.data['country']
+        cart_id = request.data['cart_id']
+        user_id = request.data['user_id']
+
+        if user_id != 0:
+            user = User.objects.get(id=user_id)
+        else:
+            user = None
+
+        cart_items = api_models.Cart.objects.filter(cart_id=cart_id)
+
+        total_price = Decimal(0.00)
+        total_tax = Decimal(0.00)
+        total_initial_total = Decimal(0.00)
+        total_total = Decimal(0.00)
+
+        order = api_models.CartOrder.objects.create(
+            full_name=full_name,
+            email=email,
+            country=country,
+            student=user
+        )
+
+        for c in cart_items:
+            order_item = api_models.CartOrderItem.objects.create(
+                order=order,
+                course=c.course,
+                price=c.price,
+                tax_fee=c.tax_fee,
+                total=c.total,
+                initial_total=c.total,
+                teacher=c.course.teacher
+            )
+
+            total_price += Decimal(c.price)
+            total_tax += Decimal(c.tax_fee)
+            total_initial_total += Decimal(c.total)
+            total_total += Decimal(c.total)
+
+            order.teachers.add(c.course.teacher)
+
+        order.sub_total = total_price
+        order.tax_fee = total_tax
+        order.initial_total = total_initial_total
+        order.total = total_total
+        order.save()
+
+        # Send enrollment confirmation email to the student
+        self.send_enrollment_email(user, order)
+        
+        # Send enrollment notification email to the teachers
+        self.send_enrollment_email_to_teacher(order)
+
+        return Response({"message": "Order Created Successfully", "order_oid": order.oid}, status=status.HTTP_201_CREATED)
+
+    def send_enrollment_email(self, user, order):
+        course_names = ", ".join([item.course.title for item in order.orderitem.all()])
+
+        context = {
+            "username": user.username if user else order.full_name,
+            "course_name": course_names
+        }
+
+        subject = "Course Enrollment Confirmation"
+        text_body = render_to_string("email/course_enrollment.txt", context)
+        html_body = render_to_string("email/course_enrollment.html", context)
+
+        msg = EmailMultiAlternatives(
+            subject=subject,
+            from_email=settings.FROM_EMAIL,
+            to=[order.email],
+            body=text_body
+        )
+
+        msg.attach_alternative(html_body, "text/html")
+        msg.send()
+
+    def send_enrollment_email_to_teacher(self, order):
+        for item in order.orderitem.all():
+            teacher = item.teacher
+            # Assuming Teacher model has a ForeignKey or OneToOneField to the User model
+            teacher_email = teacher.user.email  # or teacher.email if directly available
+
+            context = {
+                "teacher_name": teacher.full_name,
+                "student_name": order.full_name,
+                "course_name": item.course.title
+            }
+
+            subject = "New Course Enrollment Notification"
+            text_body = render_to_string("email/course_enrollment_teacher.txt", context)
+            html_body = render_to_string("email/course_enrollment_teacher.html", context)
+
+            msg = EmailMultiAlternatives(
+                subject=subject,
+                from_email=settings.FROM_EMAIL,
+                to=[teacher_email],
+                body=text_body
+            )
+
+            msg.attach_alternative(html_body, "text/html")
+            msg.send()
+
+
+@staff_member_required
+def admin_dashboard(request):
+    # Data for Enrollment Chart
+    courses = api_models.Course.objects.all()
+    course_titles = [course.title for course in courses]
+    student_counts = [api_models.EnrolledCourse.objects.filter(course=course).count() for course in courses]
+
+    # Data for Completion Rate Line Chart
+    completion_rates = []
+    for course in courses:
+        total_lessons = course.lectures().count()  # Total number of lessons in the course
+        total_students = api_models.EnrolledCourse.objects.filter(course=course).count()  # Total number of students enrolled in the course
+        total_completed_lessons = sum([student.completed_lesson().count() for student in EnrolledCourse.objects.filter(course=course)])  # Total number of lessons completed by all students
+
+        # Calculate the completion rate as a percentage
+        if total_students > 0 and total_lessons > 0:
+            rate = (total_completed_lessons / (total_lessons * total_students)) * 100
+        else:
+            rate = 0
+        completion_rates.append(round(rate, 2))
+
+    # Data for Revenue Distribution Pie Chart
+    revenue_data = []
+    for course in courses:
+        total_revenue = api_models.CartOrderItem.objects.filter(course=course).aggregate(total=models.Sum('price'))['total'] or 0
+        revenue_data.append(round(float(total_revenue), 2))  # Convert Decimal to float with 2 decimal places
+
+    context = {
+        'course_titles': mark_safe(json.dumps(course_titles)),
+        'student_counts': mark_safe(json.dumps(student_counts)),
+        'completion_rates': mark_safe(json.dumps(completion_rates)),
+        'revenue_data': mark_safe(json.dumps(revenue_data)),
+    }
+    return render(request, 'admin/dashboard.html', context)

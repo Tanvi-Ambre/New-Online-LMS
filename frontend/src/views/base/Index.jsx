@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-key */
 import { useEffect, useState, useContext, useRef, useMemo } from "react";
 import BaseHeader from "../partials/BaseHeader";
 import BaseFooter from "../partials/BaseFooter";
@@ -18,16 +17,14 @@ import { useAuthStore } from "../../store/auth";
 import { useCourseStore } from "../../store/courseStore";
 
 function Index() {
-  //const [courses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filteredCourses, setFilteredCourses] = useState([]);
   const [cartCount, setCartCount] = useContext(CartContext);
-  //const [wishlist, setWishlist] = useState([]); // Add this line
   const navigate = useNavigate();
 
   const { searchQuery } = useContext(SearchContext);
   const courses = useCourseStore((state) => state.courses); // Get courses from Zustand
-  const setCourses = useCourseStore((state) =>  state.setCourses); // Set courses in Zustand
+  const setCourses = useCourseStore((state) => state.setCourses); // Set courses in Zustand
   const courseListRef = useRef(null);
   const mostPopularCoursesRef = useRef(null);
 
@@ -36,41 +33,41 @@ function Index() {
   const user = useAuthStore((state) => state.user); // Access user data from useAuthStore
   const userId = user?.user_id;
   const fullName = user?.full_name;
-  console.log("courses", courses);
 
- 
+  // Fetch courses only if they are not already set
   useEffect(() => {
-    if (courses.length > 0) {
+    const fetchCourses = async () => {
+      try {
+        setIsLoading(true);
+        const response = await apiInstance.get(`/course/course-list/`);
+        setCourses(response.data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Failed to fetch courses:", error);
+        setIsLoading(false);
+      }
+    };
+
+    if (courses.length === 0) {
+      fetchCourses(); 
+    } else {
       setIsLoading(false);
     }
-  }, [courses]);
+  }, [courses.length, setCourses]);
 
-  // const fetchCourse = (retryCount = 3) => {
-  //   setIsLoading(true);
-  //   try {
-  //     apiInstance.get(`/course/course-list/`).then((res)=>{
+  // Fetch cart count when component mounts
+  useEffect(() => {
+    const fetchCartCount = async () => {
+      try {
+        const response = await apiInstance.get(`course/cart-list/${CartId()}/`);
+        setCartCount(response.data?.length);
+      } catch (error) {
+        console.error("Failed to fetch cart count:", error);
+      }
+    };
 
-  //       console.log("course-list", res.data);
-  //       setCourses(res.data);
-  //       setIsLoading(false);
-  //     });
-  //   } catch (error) {
-  //     if (retryCount > 0) {
-  //       fetchCourse(retryCount - 1);
-  //     } else {
-  //       console.log("Failed to fetch courses:", error);
-  //       setIsLoading(false);
-  //     }
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (courses.length === 0) {
-  //     fetchCourse(); // Fetch courses only if they are not already fetched
-  //   } else {
-  //     setIsLoading(false);
-  //   }
-  // }, [courses]);
+    fetchCartCount();
+  }, [setCartCount]);
 
   const memoizedFilteredCourses = useMemo(() => {
     if (searchQuery) {
@@ -103,19 +100,15 @@ function Index() {
     formdata.append("cart_id", cartId);
 
     try {
-      await useAxios()
-        .post(`course/cart/`, formdata)
-        .then((res) => {
-          Toast().fire({
-            title: "Added To Cart",
-            icon: "success",
-          });
+      await useAxios().post(`course/cart/`, formdata);
+      Toast().fire({
+        title: "Added To Cart",
+        icon: "success",
+      });
 
-          // Set cart count after adding to cart
-          apiInstance.get(`course/cart-list/${CartId()}/`).then((res) => {
-            setCartCount(res.data?.length);
-          });
-        });
+      // Set cart count after adding to cart
+      const res = await apiInstance.get(`course/cart-list/${CartId()}/`);
+      setCartCount(res.data?.length);
     } catch (error) {
       console.log(error);
     }
@@ -127,15 +120,14 @@ function Index() {
   const [currentPage, setCurrentPage] = useState(1);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredCourses.slice(indexOfFirstItem, indexOfLastItem); // Modified line
-  const totalPages = Math.ceil(filteredCourses.length / itemsPerPage); // Modified line
+  const currentItems = filteredCourses.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredCourses.length / itemsPerPage);
 
   const pageNumbers = Array.from(
     { length: totalPages },
     (_, index) => index + 1
   );
 
-  //console.log("currentItems", currentItems)
   const addToWishlist = (courseId) => {
     const formdata = new FormData();
     formdata.append("user_id", userId);
@@ -144,7 +136,6 @@ function Index() {
     useAxios()
       .post(`student/wishlist/${userId}/`, formdata)
       .then((res) => {
-        // console.log(res.data);
         Toast().fire({
           icon: "success",
           title: res.data.message,
@@ -460,9 +451,15 @@ function Index() {
                           <div className="card-body text-center p-6">
                             {/* img */}
                             <img
-                              src="../../assets/images/avatar/avatar-1.jpg"
+                              src="https://geeksui.codescandy.com/geeks/assets/images/avatar/avatar-1.jpg"
                               alt="avatar"
                               className="avatar avatar-lg rounded-circle"
+                              style={{
+                                width: "50px",
+                                height: "50px",
+                                borderRadius: "50%",
+                                objectFit: "cover",
+                              }}
                             />
                             <p className="mb-0 mt-3">
                               “The generated lorem Ipsum is therefore always
@@ -539,9 +536,15 @@ function Index() {
                           <div className="card-body text-center p-6">
                             {/* img */}
                             <img
-                              src="../../assets/images/avatar/avatar-1.jpg"
+                              src="https://geeksui.codescandy.com/geeks/assets/images/avatar/avatar-1.jpg"
                               alt="avatar"
                               className="avatar avatar-lg rounded-circle"
+                              style={{
+                                width: "50px",
+                                height: "50px",
+                                borderRadius: "50%",
+                                objectFit: "cover",
+                              }}
                             />
                             <p className="mb-0 mt-3">
                               “The generated lorem Ipsum is therefore always
@@ -618,9 +621,15 @@ function Index() {
                           <div className="card-body text-center p-6">
                             {/* img */}
                             <img
-                              src="../../assets/images/avatar/avatar-1.jpg"
+                              src="https://geeksui.codescandy.com/geeks/assets/images/avatar/avatar-1.jpg"
                               alt="avatar"
                               className="avatar avatar-lg rounded-circle"
+                              style={{
+                                width: "50px",
+                                height: "50px",
+                                borderRadius: "50%",
+                                objectFit: "cover",
+                              }}
                             />
                             <p className="mb-0 mt-3">
                               “The generated lorem Ipsum is therefore always

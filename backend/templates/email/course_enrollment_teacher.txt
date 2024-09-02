@@ -1,0 +1,8 @@
+Dear {{ teacher_name }},
+
+You have a new student enrolled in your course "{{ course_name }}".
+
+Student Name: {{ student_name }}
+
+Best regards,
+Your LMS Team

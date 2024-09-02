@@ -1,0 +1,8 @@
+Dear {{ username }},
+
+Congratulations! You have successfully enrolled in the course: {{ course_name }}.
+
+Thank you for choosing our platform to enhance your skills.
+
+Best regards,
+Your Learning Platform Team

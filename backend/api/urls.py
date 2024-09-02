@@ -78,5 +78,8 @@ urlpatterns = [
     path("student/quiz-detail/<int:quiz_id>/", api_views.StudentQuizDetailAPIView.as_view(), name='student-quiz-detail'),
     path("student/submit-quiz/<int:student_id>/", api_views.SubmitQuizAPIView.as_view(), name='submit-quiz'),
     path('student/quiz-scores/<int:user_id>/', api_views.StudentQuizScoresAPIView.as_view(), name='student-quiz-scores'),
+    
+     # Custom Admin URLs
+    path('admin/dashboard/', api_views.admin_dashboard, name='admin_dashboard'),
 ]
 
