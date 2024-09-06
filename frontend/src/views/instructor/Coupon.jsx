@@ -32,11 +32,22 @@ function Coupon() {
   const handleAddCouponClose = () => setShowAddCoupon(false);
   const handleAddCouponShow = () => setShowAddCoupon(true);
 
+  // const fetchCoupons = () => {
+  //   useAxios()
+  //     .get(`teacher/coupon-list/${teacherId}/`)
+  //     .then((res) => {
+  //       setCoupons(res.data);
+  //     });
+  // };
   const fetchCoupons = () => {
-    useAxios()
+    const axiosInstance = useAxios();
+    return axiosInstance
       .get(`teacher/coupon-list/${teacherId}/`)
       .then((res) => {
         setCoupons(res.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching coupons:', error);
       });
   };
 

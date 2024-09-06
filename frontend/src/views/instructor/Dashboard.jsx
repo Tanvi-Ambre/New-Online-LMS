@@ -173,7 +173,7 @@ function Dashboard() {
               </div>
 
               {loading ? (
-                <Spinner />
+                <Spinner data-testid="spinner"/>
               ) : (
                 <>
                   <div className="row mb-4">

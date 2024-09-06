@@ -26,30 +26,61 @@ function Login() {
     }
   }, []);
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setIsLoading(true);
+  //   const { access, error, refresh } = await login(email, password);
+  //  // console.log("token", access)
+  //   if (error) {
+  //     setIsLoading(false);
+  //     alert(error);
+  //   } else {
+  //     if (rememberMe) {
+  //       // Save email and password to localStorage
+  //       localStorage.setItem("rememberedEmail", email);
+  //       localStorage.setItem("rememberedPassword", password);
+  //     } else {
+  //       // Clear any remembered login details
+  //       localStorage.removeItem("rememberedEmail");
+  //       localStorage.removeItem("rememberedPassword");
+  //     }
+
+  //     setAuthUser(access, refresh);
+  //     navigate("/");
+  //     setIsLoading(false);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    const { access, error, refresh } = await login(email, password);
-   // console.log("token", access)
-    if (error) {
-      setIsLoading(false);
-      alert(error);
-    } else {
-      if (rememberMe) {
-        // Save email and password to localStorage
-        localStorage.setItem("rememberedEmail", email);
-        localStorage.setItem("rememberedPassword", password);
-      } else {
-        // Clear any remembered login details
-        localStorage.removeItem("rememberedEmail");
-        localStorage.removeItem("rememberedPassword");
+  
+    try {
+      const { access, error, refresh } = (await login(email, password)) || {}; // Safeguard against undefined response
+  
+      if (error) {
+        setIsLoading(false);
+        alert(error);
+      } else if (access) {
+        if (rememberMe) {
+          // Save email and password to localStorage
+          localStorage.setItem("rememberedEmail", email);
+          localStorage.setItem("rememberedPassword", password);
+        } else {
+          // Clear any remembered login details
+          localStorage.removeItem("rememberedEmail");
+          localStorage.removeItem("rememberedPassword");
+        }        
+        setAuthUser(access, refresh);
+        navigate("/");
+        setIsLoading(false);
       }
-
-      setAuthUser(access, refresh);
-      navigate("/");
+    } catch (err) {
       setIsLoading(false);
+      alert("An unexpected error occurred");
     }
   };
+  
 
   const togglePasswordVisibility = () => {
     setShowPassword((prevState) => !prevState);
@@ -125,6 +156,7 @@ function Login() {
                         className="input-group-text"
                         onClick={togglePasswordVisibility}
                         style={{ cursor: "pointer" }}
+                        data-testid="password-visibility-toggle"
                       >
                         {showPassword ? (
                           <i className="fas fa-eye-slash"></i>
