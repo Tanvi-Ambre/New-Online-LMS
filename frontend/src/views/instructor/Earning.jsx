@@ -16,7 +16,7 @@ function Earning() {
   const { user } = useAuthStore((state) => ({
     user: state.user,
   }));
-  const teacherId = user?.teacher_id
+  const teacherId = user?.teacher_id;
 
   useEffect(() => {
     useAxios()
@@ -26,7 +26,7 @@ function Earning() {
       });
 
     useAxios()
-    .get(`teacher/all-months-earning/${teacherId}/?interval=month`)
+      .get(`teacher/all-months-earning/${teacherId}/?interval=month`)
       .then((res) => {
         setEarning(res.data);
       });
@@ -91,7 +91,7 @@ function Earning() {
                       <div className="border p-3 rounded shadow-sm">
                         <i className="fe fe-shopping-cart icon-shape icon-sm rounded-3 bg-light-success text-dark-success mt-2" />
                         <h3 className="display-4 fw-bold mt-3 mb-0">
-                          ${stats.total_revenue?.toFixed(2)}
+                          ${stats.monthly_revenue?.toFixed(2)}{" "}
                         </h3>
                         <span>Monthly Earnings</span>
                       </div>
@@ -100,7 +100,7 @@ function Earning() {
                       <div className="border p-3 rounded shadow-sm">
                         <i className="fe fe-shopping-cart icon-shape icon-sm rounded-3 bg-light-success text-dark-success mt-2" />
                         <h3 className="display-4 fw-bold mt-3 mb-0">
-                          ${stats.monthly_revenue?.toFixed(2)}
+                          ${stats.total_revenue?.toFixed(2)}{" "}
                         </h3>
                         <span>Your Revenue</span>
                       </div>
@@ -201,14 +201,15 @@ function Earning() {
                       </tr>
                     </thead>
                     <tbody>
-                      {Array.isArray(earning.intervals) && earning.intervals.map((interval, index) => (
-                        <tr key={index}>
-                          <td>
-                            {moment(interval, 'YYYY-MM').format('MMMM YYYY')}
-                          </td>
-                          <td>${earning.earnings[index]?.toFixed(2)}</td>
-                        </tr>
-                      ))}
+                      {Array.isArray(earning.intervals) &&
+                        earning.intervals.map((interval, index) => (
+                          <tr key={index}>
+                            <td>
+                              {moment(interval, "YYYY-MM").format("MMMM YYYY")}
+                            </td>
+                            <td>${earning.earnings[index]?.toFixed(2)}</td>
+                          </tr>
+                        ))}
                     </tbody>
                   </table>
                 </div>

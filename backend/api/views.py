@@ -793,8 +793,9 @@ class QuestionAnswerMessageSendAPIView(generics.CreateAPIView):
         question_serializer = api_serializer.Question_AnswerSerializer(question)
         return Response({"messgae": "Message Sent", "question": question_serializer.data})
 
-
-
+    
+from django.utils import timezone
+from datetime import datetime, timedelta
 
 class TeacherSummaryAPIView(generics.ListAPIView):
     serializer_class = api_serializer.TeacherSummarySerializer
@@ -805,12 +806,28 @@ class TeacherSummaryAPIView(generics.ListAPIView):
         print("teacher_id---", teacher_id)
         teacher = api_models.Teacher.objects.get(id=teacher_id)
 
-        one_month_ago = datetime.today() - timedelta(days=28)
+        # Current time
+        now = timezone.now()
+        # First day of the current month
+        first_day_of_month = now.replace(day=1)
 
+        # Calculate total courses
         total_courses = api_models.Course.objects.filter(teacher=teacher).count()
-        total_revenue = api_models.CartOrderItem.objects.filter(teacher=teacher, order__payment_status="Paid").aggregate(total_revenue=models.Sum("price"))['total_revenue'] or 0
-        monthly_revenue = api_models.CartOrderItem.objects.filter(teacher=teacher, order__payment_status="Paid", date__gte=one_month_ago).aggregate(total_revenue=models.Sum("price"))['total_revenue'] or 0
 
+        # Calculate total revenue (all-time)
+        total_revenue = api_models.CartOrderItem.objects.filter(
+            teacher=teacher, 
+            order__payment_status="Paid"
+        ).aggregate(total_revenue=models.Sum("price"))['total_revenue'] or 0
+
+        # Calculate revenue for the current month
+        monthly_revenue = api_models.CartOrderItem.objects.filter(
+            teacher=teacher,
+            order__payment_status="Paid",
+            date__gte=first_day_of_month  # Only orders from the start of this month
+        ).aggregate(total_revenue=models.Sum("price"))['total_revenue'] or 0
+
+        # Find total students
         enrolled_courses = api_models.EnrolledCourse.objects.filter(teacher=teacher)
         unique_student_ids = set()
         students = []
@@ -824,7 +841,6 @@ class TeacherSummaryAPIView(generics.ListAPIView):
                     "country": user.profile.country,
                     "date": course.date
                 }
-
                 students.append(student)
                 unique_student_ids.add(course.user_id)
 
@@ -834,12 +850,12 @@ class TeacherSummaryAPIView(generics.ListAPIView):
             "monthly_revenue": monthly_revenue,
             "total_students": len(students),
         }]
-    
+
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-    
+
 
 class TeacherCourseListAPIView(generics.ListAPIView):
     serializer_class = api_serializer.CourseSerializer
@@ -1611,7 +1627,7 @@ def admin_dashboard(request):
     for course in courses:
         total_lessons = course.lectures().count()  # Total number of lessons in the course
         total_students = api_models.EnrolledCourse.objects.filter(course=course).count()  # Total number of students enrolled in the course
-        total_completed_lessons = sum([student.completed_lesson().count() for student in EnrolledCourse.objects.filter(course=course)])  # Total number of lessons completed by all students
+        total_completed_lessons = sum([student.completed_lesson().count() for student in api_models.EnrolledCourse.objects.filter(course=course)])  # Total number of lessons completed by all students
 
         # Calculate the completion rate as a percentage
         if total_students > 0 and total_lessons > 0:
