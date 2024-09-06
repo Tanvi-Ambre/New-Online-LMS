@@ -70,7 +70,6 @@ class Teacher(models.Model):
     linkedin = models.URLField(null=True, blank=True)
     about = models.TextField(null=True, blank=True)
     country = models.CharField(max_length=100, null=True, blank=True)
-    #teacher_id = ShortUUIDField(unique=True, length=6, max_length=20, alphabet="1234567890")
 
     def __str__(self):
         return self.full_name

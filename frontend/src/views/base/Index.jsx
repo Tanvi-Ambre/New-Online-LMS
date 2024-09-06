@@ -20,6 +20,7 @@ function Index() {
   const [isLoading, setIsLoading] = useState(true);
   const [filteredCourses, setFilteredCourses] = useState([]);
   const [cartCount, setCartCount] = useContext(CartContext);
+  //console.log("cartCount", cartCount)
   const navigate = useNavigate();
 
   const { searchQuery } = useContext(SearchContext);

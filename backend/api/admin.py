@@ -24,28 +24,6 @@ admin.site.register(models.Notification)
 admin.site.register(models.Coupon)
 admin.site.register(models.Wishlist)
 admin.site.register(models.Country)
-# class AnswerInline(admin.TabularInline):
-#     model = models.Answer
-#     extra = 1
-
-# class QuestionAdmin(admin.ModelAdmin):
-#     list_display = ('text', 'quiz', 'date_created')
-#     inlines = [AnswerInline]
-
-# class QuizAdmin(admin.ModelAdmin):
-#     list_display = ('title', 'course', 'date_created')
-#     search_fields = ('title', 'course__title')
-#     list_filter = ('course',)
-    
-# class UserQuizResponseAdmin(admin.ModelAdmin):
-#     list_display = ('user', 'quiz', 'question', 'selected_answer', 'is_correct', 'date_answered')
-#     list_filter = ('quiz', 'user', 'is_correct')
-
-# # Register the models with custom ModelAdmin
-# admin.site.register(models.Quiz, QuizAdmin)
-# admin.site.register(models.Question, QuestionAdmin)
-# admin.site.register(models.UserQuizResponse, UserQuizResponseAdmin)
-
 class CustomAdminSite(admin.AdminSite):
     site_header = "LMS Admin Dashboard"
 

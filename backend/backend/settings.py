@@ -130,9 +130,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -141,9 +138,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
@@ -156,27 +150,13 @@ MEDIA_ROOT = BASE_DIR / 'media'
 AUTH_USER_MODEL = 'userauths.User'
 
 
-# MAILGUN_API_KEY = env("MAILGUN_API_KEY")
-# MAILERSEND_API_TOKEN = env("MAILERSEND_API_TOKEN")
-# MAILGUN_SENDER_DOMAIN = env("MAILGUN_SENDER_DOMAIN")
-
 STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY")
-PAYPAL_CLIENT_ID = env("PAYPAL_CLIENT_ID") # PAYPAL_CLIENT_ID=9-320034750834758934758347
-PAYPAL_SECRET_ID = env("PAYPAL_SECRET_ID") # PAYPAL_SECRET_ID=9-320034750834758934758347
+PAYPAL_CLIENT_ID = env("PAYPAL_CLIENT_ID") 
+PAYPAL_SECRET_ID = env("PAYPAL_SECRET_ID") 
 
 FRONTEND_SITE_URL = env("FRONTEND_SITE_URL")
 
 
-# ANYMAIL = {
-#     "MAILGUN_API_KEY": env("MAILGUN_API_KEY"),
-#     "MAILGUN_SENDER_DOMAIN": env("MAILGUN_SENDER_DOMAIN"),
-# }
-
-# FROM_EMAIL = env("FROM_EMAIL")
-# EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

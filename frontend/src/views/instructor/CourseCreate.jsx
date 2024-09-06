@@ -532,6 +532,7 @@ function CourseCreate() {
                 <button
                   className="btn btn-lg btn-success w-100 mt-2"
                   type="submit"
+                  data-testid="create-course-button"
                 >
                   Create Course <i className="fas fa-check-circle"></i>
                 </button>
